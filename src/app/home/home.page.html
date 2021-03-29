@@ -1,20 +1,51 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-app>
+  <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title>
+        C3 - Progettazione di Applicazioni Web e Mobili
+      </ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
-</ion-content>
+  <ion-content [fullscreen]="true">
+    <div id="container">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Progetto universitario per l'esame di Progettazione di Applicazioni Web e Mobile.
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Progetto per la realizzazione di un' applicazione rivolta ai centri abitati medi della provincia italiana
+          dove le attività commerciali del centro soffrono la concorrenza di grossi centri commerciali situati nelle
+          periferie.
+        </ion-card-content>
+        <ion-card-content>
+          L’idea di fondo è considerare il trasporto della merce, una volta acquistata, una delle scomodità principali
+          degli acquisti in centro, oltre alla più difficile collocazione dei punti vendita in relazione a specifiche
+          categorie merceologiche.
+        </ion-card-content>
+        <ion-card-content>
+          Il progetto si pone dunque come obiettivo quello di fornire un supporto tramite punti di prelievo per rendere
+          l’esperienza degli acquisti in centro più facile e interessante.
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </ion-content>
+
+  <ion-footer style="text-align: center;">
+    <ion-toolbar>
+      <ion-card>
+        <ion-card-content>
+          <a target="_blank" rel="noopener noreferrer" href="https://www.unicam.it/">Università di Camerino</a>
+          <br>
+          <a target="_blank" rel="noopener noreferrer" href="https://github.com/matteoRondyUni/C3-PAWM">Github del
+            progetto</a>
+          <br>
+          <a target="_blank" rel="noopener noreferrer"
+            href="http://didattica.cs.unicam.it/doku.php?id=didattica:triennale:pawm:ay_2021:main">Corso di
+            Progettazione di Applicazioni Web e Mobile</a>
+        </ion-card-content>
+      </ion-card>
+    </ion-toolbar>
+  </ion-footer>
+</ion-app>
