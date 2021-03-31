@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { RegistrationPageRoutingModule } from './registration-routing.module';
+import { ComponentsModule } from '../../components/components.module';
 
 import { RegistrationPage } from './registration.page';
 
@@ -13,6 +14,7 @@ import { RegistrationPage } from './registration.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    ComponentsModule,
     RegistrationPageRoutingModule
   ],
   declarations: [RegistrationPage]
