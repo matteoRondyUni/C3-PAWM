@@ -7,24 +7,25 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content [fullscreen]="true">
-    <div id="container">
+  <ion-content style="min-height: 350px !important;">
+    <div class="container">
       <ion-card>
-        <ion-card-header>
-          <ion-card-title>Progetto universitario per l'esame di Progettazione di Applicazioni Web e Mobile.
+        <ion-card-header style="text-align: center;">
+          <ion-card-title style="font-size: 22px;">Progetto universitario per l'esame di Progettazione di Applicazioni
+            Web e Mobile.
           </ion-card-title>
         </ion-card-header>
-        <ion-card-content>
+        <ion-card-content class="page-text">
           Progetto per la realizzazione di un' applicazione rivolta ai centri abitati medi della provincia italiana
           dove le attività commerciali del centro soffrono la concorrenza di grossi centri commerciali situati nelle
           periferie.
         </ion-card-content>
-        <ion-card-content>
+        <ion-card-content class="page-text">
           L’idea di fondo è considerare il trasporto della merce, una volta acquistata, una delle scomodità principali
           degli acquisti in centro, oltre alla più difficile collocazione dei punti vendita in relazione a specifiche
           categorie merceologiche.
         </ion-card-content>
-        <ion-card-content>
+        <ion-card-content class="page-text">
           Il progetto si pone dunque come obiettivo quello di fornire un supporto tramite punti di prelievo per rendere
           l’esperienza degli acquisti in centro più facile e interessante.
         </ion-card-content>
@@ -41,20 +42,5 @@
     </div>
   </ion-content>
 
-  <ion-footer style="text-align: center;">
-    <ion-toolbar>
-      <ion-card>
-        <ion-card-content>
-          <a target="_blank" rel="noopener noreferrer" href="https://www.unicam.it/">Università di Camerino</a>
-          <br>
-          <a target="_blank" rel="noopener noreferrer" href="https://github.com/matteoRondyUni/C3-PAWM">Github del
-            progetto</a>
-          <br>
-          <a target="_blank" rel="noopener noreferrer"
-            href="http://didattica.cs.unicam.it/doku.php?id=didattica:triennale:pawm:ay_2021:main">Corso di
-            Progettazione di Applicazioni Web e Mobile</a>
-        </ion-card-content>
-      </ion-card>
-    </ion-toolbar>
-  </ion-footer>
+  <app-page-footer></app-page-footer>
 </ion-app>
