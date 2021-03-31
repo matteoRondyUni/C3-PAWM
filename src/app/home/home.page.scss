@@ -2,7 +2,7 @@
   margin: auto;
   text-align: center;
   top:20%;
-  max-width: 600px;
+  max-width: 800px;
 }
 
 #container strong {
@@ -21,4 +21,29 @@
 
 #container a {
   text-decoration: none;
+}
+
+.alert {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  padding: 20px;
+  background-color: #2196F3;
+  color: white;
+  text-align: center;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
 }
