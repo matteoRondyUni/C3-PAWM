@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AlertController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-alert-feature-not-implemented',
@@ -7,8 +9,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AlertFeatureNotImplementedComponent implements OnInit {
 
-  constructor() { }
+  constructor(public alertController: AlertController) { }
 
   ngOnInit() {}
+
+  async presentAlert() {
+
+  }
+
 
 }
