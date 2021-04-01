@@ -7,12 +7,12 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content style="min-height: 300px !important;">
+  <ion-content [fullscreen]="true">
     <div class="container">
-      <ion-card>
-        <ion-card-header style="text-align: center;">
-          <ion-card-title style="font-size: 22px;">Progetto universitario per l'esame di Progettazione di Applicazioni
-            Web e Mobile.
+      <ion-card style="background-color: rgba(0, 0, 0, 0.6) !important;">
+        <ion-card-header >
+          <ion-card-title class="card-title">
+            <strong>Progetto universitario per l'esame di Progettazione di Applicazioni Web e Mobile.</strong>
           </ion-card-title>
         </ion-card-header>
         <ion-card-content class="page-text">
@@ -26,14 +26,62 @@
           categorie merceologiche.
         </ion-card-content>
         <ion-card-content class="page-text">
-          Il progetto si pone dunque come obiettivo quello di fornire un supporto tramite punti di prelievo per rendere
+          Il progetto si pone dunque come obiettivo quello di fornire un supporto tramite punti di prelievo per
+          rendere
           l’esperienza degli acquisti in centro più facile e interessante.
         </ion-card-content>
       </ion-card>
     </div>
+    <br>
+    <div class="container-button">
+      <ion-row>
+        <ion-col>
+          <ion-button expand="block" href="login">Login</ion-button>
+        </ion-col>
+        <ion-col>
+          <p>Or</p>
+        </ion-col>
+        <ion-col>
+          <ion-button expand="block" href="registration">Register</ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
+    <br>
+    <div class="container">
+      <ion-card style="background-color: rgba(0, 0, 0, 0.6) !important;">
+        <ion-card-header>
+          <ion-card-title class="card-title">
+            <strong>Informazioni Tecniche:</strong>
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="page-text">
+          Progetto realizzato tramite Ionic ed Angular.
+          ... (da completare) ...
+          <p>
+            Foto del Background by <a target="_blank" rel="noopener noreferrer"
+              href="https://unsplash.com/@blakewisz?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Blake
+              Wisz</a>
+            on <a target="_blank" rel="noopener noreferrer"
+              href="https://unsplash.com/s/photos/shop?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+          </p>
+        </ion-card-content>
+        <ion-card-content>
+          <ion-row>
+            <ion-col>
+              <ion-icon name="logo-github"></ion-icon>
+              <a target="_blank" rel="noopener noreferrer" href="https://github.com/matteoRondyUni"> Matteo Rondini</a>
+            </ion-col>
+            <ion-col></ion-col>
+            <ion-col>
+              <ion-icon name="logo-github"></ion-icon>
+              <a target="_blank" rel="noopener noreferrer" href="https://github.com/catervpillar"> Tommaso Catervi</a>
+            </ion-col>
+          </ion-row>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <app-cookie-alert></app-cookie-alert>
   </ion-content>
-
-  <app-cookie-alert></app-cookie-alert>
-
   <app-page-footer></app-page-footer>
 </ion-app>
