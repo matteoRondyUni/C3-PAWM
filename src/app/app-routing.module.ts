@@ -10,7 +10,8 @@ const routes: Routes = [
   {
     path: 'home',
     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
-  },  {
+  },
+  {
     path: 'login',
     loadChildren: () => import('./auth/login/login.module').then( m => m.LoginPageModule)
   },
@@ -21,6 +22,10 @@ const routes: Routes = [
   {
     path: 'registration',
     loadChildren: () => import('./auth/registration/registration.module').then( m => m.RegistrationPageModule)
+  },
+  {
+    path: 'home-cliente',
+    loadChildren: () => import('./users/cliente/home-cliente/home-cliente.module').then( m => m.HomeClientePageModule)
   },
 
 
