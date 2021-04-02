@@ -12,4 +12,8 @@ export class RegistrationPage implements OnInit {
   ngOnInit() {
   }
 
+  isRegistrationPage() {
+    document.getElementById("header-registration").style.color = "white";
+    document.getElementById("header-registration").style.backgroundColor = "#2196F3";
+  }
 }

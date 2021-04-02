@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from  "@angular/router";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -8,9 +8,13 @@ import { Router } from  "@angular/router";
 })
 export class LoginPage implements OnInit {
 
-  constructor(private  router:  Router) { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
+  isLoginPage() {
+    document.getElementById("header-login").style.color = "white";
+    document.getElementById("header-login").style.backgroundColor = "#2196F3";
+  }
 }
