@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { AlertFeatureNotImplementedComponent } from './alert-feature-not-implemented.component';
+import { MenuClientePage } from './menu-cliente.page';
 
-describe('AlertFeatureNotImplementedComponent', () => {
-  let component: AlertFeatureNotImplementedComponent;
-  let fixture: ComponentFixture<AlertFeatureNotImplementedComponent>;
+describe('MenuClientePage', () => {
+  let component: MenuClientePage;
+  let fixture: ComponentFixture<MenuClientePage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AlertFeatureNotImplementedComponent ],
+      declarations: [ MenuClientePage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AlertFeatureNotImplementedComponent);
+    fixture = TestBed.createComponent(MenuClientePage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

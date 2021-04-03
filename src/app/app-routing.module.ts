@@ -9,26 +9,24 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
   },
   {
     path: 'login',
-    loadChildren: () => import('./auth/login/login.module').then( m => m.LoginPageModule)
+    loadChildren: () => import('./auth/login/login.module').then(m => m.LoginPageModule)
   },
   {
     path: 'forgot-password',
-    loadChildren: () => import('./auth/forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
+    loadChildren: () => import('./auth/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
   },
   {
     path: 'registration',
-    loadChildren: () => import('./auth/registration/registration.module').then( m => m.RegistrationPageModule)
+    loadChildren: () => import('./auth/registration/registration.module').then(m => m.RegistrationPageModule)
   },
   {
-    path: 'home-cliente',
-    loadChildren: () => import('./users/cliente/home-cliente/home-cliente.module').then( m => m.HomeClientePageModule)
-  },
-
-
+    path: 'cliente',
+    loadChildren: () => import('./users/cliente/menu-cliente/menu-cliente.module').then(m => m.MenuClientePageModule)
+  }
 ];
 
 @NgModule({

@@ -11,4 +11,10 @@ export class HomeClientePage implements OnInit {
 
   ngOnInit() {
   }
+
+  openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+  }
+
+
 }

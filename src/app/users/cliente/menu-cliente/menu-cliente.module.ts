@@ -1,8 +1,20 @@
 import { NgModule } from '@angular/core';
-import { MenuClienteComponent } from './menu-cliente.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+import { IonicModule } from '@ionic/angular';
+
+import { MenuClientePageRoutingModule } from './menu-cliente-routing.module';
+
+import { MenuClientePage } from './menu-cliente.page';
 
 @NgModule({
-    declarations: [MenuClienteComponent],
-    exports: [MenuClienteComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    MenuClientePageRoutingModule
+  ],
+  declarations: [MenuClientePage]
 })
-export class MenuClienteModule { }
+export class MenuClientePageModule { }
