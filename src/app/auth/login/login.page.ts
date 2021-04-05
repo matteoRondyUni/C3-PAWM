@@ -16,5 +16,7 @@ export class LoginPage implements OnInit {
   isLoginPage() {
     document.getElementById("header-login").style.color = "white";
     document.getElementById("header-login").style.backgroundColor = "#2196F3";
+    document.getElementById("header-login-label").style.color = "white";
+    document.getElementById("header-login-label").style.backgroundColor = "#2196F3";
   }
 }

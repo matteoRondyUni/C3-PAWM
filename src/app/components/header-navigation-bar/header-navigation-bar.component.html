@@ -1,7 +1,21 @@
-<ul>
-  <li><a style="padding-right: 20px; color:#2196F3;">C3</a></li>
-  <li><a [routerLink]="['/home']">Home</a></li>
-  <li><a id="header-login" href="/login">Login</a></li>
-  <li><a id="header-registration" href="/registration">Register</a></li>
-  <li><a id="header-about" href="/about">About</a></li>
-</ul>
+<ion-tab-bar>
+  <ion-tab-button href="/home">
+    <ion-icon name="home-outline"></ion-icon>
+    <ion-label>Home</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button id="header-login" href="/login">
+    <ion-icon name="log-in-outline" id="header-login"></ion-icon>
+    <ion-label id="header-login-label">Login</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button id="header-registration" href="/registration">
+    <ion-icon name="person-circle" id="header-registration"></ion-icon>
+    <ion-label id="header-registration-label">Registration</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button id="header-about" href="/about">
+    <ion-icon name="information-circle" id="header-about"></ion-icon>
+    <ion-label id="header-about-label">About</ion-label>
+  </ion-tab-button>
+</ion-tab-bar>

@@ -16,6 +16,8 @@ export class AboutPage implements OnInit {
   isAboutPage() {
     document.getElementById("header-about").style.color = "white";
     document.getElementById("header-about").style.backgroundColor = "#2196F3";
+    document.getElementById("header-about-label").style.color = "white";
+    document.getElementById("header-about-label").style.backgroundColor = "#2196F3";
   }
 
 }
