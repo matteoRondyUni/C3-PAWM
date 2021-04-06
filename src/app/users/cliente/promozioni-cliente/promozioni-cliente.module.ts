@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { HomeClientePageRoutingModule } from './home-cliente-routing.module';
+import { PromozioniClientePageRoutingModule } from './promozioni-cliente-routing.module';
 
-import { HomeClientePage } from './home-cliente.page';
+import { PromozioniClientePage } from './promozioni-cliente.page';
 
 import { ComponentsModule } from '../../../components/components.module';
 
@@ -16,9 +16,9 @@ import { ComponentsModule } from '../../../components/components.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    HomeClientePageRoutingModule,
+    PromozioniClientePageRoutingModule,
     ComponentsModule
   ],
-  declarations: [HomeClientePage]
+  declarations: [PromozioniClientePage]
 })
-export class HomeClientePageModule { }
+export class PromozioniClientePageModule {}

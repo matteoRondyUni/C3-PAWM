@@ -12,12 +12,12 @@ export class MenuClientePage implements OnInit {
     {
       title: 'Home',
       icon: 'home-outline',
-      url: '/cliente/home-cliente'
+      url: '/cliente/home'
     },
     {
-      title: 'Login',
-      icon: 'log-in-outline',
-      url: '/login'
+      title: 'Promozioni',
+      icon: 'pricetags-outline',
+      url: '/cliente/promo'
     }
   ]
 

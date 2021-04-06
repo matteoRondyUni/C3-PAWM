@@ -7,18 +7,19 @@ const routes: Routes = [
   {
     path: '',
     component: MenuClientePage,
-    redirectTo: 'home-cliente',
+    redirectTo: 'home',
     pathMatch: 'full'
   },
   {
-    path: 'login',
-    loadChildren: () => import('../../../auth/login/login.module').then(m => m.LoginPageModule)
-  },
-  {
-    path: 'home-cliente',
+    path: 'home',
     component: MenuClientePage,
     loadChildren: () => import('../home-cliente/home-cliente.module').then(m => m.HomeClientePageModule)
   },
+  {
+    path: 'promo',
+    component: MenuClientePage,
+    loadChildren: () => import('../promozioni-cliente/promozioni-cliente.module').then(m => m.PromozioniClientePageModule)
+  }
 ];
 
 @NgModule({
