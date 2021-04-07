@@ -9,4 +9,10 @@ export class HomePage {
 
   constructor() {}
 
+  isHomePage() {
+    document.getElementById("header-home").style.color = "white";
+    document.getElementById("header-home").style.backgroundColor = "#2196F3";
+    document.getElementById("header-home-label").style.color = "white";
+    document.getElementById("header-home-label").style.backgroundColor = "#2196F3";
+  }
 }
