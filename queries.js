@@ -1,10 +1,10 @@
 const Pool = require('pg').Pool
 const pool = new Pool({
-    host: "localhost",
-    port: 5432,
-    user: "postgres",
-    password: "postgres123",
-    database: "C3-PAWM-DB"
+  host: "localhost",
+  port: 5432,
+  user: "postgres",
+  password: "postgres123",
+  database: "C3-PAWM-DB"
 })
 
 const getUsers = (request, response) => {
@@ -28,23 +28,25 @@ const getUserById = (request, response) => {
 }
 
 const createUser = (request, response) => {
-  const { name, email } = request.body
+  // const id = parseInt(request.body.id)
+  const { nome, cognome, email, password, telefono, indirizzo, tipo } = request.body
 
-  pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(201).send(`User added with ID: ${result.insertId}`)
-  })
+  pool.query('INSERT INTO public.utenti ( nome, cognome, email, password, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+    [nome, cognome, email, password, telefono, indirizzo, tipo], (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(201).send(`User added with ID: ${results.insertId}`)
+    })
 }
 
 const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
-  const { name, email } = request.body
+  const { nome, cognome } = request.body
 
   pool.query(
-    'UPDATE users SET name = $1, email = $2 WHERE id = $3',
-    [name, email, id],
+    'UPDATE public.utenti SET nome = $1, cognome = $2 WHERE id = $3',
+    [nome, cognome, id],
     (error, results) => {
       if (error) {
         throw error
@@ -57,7 +59,7 @@ const updateUser = (request, response) => {
 const deleteUser = (request, response) => {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
+  pool.query('DELETE FROM public.utenti WHERE id = $1', [id], (error, results) => {
     if (error) {
       throw error
     }
