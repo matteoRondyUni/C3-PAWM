@@ -11,41 +11,93 @@
   {{ isRegistrationPage() }}
 
   <ion-content [fullscreen]="true">
-    <form>
+    <form (ngSubmit)="register()" [formGroup]="credentials">
       <div class="registration-card">
         <ion-card>
           <br>
           <br>
           <ion-card-header>
             <ion-card-subtitle></ion-card-subtitle>
-            <ion-card-title style="font-size:35px"><strong>Registration</strong></ion-card-title>
+            <ion-card-title style="font-size:35px"><strong>Registrazione</strong></ion-card-title>
           </ion-card-header>
 
           <ion-card-content>
-            <ion-item lines="full">
-              <ion-label position="floating">First name</ion-label>
-              <ion-input type="text" required></ion-input>
-            </ion-item>
+
+            <ion-row>
+              <ion-col width-25>
+                <ion-item lines="full">
+                  <ion-label position="floating">Nome</ion-label>
+                  <ion-input type="name" name="nome" formControlName="nome" required></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col width-25>
+                <ion-item lines="full">
+                  <ion-label position="floating">Cognome</ion-label>
+                  <ion-input type="family-name" name="cognome" formControlName="cognome" required></ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
 
             <ion-item lines="full">
-              <ion-label position="floating">Last name</ion-label>
-              <ion-input type="text" required></ion-input>
-            </ion-item>
-
-            <ion-item lines="full">
-              <ion-label position="floating">Email</ion-label>
-              <ion-input type="text" required></ion-input>
+              <ion-label position="floating">Indirizzo email</ion-label>
+              <ion-input type="email" name="email" formControlName="email" required></ion-input>
             </ion-item>
 
             <ion-item lines="full">
               <ion-label position="floating">Password</ion-label>
-              <ion-input type="password" required></ion-input>
+              <ion-input type="password" name="password" formControlName="password" required></ion-input>
             </ion-item>
+
+            <ion-item lines="full">
+              <ion-label position="floating">Numero di telefono</ion-label>
+              <ion-input type="tel" name="telefono" formControlName="telefono" required></ion-input>
+            </ion-item>
+
+            <ion-item lines="full">
+              <ion-label position="floating">Indirizzo</ion-label>
+              <ion-input type="street-address" name="indirizzo" formControlName="indirizzo" required></ion-input>
+            </ion-item>
+
+            <ion-item lines="full">
+              <ion-label style="font-size:20px"><strong>Scegli il tipo di account</strong></ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-radio-group>
+                <ion-row>
+                  <ion-col>
+                    <ion-item>
+                      <ion-label>Cliente</ion-label>
+                      <ion-radio slot="start" color="success" value="cliente"></ion-radio>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label>Corriere</ion-label>
+                      <ion-radio slot="start" color="success" value="corriere"></ion-radio>
+                    </ion-item>
+                  </ion-col>
+
+                  <ion-col>
+                    <ion-item>
+                      <ion-label>Commerciante</ion-label>
+                      <ion-radio slot="start" color="success" value="commerciante"></ion-radio>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label>Magazziniere</ion-label>
+                      <ion-radio slot="start" color="success" value="magazziniere"></ion-radio>
+                    </ion-item>
+                  </ion-col>
+
+                </ion-row>
+
+              </ion-radio-group>
+            </ion-item>
+
             <br>
 
             <ion-row>
               <ion-col>
-                <ion-button type="submit" color="danger" expand="block">Sign Up</ion-button>
+                <ion-button (click)="register()" type="submit" color="danger" expand="block">Registrati</ion-button>
               </ion-col>
             </ion-row>
           </ion-card-content>
