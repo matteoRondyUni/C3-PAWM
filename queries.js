@@ -67,10 +67,17 @@ const deleteUser = (request, response) => {
   })
 }
 
+const findUserByEmail = (email, cb) => {
+  return pool.query('SELECT * FROM public.utenti WHERE email = $1', [email], (error, results) => {
+    cb(error, results)
+  });
+}
+
 module.exports = {
   getUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
+  findUserByEmail
 }
