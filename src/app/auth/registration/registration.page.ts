@@ -41,8 +41,8 @@ export class RegistrationPage implements OnInit {
   async register() {
     const loading = await this.loadingController.create();
     await loading.present();
-    if () {
-
+    if (1 == 1) {
+      await loading.dismiss();
     } else {
       await loading.dismiss();
     }

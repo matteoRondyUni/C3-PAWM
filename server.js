@@ -33,6 +33,21 @@ app.post('/users/login', (req, res) => {
     })
 });
 
+app.post('/users/register', (req, res) => {
+    db.findUserByEmail(req.body.email, (err, results) => {
+        if (err) return res.status(500).send('Server error!');
+
+        const users = JSON.parse(JSON.stringify(results.rows));
+
+        if (users.length == 0) {
+            db.createUser(req, res);
+            return res.status(200).send('Utente creato correttamente');
+        }
+        else return res.status(404).send("L'email \'" + users[0].email + "\' è già stata usata!");
+    });
+});
+
+
 app.get('/*', function (req, res) {
     res.sendFile('index.html', { root: __dirname + '/www' }
     );

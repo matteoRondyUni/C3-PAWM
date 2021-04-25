@@ -28,15 +28,21 @@ const getUserById = (request, response) => {
 }
 
 const createUser = (request, response) => {
-  // const id = parseInt(request.body.id)
-  const { nome, cognome, email, password, telefono, indirizzo, tipo } = request.body
+  const nome = request.body.nome;
+  const cognome = request.body.cognome;
+  const email = request.body.email;
+  const telefono = request.body.telefono;
+  const indirizzo = request.body.indirizzo;
+  const tipo = request.body.tipo;
+  const password = request.body.password;
 
+  console.log("NUOVO UTENTE:\n",request.body);
+  
   pool.query('INSERT INTO public.utenti ( nome, cognome, email, password, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7)',
     [nome, cognome, email, password, telefono, indirizzo, tipo], (error, results) => {
       if (error) {
         throw error
       }
-      response.status(201).send(`User added with ID: ${results.insertId}`)
     })
 }
 
