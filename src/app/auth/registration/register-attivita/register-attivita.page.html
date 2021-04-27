@@ -1,0 +1,85 @@
+<ion-app>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <app-header-navigation-bar></app-header-navigation-bar>
+    </ion-toolbar>
+  </ion-header>
+
+  {{ isRegistrationPage() }}
+
+  <ion-content [fullscreen]="true">
+    <form (ngSubmit)="register()" [formGroup]="credentials">
+      <div class="registration-card">
+        <ion-card>
+          <br>
+          <br>
+          <ion-card-header>
+            <ion-card-title style="font-size:35px"><strong>Registrazione </strong></ion-card-title>
+            <ion-card-subtitle style="font-size:25px">
+              Profilo attività
+              <ion-icon name="business-outline"></ion-icon>
+            </ion-card-subtitle>
+
+          </ion-card-header>
+
+          <ion-card-content>
+
+            <ion-row>
+              <ion-col width-25>
+                <ion-item lines="full">
+                  <ion-label position="floating">Ragione sociale</ion-label>
+                  <ion-input type="name" name="ragione_sociale" formControlName="ragione_sociale" required></ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col width-25>
+                <ion-item lines="full">
+                  <ion-label position="floating">Tipologia attività</ion-label>
+                  <ion-select value="" name="tipo" formControlName="tipo" required>
+                    <ion-select-option value="NEGOZIO">Negozio</ion-select-option>
+                    <ion-select-option value="MAGAZZINO">Magazzino</ion-select-option>
+                    <ion-select-option value="DITTA_TRASPORTI">Ditta trasporti</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
+            <ion-item lines="full">
+              <ion-label position="floating">Indirizzo email</ion-label>
+              <ion-input type="email" name="email" formControlName="email" required></ion-input>
+            </ion-item>
+
+            <ion-item lines="full">
+              <ion-label position="floating">Password</ion-label>
+              <ion-input type="password" name="password" formControlName="password" required></ion-input>
+            </ion-item>
+
+            <ion-item lines="full">
+              <ion-label position="floating">Numero di telefono</ion-label>
+              <ion-input type="tel" name="telefono" formControlName="telefono" required></ion-input>
+            </ion-item>
+
+            <ion-item lines="full">
+              <ion-label position="floating">Indirizzo</ion-label>
+              <ion-input type="street-address" name="indirizzo" formControlName="indirizzo" required></ion-input>
+            </ion-item>
+
+            <br>
+
+            <ion-row>
+              <ion-col>
+                <ion-button type="submit" color="danger" expand="block">Registrati</ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </form>
+  </ion-content>
+
+  <app-cookie-alert></app-cookie-alert>
+  <app-page-footer></app-page-footer>
+</ion-app>

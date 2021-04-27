@@ -21,8 +21,16 @@ const routes: Routes = [
     loadChildren: () => import('./auth/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
   },
   {
-    path: 'registration',
-    loadChildren: () => import('./auth/registration/registration.module').then(m => m.RegistrationPageModule)
+    path: 'register',
+    loadChildren: () => import('./auth/registration/register/register.module').then(m => m.RegisterPageModule)
+  },
+  {
+    path: 'register-cliente',
+    loadChildren: () => import('./auth/registration/register-cliente/register-cliente.module').then(m => m.RegisterClientePageModule)
+  },
+  {
+    path: 'register-attivita',
+    loadChildren: () => import('./auth/registration/register-attivita/register-attivita.module').then(m => m.RegisterAttivitaPageModule)
   },
   {
     path: 'cliente',

@@ -1,0 +1,49 @@
+<ion-app>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <app-header-navigation-bar></app-header-navigation-bar>
+    </ion-toolbar>
+  </ion-header>
+
+  {{ isRegistrationPage() }}
+
+  <ion-content [fullscreen]="true">
+    <ion-slides #slides pager="true">
+
+      <ion-slide>
+        <div class="slide">
+          <img src="" />
+          <h1 style="font-size:35px"><strong>Registrati ora</strong></h1>
+          <p>Sei un cliente o un'attività? C3 PAWM è un potente e pratico strumento per tutte le esigenze.</p>
+          <ion-button fill="clear" style="font-size:20px" (click)="slides.slideNext()"><strong>PROSEGUI</strong>
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-slide>
+
+      <ion-slide>
+        <div class="slide">
+          <img src="" />
+          <h1 style="font-size:35px"><strong>Sei pronto?</strong></h1>
+          <br>
+          <ion-button fill="clear" style="font-size:20px" href="/register-cliente"><strong>Registrati come cliente</strong>
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button>
+          <br>
+          <ion-button fill="clear" style="font-size:20px" href="/register-attivita"><strong>Registrati come attività</strong>
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-slide>
+
+
+    </ion-slides>
+  </ion-content>
+
+  <app-cookie-alert></app-cookie-alert>
+  <app-page-footer></app-page-footer>
+
+</ion-app>

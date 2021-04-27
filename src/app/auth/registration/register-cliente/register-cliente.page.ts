@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
-import { AuthenticationService } from './../../services/authentication.service';
+import { AuthenticationService } from '../../../services/authentication.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 
+
 @Component({
-  selector: 'app-registration',
-  templateUrl: './registration.page.html',
-  styleUrls: ['./registration.page.scss'],
+  selector: 'app-register-cliente',
+  templateUrl: './register-cliente.page.html',
+  styleUrls: ['./register-cliente.page.scss'],
 })
-export class RegistrationPage implements OnInit {
+export class RegisterClientePage implements OnInit {
   credentials: FormGroup;
 
   constructor(
@@ -27,7 +28,7 @@ export class RegistrationPage implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       telefono: ['', [Validators.required]],
       indirizzo: ['', [Validators.required]],
-      tipo: ['', [Validators.required]]
+      tipo: ['CLIENTE', [Validators.required]]
     });
   }
 
@@ -39,12 +40,18 @@ export class RegistrationPage implements OnInit {
   }
 
   async register() {
-    const loading = await this.loadingController.create();
-    await loading.present();
-    if (1 == 1) {
-      await loading.dismiss();
-    } else {
-      await loading.dismiss();
-    }
+    // if (!this.selectedType) {
+    //   return console.log("SELEZIONARE UN TIPO!");
+    // }
+    // const loading = await this.loadingController.create();
+    // await loading.present();
+    // if (this.authService.register(this.credentials.value)) {
+    //   await loading.dismiss();
+    //   this.router.navigateByUrl('/login', { replaceUrl: true });
+    // } else {
+    //   await loading.dismiss();
+    // }
+
+    console.log(this.credentials.value);
   }
 }
