@@ -24,12 +24,12 @@ app.post('/users/login', (req, res) => {
         const user = JSON.parse(JSON.stringify(results.rows));
         if (user.length == 0) return res.status(404).send('Utente non trovato!');
 
-        const result = password == user[0].password;
+        const result = (password == user[0].password);
         if (!result) return res.status(401).send('Password non valida!');
 
         const expiresIn = 24 * 60 * 60;
-        const accessToken = jwt.sign({ id: user[0].id }, SECRET_KEY, { expiresIn: expiresIn });
-        res.status(200).send({ "access_token": accessToken, "expires_in": expiresIn });
+        const accessToken = jwt.sign({ id: user[0].id }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+        return res.status(200).send({ "accessToken": accessToken });
     })
 });
 
@@ -46,6 +46,17 @@ app.post('/users/register', (req, res) => {
         else return res.status(404).send("L'email \'" + users[0].email + "\' è già stata usata!");
     });
 });
+
+app.post('/control/JWT', (req, res) => {
+    const token = req.body.value;
+    try {
+        jwt.verify(token, SECRET_KEY);
+        return res.status(200).send();
+    } catch (err) {
+        // err
+        return res.status(400).send({ "error": err });
+    }
+})
 
 
 app.get('/*', function (req, res) {
