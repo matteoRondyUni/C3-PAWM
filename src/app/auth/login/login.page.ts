@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { AuthenticationService } from './../../services/authentication.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +15,7 @@ export class LoginPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthenticationService,
+    private alertController: AlertController,
     private router: Router,
     private loadingController: LoadingController
   ) { }
@@ -34,13 +35,40 @@ export class LoginPage implements OnInit {
   }
 
   async login() {
+    // const loading = await this.loadingController.create();
+    // await loading.present();
+    // if (this.authService.login(this.credentials.value)) {
+    //   await loading.dismiss();
+    //   switch(await this.authService.getType()){
+    //     case "CLIENTE":
+    //       this.router.navigateByUrl('/cliente', { replaceUrl: true });
+    //   }
+    // } else {
+    //   await loading.dismiss();
+    // }
+
     const loading = await this.loadingController.create();
     await loading.present();
-    if (this.authService.login(this.credentials.value)) {
-      await loading.dismiss();
-      this.router.navigateByUrl('/cliente', { replaceUrl: true });
-    } else {
-      await loading.dismiss();
-    }
+
+    this.authService.login(this.credentials.value).subscribe(
+      async (res) => {
+        console.log("res: ", res);
+        await loading.dismiss();
+        this.router.navigateByUrl('/cliente', { replaceUrl: true });
+      },
+      async (res) => {
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Login failed',
+          message: res.error,
+          buttons: ['OK'],
+        });
+
+        await alert.present();
+      }
+    );
+
+
+
   }
 }

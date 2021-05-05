@@ -28,7 +28,7 @@ app.post('/users/login', (req, res) => {
         if (!result) return res.status(401).send('Password non valida!');
 
         const expiresIn = 24 * 60 * 60;
-        const accessToken = jwt.sign({ id: user[0].id }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+        const accessToken = jwt.sign({ id: user[0].id, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
         return res.status(200).send({ "accessToken": accessToken });
     })
 });
