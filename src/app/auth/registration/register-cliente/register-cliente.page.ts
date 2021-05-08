@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { AuthenticationService } from '../../../services/authentication.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 
 
 @Component({
@@ -11,24 +11,24 @@ import { LoadingController } from '@ionic/angular';
   styleUrls: ['./register-cliente.page.scss'],
 })
 export class RegisterClientePage implements OnInit {
-  credentials: FormGroup;
+  credenziali: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthenticationService,
     private router: Router,
+    private alertController: AlertController,
     private loadingController: LoadingController
   ) { }
 
   ngOnInit() {
-    this.credentials = this.fb.group({
-      nome: ['', [Validators.required]],
-      cognome: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      telefono: ['', [Validators.required]],
-      indirizzo: ['', [Validators.required]],
-      tipo: ['CLIENTE', [Validators.required]]
+    this.credenziali = this.fb.group({
+      nome: ['carlo', [Validators.required]],
+      cognome: ['carlo', [Validators.required]],
+      email: ['carlo@gmail.com', [Validators.required, Validators.email]],
+      password: ['carlocarlo', [Validators.required, Validators.minLength(6)]],
+      telefono: ['1234567890', [Validators.required]],
+      indirizzo: ['carlo', [Validators.required]],
     });
   }
 
@@ -40,18 +40,31 @@ export class RegisterClientePage implements OnInit {
   }
 
   async register() {
-    // if (!this.selectedType) {
-    //   return console.log("SELEZIONARE UN TIPO!");
-    // }
-    // const loading = await this.loadingController.create();
-    // await loading.present();
-    // if (this.authService.register(this.credentials.value)) {
-    //   await loading.dismiss();
-    //   this.router.navigateByUrl('/login', { replaceUrl: true });
-    // } else {
-    //   await loading.dismiss();
-    // }
+    const loading = await this.loadingController.create();
+    await loading.present();
 
-    console.log(this.credentials.value);
+
+    this.authService.register(this.credenziali.value).subscribe(
+      async (res) => {
+        await loading.dismiss();
+        this.router.navigateByUrl('/login');
+        const alert = await this.alertController.create({
+          header: 'Registrazione completata',
+          message: "Ora puoi effettuare il login",
+          buttons: ['OK'],
+        });
+        await alert.present();
+      },
+      async (res) => {
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Registrazione fallita',
+          message: res.error,
+          buttons: ['OK'],
+        });
+
+        await alert.present();
+      }
+    );
   }
 }

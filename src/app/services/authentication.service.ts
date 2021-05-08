@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map, tap, switchMap } from 'rxjs/operators';
-import { BehaviorSubject, from, Observable, Subject } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { map, tap, switchMap, catchError } from 'rxjs/operators';
+import { BehaviorSubject, from, Observable, Subject, throwError } from 'rxjs';
 import jwt_decode from 'jwt-decode';
 
 import { Plugins } from '@capacitor/core';
 import { ConstantPool } from '@angular/compiler';
+import * as crypto from "crypto-js";
+
 const { Storage } = Plugins;
 
 const TOKEN_KEY = 'my-token';
+
+// var crypto = require("crypto-js");
 
 @Injectable({
   providedIn: 'root'
@@ -81,4 +85,14 @@ export class AuthenticationService {
     this.isAuthenticated.next(false);
     return Storage.remove({ key: TOKEN_KEY });
   }
+
+  register(credentials: { nome, cognome, email, password, indirizzo }): Observable<any> {
+    return this.http.post('/register/cliente', credentials).pipe(
+      map((data: any) => data.esito),
+      switchMap(esito => {
+        return esito;
+      }
+      ))
+  }
+
 }

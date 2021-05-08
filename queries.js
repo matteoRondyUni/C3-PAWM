@@ -7,6 +7,10 @@ const pool = new Pool({
   database: "C3-PAWM-DB"
 })
 
+const bcrypt = require('bcrypt');
+const secret = "secret";
+const salt = "salt";
+
 const getUsers = (request, response) => {
   pool.query('SELECT * FROM public.utenti ORDER BY id ASC', (error, results) => {
     if (error) {
@@ -27,19 +31,25 @@ const getUserById = (request, response) => {
   })
 }
 
-const createUser = (request, response) => {
+const createCliente = (request, response) => {
   const nome = request.body.nome;
   const cognome = request.body.cognome;
   const email = request.body.email;
   const telefono = request.body.telefono;
   const indirizzo = request.body.indirizzo;
-  const tipo = request.body.tipo;
+  const tipo = "CLIENTE";
   const password = request.body.password;
 
-  console.log("NUOVO UTENTE:\n",request.body);
-  
-  pool.query('INSERT INTO public.utenti ( nome, cognome, email, password, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-    [nome, cognome, email, password, telefono, indirizzo, tipo], (error, results) => {
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password + "secret", salt);
+
+  console.log("\n\nsalt:", salt);
+  console.log("hash:", hash);
+
+  console.log("NUOVO UTENTE:\n", request.body);
+
+  pool.query('INSERT INTO public.utenti ( nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+    [nome, cognome, email, hash, salt, telefono, indirizzo, tipo], (error, results) => {
       if (error) {
         throw error
       }
@@ -82,7 +92,7 @@ const findUserByEmail = (email, cb) => {
 module.exports = {
   getUsers,
   getUserById,
-  createUser,
+  createCliente,
   updateUser,
   deleteUser,
   findUserByEmail
