@@ -6,13 +6,11 @@ import jwt_decode from 'jwt-decode';
 
 import { Plugins } from '@capacitor/core';
 import { ConstantPool } from '@angular/compiler';
-import * as crypto from "crypto-js";
 
 const { Storage } = Plugins;
 
 const TOKEN_KEY = 'my-token';
 
-// var crypto = require("crypto-js");
 
 @Injectable({
   providedIn: 'root'
@@ -86,8 +84,17 @@ export class AuthenticationService {
     return Storage.remove({ key: TOKEN_KEY });
   }
 
-  register(credentials: { nome, cognome, email, password, indirizzo }): Observable<any> {
+  registerCliente(credentials): Observable<any> {
     return this.http.post('/register/cliente', credentials).pipe(
+      map((data: any) => data.esito),
+      switchMap(esito => {
+        return esito;
+      }
+      ))
+  }
+
+  registerAttivita(credentials): Observable<any> {
+    return this.http.post('/register/attivita', credentials).pipe(
       map((data: any) => data.esito),
       switchMap(esito => {
         return esito;

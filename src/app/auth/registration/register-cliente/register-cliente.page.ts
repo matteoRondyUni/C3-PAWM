@@ -26,7 +26,7 @@ export class RegisterClientePage implements OnInit {
       nome: ['carlo', [Validators.required]],
       cognome: ['carlo', [Validators.required]],
       email: ['carlo@gmail.com', [Validators.required, Validators.email]],
-      password: ['carlocarlo', [Validators.required, Validators.minLength(6)]],
+      password: ['carlocarlo', [Validators.required, Validators.minLength(8)]],
       telefono: ['1234567890', [Validators.required]],
       indirizzo: ['carlo', [Validators.required]],
     });
@@ -44,7 +44,7 @@ export class RegisterClientePage implements OnInit {
     await loading.present();
 
 
-    this.authService.register(this.credenziali.value).subscribe(
+    this.authService.registerCliente(this.credenziali.value).subscribe(
       async (res) => {
         await loading.dismiss();
         this.router.navigateByUrl('/login');
