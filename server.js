@@ -38,7 +38,21 @@ app.post('/register/cliente', (req, res) => {
             db.createCliente(req, res);
             return res.status(200).send({'esito': "1"});
         }
-        else return res.status(404).send("L'email \'" + users[0].email + "\' è già stata usata!");
+        else return res.status(400).send("L'email \'" + users[0].email + "\' è già stata usata!");
+    });
+});
+
+app.post('/register/attivita', (req, res) => {
+    db.findAttivitaByEmail(req.body.email, (err, results) => {
+        if (err) return res.status(500).send('Server error!');
+
+        const attivita = JSON.parse(JSON.stringify(results.rows));
+
+        if (attivita.length == 0) {
+            db.creaAttivita(req, res);
+            return res.status(200).send({'esito': "1"});
+        }
+        else return res.status(400).send("L'email \'" + attivita[0].email + "\' è già stata usata!");
     });
 });
 

@@ -5,9 +5,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import jwt_decode from 'jwt-decode';
 
 import { Plugins } from '@capacitor/core';
+
 const { Storage } = Plugins;
 
 const TOKEN_KEY = 'my-token';
+
 
 @Injectable({
   providedIn: 'root'
@@ -62,8 +64,17 @@ export class AuthenticationService {
     return Storage.remove({ key: TOKEN_KEY });
   }
 
-  register(credentials: { nome, cognome, email, password, indirizzo }): Observable<any> {
+  registerCliente(credentials): Observable<any> {
     return this.http.post('/register/cliente', credentials).pipe(
+      map((data: any) => data.esito),
+      switchMap(esito => {
+        return esito;
+      }
+      ))
+  }
+
+  registerAttivita(credentials): Observable<any> {
+    return this.http.post('/register/attivita', credentials).pipe(
       map((data: any) => data.esito),
       switchMap(esito => {
         return esito;

@@ -31,7 +31,7 @@ const getUserById = (request, response) => {
   })
 }
 
-const createCliente = (request, response) => {
+const creaCliente = (request, response) => {
   const nome = request.body.nome;
   const cognome = request.body.cognome;
   const email = request.body.email;
@@ -50,6 +50,30 @@ const createCliente = (request, response) => {
 
   pool.query('INSERT INTO public.utenti ( nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     [nome, cognome, email, hash, salt, telefono, indirizzo, tipo], (error, results) => {
+      if (error) {
+        throw error
+      }
+    })
+}
+
+const creaAttivita = (request, response) => {
+  const ragione_sociale = request.body.ragione_sociale;
+  const tipo = request.body.tipo;
+  const email = request.body.email;
+  const telefono = request.body.telefono;
+  const indirizzo = request.body.indirizzo;
+  const password = request.body.password;
+
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password + "secret", salt);
+
+  console.log("\n\nsalt:", salt);
+  console.log("hash:", hash);
+
+  console.log("NUOVA ATTIVITA:\n", request.body);
+
+  pool.query('INSERT INTO public.attivita ( ragione_sociale, tipo, email, password, salt, telefono, indirizzo ) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+    [ragione_sociale, tipo, email, hash, salt, telefono, indirizzo], (error, results) => {
       if (error) {
         throw error
       }
@@ -89,11 +113,19 @@ const findUserByEmail = (email, cb) => {
   });
 }
 
+const findAttivitaByEmail = (email, cb) => {
+  return pool.query('SELECT * FROM public.attivita WHERE email = $1', [email], (error, results) => {
+    cb(error, results)
+  });
+}
+
 module.exports = {
   getUsers,
   getUserById,
-  createCliente,
+  creaCliente,
+  creaAttivita,
   updateUser,
   deleteUser,
-  findUserByEmail
+  findUserByEmail,
+  findAttivitaByEmail
 }
