@@ -1,0 +1,55 @@
+<ion-app>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <app-header-navigation-bar></app-header-navigation-bar>
+    </ion-toolbar>
+  </ion-header>
+
+  {{ isLoginPage() }}
+
+  <ion-content [fullscreen]="true">
+    <form (ngSubmit)="login()" [formGroup]="credentials">
+      <div class="login-card">
+        <ion-card>
+          <br>
+          <br>
+          <ion-card-header>
+            <ion-card-title style="font-size:35px"><strong>Login</strong></ion-card-title>
+            <ion-card-subtitle style="font-size:25px">
+              Profilo attività
+              <ion-icon name="business-outline"></ion-icon>
+            </ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ion-item lines="full">
+              <ion-label position="floating">Email</ion-label>
+              <ion-input type="email" name="email" formControlName="email" required></ion-input>
+            </ion-item>
+
+            <ion-item lines="full">
+              <ion-label position="floating">Password</ion-label>
+              <ion-input type="password" name="password" formControlName="password" required></ion-input>
+            </ion-item>
+            <br>
+            <ion-row>
+              <ion-col>
+                <div>
+                  <ion-button type="submit" color="danger" expand="block">Sign In</ion-button>
+                </div>
+                <br>
+                <a [routerLink]="['/forgot-password']" class="small-text forgot-password">Forgot Password?</a>
+                <br>
+              </ion-col>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </form>
+  </ion-content>
+  <app-cookie-alert></app-cookie-alert>
+  <app-page-footer></app-page-footer>
+</ion-app>

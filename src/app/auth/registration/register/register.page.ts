@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { IonSlides} from '@ionic/angular';
-import { ViewChild } from '@angular/core'
 
 @Component({
   selector: 'app-register',
@@ -8,8 +6,6 @@ import { ViewChild } from '@angular/core'
   styleUrls: ['./register.page.scss'],
 })
 export class RegisterPage implements OnInit {
-  @ViewChild('mySlider')  slides: IonSlides;
-
   constructor() { }
 
   ngOnInit() {
@@ -22,7 +18,4 @@ export class RegisterPage implements OnInit {
     document.getElementById("header-registration-label").style.backgroundColor = "#2196F3";
   }
 
-  swipeNext(){
-    this.slides.slideNext();
-  }//
 }

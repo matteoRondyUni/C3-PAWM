@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
-import { AuthenticationService } from './../../services/authentication.service';
+import { AuthenticationService } from '../../../services/authentication.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.page.html',
-  styleUrls: ['./login.page.scss'],
+  selector: 'app-login-attivita',
+  templateUrl: './login-attivita.page.html',
+  styleUrls: ['./login-attivita.page.scss'],
 })
-export class LoginPage implements OnInit {
+export class LoginAttivitaPage implements OnInit {
   credentials: FormGroup;
 
   constructor(
@@ -35,24 +35,14 @@ export class LoginPage implements OnInit {
   }
 
   async login() {
-    // const loading = await this.loadingController.create();
-    // await loading.present();
-    // if (this.authService.login(this.credentials.value)) {
-    //   await loading.dismiss();
-    //   switch(await this.authService.getType()){
-    //     case "CLIENTE":
-    //       this.router.navigateByUrl('/cliente', { replaceUrl: true });
-    //   }
-    // } else {
-    //   await loading.dismiss();
-    // }
-
     const loading = await this.loadingController.create();
     await loading.present();
 
     this.authService.login(this.credentials.value).subscribe(
       async (res) => {
         console.log("res: ", res);
+        console.log("primo metodo: ", (await this.authService.getToken()).value);
+        console.log("secondo metodo: ", this.authService.token);
         await loading.dismiss();
         this.router.navigateByUrl('/cliente', { replaceUrl: true });
       },
@@ -67,8 +57,5 @@ export class LoginPage implements OnInit {
         await alert.present();
       }
     );
-
-
-
   }
 }

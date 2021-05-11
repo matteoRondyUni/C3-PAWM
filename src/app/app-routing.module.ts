@@ -14,7 +14,15 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => import('./auth/login/login.module').then(m => m.LoginPageModule)
+    loadChildren: () => import('./auth/login/login/login.module').then(m => m.LoginPageModule)
+  },
+  {
+    path: 'login-cliente',
+    loadChildren: () => import('./auth/login/login-cliente/login-cliente.module').then(m => m.LoginClientePageModule)
+  },
+  {
+    path: 'login-attivita',
+    loadChildren: () => import('./auth/login/login-attivita/login-attivita.module').then(m => m.LoginAttivitaPageModule)
   },
   {
     path: 'forgot-password',
@@ -40,7 +48,7 @@ const routes: Routes = [
   {
     path: 'about',
     loadChildren: () => import('./about/about.module').then(m => m.AboutPageModule)
-  }
+  },
 ];
 
 @NgModule({
