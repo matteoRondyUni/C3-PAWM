@@ -49,6 +49,10 @@ const routes: Routes = [
     path: 'about',
     loadChildren: () => import('./about/about.module').then(m => m.AboutPageModule)
   },
+  {
+    path: 'attivita',
+    loadChildren: () => import('./users/attivita/menu-attivita/menu-attivita.module').then( m => m.MenuAttivitaPageModule)
+  }
 ];
 
 @NgModule({
