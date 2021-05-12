@@ -6,10 +6,17 @@ const pool = new Pool({
   password: "postgres123",
   database: "C3-PAWM-DB"
 })
-
+const crypto = require("crypto");
 const bcrypt = require('bcrypt');
-const secret = "secret";
-const salt = "salt";
+
+/**
+ * Genera il Codice di Ritiro per l'Ordine.
+ * @returns il Codice di Ririto
+ */
+function generateCodiceRitiro() {
+  const toReturn = crypto.randomBytes(4).toString('hex');
+  return toReturn;
+}
 
 const getUsers = (request, response) => {
   pool.query('SELECT * FROM public.utenti ORDER BY id ASC', (error, results) => {
@@ -119,6 +126,20 @@ const findAttivitaByEmail = (email, cb) => {
   });
 }
 
+//TODO da finire
+const creaOrdine = (request, response) => {
+  const idMagazzino = request.body.idMagazzino;
+  const idCliente = request.body.idCliente;
+  const codiceRitiro = generateCodiceRitiro();
+
+  pool.query('INSERT INTO public.ordini (id_magazzino, id_cliente, stato, codice_ritiro) VALUES ($1, $2, $3, $4)',
+    [idMagazzino, idCliente, "PAGATO", codiceRitiro], (error, results) => {
+      if (error) {
+        throw error
+      }
+    })
+}
+
 module.exports = {
   getUsers,
   getUserById,
@@ -127,5 +148,6 @@ module.exports = {
   updateUser,
   deleteUser,
   findUserByEmail,
-  findAttivitaByEmail
+  findAttivitaByEmail,
+  creaOrdine
 }

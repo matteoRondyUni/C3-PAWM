@@ -38,12 +38,13 @@ export class LoginAttivitaPage implements OnInit {
     const loading = await this.loadingController.create();
     await loading.present();
 
-    this.authService.login(this.credentials.value).subscribe(
+    this.authService.loginAttivita(this.credentials.value).subscribe(
       async (res) => {
         console.log("res: ", res);
         console.log("primo metodo: ", (await this.authService.getToken()).value);
         console.log("secondo metodo: ", this.authService.token);
         await loading.dismiss();
+        //TODO cambiare /cliente con /attivita
         this.router.navigateByUrl('/cliente', { replaceUrl: true });
       },
       async (res) => {
