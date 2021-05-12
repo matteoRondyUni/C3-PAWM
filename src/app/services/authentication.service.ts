@@ -37,7 +37,7 @@ export class AuthenticationService {
     return toReturn;
   }
 
-  login(credentials: { email, password }): Observable<any> {
+  loginUser(credentials: { email, password }): Observable<any> {
     return this.http.post('/users/login', credentials).pipe(
       map((data: any) => data.accessToken),
       switchMap(token => {
@@ -46,6 +46,29 @@ export class AuthenticationService {
         console.log("tmp: ", tipoUtente.tipo);
         Storage.set({ key: TOKEN_KEY, value: token });
         switch (tipoUtente.tipo) {
+          case "CLIENTE": return "1";
+          case "COMMERCIANTE": return "2";
+          case "CORRIERE": return "3";
+          case "MAGAZZINIERE": return "4";
+          default: return "0";
+        }
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  loginAttivita(credentials: { email, password }): Observable<any> {
+    return this.http.post('/attivita/login', credentials).pipe(
+      map((data: any) => data.accessToken),
+      switchMap(token => {
+        console.log("token login", token);
+        const tipoAttivita: any = jwt_decode(token);
+        console.log("tmp: ", tipoAttivita.tipo);
+        Storage.set({ key: TOKEN_KEY, value: token });
+        switch (tipoAttivita.tipo) {
+          //TODO da finire
           case "CLIENTE": return "1";
           case "COMMERCIANTE": return "2";
           case "CORRIERE": return "3";

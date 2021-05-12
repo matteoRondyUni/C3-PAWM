@@ -38,7 +38,7 @@ export class LoginClientePage implements OnInit {
     const loading = await this.loadingController.create();
     await loading.present();
 
-    this.authService.login(this.credentials.value).subscribe(
+    this.authService.loginUser(this.credentials.value).subscribe(
       async (res) => {
         console.log("res: ", res);
         console.log("primo metodo: ", (await this.authService.getToken()).value);

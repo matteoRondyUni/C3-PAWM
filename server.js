@@ -11,15 +11,18 @@ app.use(express.static(__dirname + '/www'));
 
 app.use(express.json());
 
+/**
+ * REST - Login User
+ */
 app.post('/users/login', (req, res) => {
-    const email = req.body.email;
     const password = req.body.password;
-    db.findUserByEmail(email, (err, results) => {
+    db.findUserByEmail(req.body.email, (err, results) => {
         if (err) return res.status(500).send('Server Error!');
         const user = JSON.parse(JSON.stringify(results.rows));
         if (user.length == 0) return res.status(404).send('Utente non trovato!');
 
-        const result = (password == user[0].password);
+        const toControl = bcrypt.hashSync(password + "secret", user[0].salt);
+        const result = (user[0].password == toControl);
         if (!result) return res.status(401).send('Password non valida!');
 
         const expiresIn = 24 * 60 * 60;
@@ -28,6 +31,29 @@ app.post('/users/login', (req, res) => {
     })
 });
 
+/**
+ * REST - Login Attività
+ */
+app.post('/attivita/login', (req, res) => {
+    const password = req.body.password;
+    db.findAttivitaByEmail(req.body.email, (err, results) => {
+        if (err) return res.status(500).send('Server Error!');
+        const attivita = JSON.parse(JSON.stringify(results.rows));
+        if (attivita.length == 0) return res.status(404).send('Attività non trovata!');
+
+        const toControl = bcrypt.hashSync(password + "secret", attivita[0].salt);
+        const result = (attivita[0].password == toControl);
+        if (!result) return res.status(401).send('Password non valida!');
+
+        const expiresIn = 24 * 60 * 60;
+        const accessToken = jwt.sign({ id: attivita[0].id, tipo: attivita[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+        return res.status(200).send({ "accessToken": accessToken });
+    })
+});
+
+/**
+ * REST - Registrazione Cliente
+ */
 app.post('/register/cliente', (req, res) => {
     db.findUserByEmail(req.body.email, (err, results) => {
         if (err) return res.status(500).send('Server error!');
@@ -35,13 +61,16 @@ app.post('/register/cliente', (req, res) => {
         const users = JSON.parse(JSON.stringify(results.rows));
 
         if (users.length == 0) {
-            db.createCliente(req, res);
-            return res.status(200).send({'esito': "1"});
+            db.creaCliente(req, res);
+            return res.status(200).send({ 'esito': "1" });
         }
         else return res.status(400).send("L'email \'" + users[0].email + "\' è già stata usata!");
     });
 });
 
+/**
+ * REST - Registrazione Attivita'
+ */
 app.post('/register/attivita', (req, res) => {
     db.findAttivitaByEmail(req.body.email, (err, results) => {
         if (err) return res.status(500).send('Server error!');
@@ -50,7 +79,7 @@ app.post('/register/attivita', (req, res) => {
 
         if (attivita.length == 0) {
             db.creaAttivita(req, res);
-            return res.status(200).send({'esito': "1"});
+            return res.status(200).send({ 'esito': "1" });
         }
         else return res.status(400).send("L'email \'" + attivita[0].email + "\' è già stata usata!");
     });
@@ -90,10 +119,14 @@ app.post('/verifica', (req, res) => {
     })
 })
 
+app.post('/ordini/crea', (req, res) => {
+    console.log("ordini/crea");
+    db.creaOrdine(req, res);
+    return res.status(200).send({ 'esito': "1" });
+})
 
 app.get('/*', function (req, res) {
-    res.sendFile('index.html', { root: __dirname + '/www' }
-    );
+    res.sendFile('index.html', { root: __dirname + '/www' });
 });
 
 // Start the app by listening on the default Heroku port
