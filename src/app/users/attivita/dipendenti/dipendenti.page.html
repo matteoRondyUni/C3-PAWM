@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Dipendenti</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+
+
+</ion-header>
+
+<ion-content>
+
+  <ion-button>Aggiungi</ion-button>
+  <ion-button>Rimuovi</ion-button>
+
+  <ion-virtual-scroll [items]="dipendenti" approximateItemHeight="70px" [headerFn]="separateLetter">
+
+    <ion-item-divider *virtualHeader="let header" color="gray">
+      <ion-label>{{header}}</ion-label>
+    </ion-item-divider>
+
+    <ion-item *virtualItem="let dipendente">
+      <ion-avatar slot="start">
+        <ion-img [src]=""></ion-img>
+      </ion-avatar>
+
+      <ion-label>
+        <h2 text-capitalize>{{dipendente.cognome}} {{dipendente.nome}}</h2>
+        <p>{{dipendente.email}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-virtual-scroll>
+
+</ion-content>

@@ -8,6 +8,7 @@ const pool = new Pool({
 })
 const crypto = require("crypto");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 /**
  * Genera il Codice di Ritiro per l'Ordine.
@@ -140,6 +141,29 @@ const creaOrdine = (request, response) => {
     })
 }
 
+const getDipendenti = (token, cb) => {
+  //TODO: verificare il token!
+  const info = jwt.decode(token);
+
+  switch (info.tipo) {
+    case 'NEGOZIO':
+      return pool.query(
+        'select public.utenti.id, nome, cognome, email, telefono, indirizzo from public.commercianti inner join public.utenti on public.commercianti.id=public.utenti.id where public.commercianti.id_negozio=$1', [info.id], (error, results) => {
+          cb(error, results)
+        });
+    case 'DITTA_TRASPORTI':
+      return pool.query(
+        'select public.utenti.id, nome, cognome, email, telefono, indirizzo from public.corrieri inner join public.utenti on public.corrieri.id=public.utenti.id where public.corrieri.id_ditta=$1', [info.id], (error, results) => {
+          cb(error, results)
+        });
+    case 'MAGAZZINO':
+      return pool.query(
+        'select public.utenti.id, nome, cognome, email, telefono, indirizzo from public.magazzinieri inner join public.utenti on public.magazzinieri.id=public.utenti.id where public.magazzinieri.id_magazzino=$1', [info.id], (error, results) => {
+          cb(error, results)
+        });
+  }
+}
+
 module.exports = {
   getUsers,
   getUserById,
@@ -149,5 +173,6 @@ module.exports = {
   deleteUser,
   findUserByEmail,
   findAttivitaByEmail,
-  creaOrdine
+  creaOrdine,
+  getDipendenti
 }

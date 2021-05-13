@@ -45,7 +45,7 @@ export class LoginAttivitaPage implements OnInit {
         console.log("secondo metodo: ", this.authService.token);
         await loading.dismiss();
         //TODO cambiare /cliente con /attivita
-        this.router.navigateByUrl('/cliente', { replaceUrl: true });
+        this.router.navigateByUrl('/attivita', { replaceUrl: true });
       },
       async (res) => {
         await loading.dismiss();

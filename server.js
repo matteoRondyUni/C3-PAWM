@@ -85,6 +85,23 @@ app.post('/register/attivita', (req, res) => {
     });
 });
 
+
+app.get('/dipendenti', (req, res) => {
+    //TODO: fai un metodo unico controllando il JWT dell'attività
+
+    const token = req.headers.token;
+
+    db.getDipendenti(token, (err, results) => {
+        if (err) return res.status(500).send('Server error!');
+
+        const dipendenti = JSON.parse(JSON.stringify(results.rows));
+        const to_return = { 'results': dipendenti };
+
+        return res.status(200).send(to_return);
+    });
+});
+
+
 app.post('/control/JWT', (req, res) => {
     const token = req.body.value;
     try {
