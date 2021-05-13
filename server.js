@@ -11,6 +11,16 @@ app.use(express.static(__dirname + '/www'));
 
 app.use(express.json());
 
+//TODO
+function verifyJWT(token) {
+    try {
+        jwt.verify(token, SECRET_KEY);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
 /**
  * REST - Login User
  */
@@ -88,17 +98,19 @@ app.post('/register/attivita', (req, res) => {
 
 app.get('/dipendenti', (req, res) => {
     //TODO: fai un metodo unico controllando il JWT dell'attività
-
     const token = req.headers.token;
+    if (verifyJWT(token)) {
+        db.getDipendenti(token, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
 
-    db.getDipendenti(token, (err, results) => {
-        if (err) return res.status(500).send('Server error!');
+            const dipendenti = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': dipendenti };
 
-        const dipendenti = JSON.parse(JSON.stringify(results.rows));
-        const to_return = { 'results': dipendenti };
-
-        return res.status(200).send(to_return);
-    });
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
 });
 
 
