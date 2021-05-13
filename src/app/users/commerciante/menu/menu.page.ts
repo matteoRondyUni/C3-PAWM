@@ -3,22 +3,17 @@ import { Router, RouterEvent } from '@angular/router';
 import { AuthenticationService } from '../../../services/authentication.service';
 
 @Component({
-  selector: 'app-menu-cliente',
-  templateUrl: './menu-cliente.page.html',
-  styleUrls: ['./menu-cliente.page.scss'],
+  selector: 'app-menu',
+  templateUrl: './menu.page.html',
+  styleUrls: ['./menu.page.scss'],
 })
-export class MenuClientePage implements OnInit {
+export class MenuPage implements OnInit {
 
   pages = [
     {
       title: 'Home',
       icon: 'home-outline',
-      url: '/cliente/home'
-    },
-    {
-      title: 'Promozioni',
-      icon: 'pricetags-outline',
-      url: '/cliente/promo'
+      url: '/commerciante/home'
     }
   ]
 
@@ -27,8 +22,8 @@ export class MenuClientePage implements OnInit {
   constructor(private authService: AuthenticationService, private router: Router) {
     this.router.events.subscribe((event: RouterEvent) => {
       if (event.url != undefined) {
-        if (event.url == '/cliente') {
-          this.selectedPath = '/cliente/home';
+        if (event.url == '/commerciante') {
+          this.selectedPath = '/commerciante/home';
         } else {
           this.selectedPath = event.url;
         }

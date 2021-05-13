@@ -4,21 +4,20 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { HomeClientePageRoutingModule } from './home-cliente-routing.module';
+import { HomePageRoutingModule } from './home-routing.module';
 
-import { HomeClientePage } from './home-cliente.page';
+import { HomePage } from './home.page';
 
 import { ComponentsModule } from '../../../components/components.module';
-
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    HomeClientePageRoutingModule,
+    HomePageRoutingModule,
     ComponentsModule
   ],
-  declarations: [HomeClientePage]
+  declarations: [HomePage]
 })
-export class HomeClientePageModule { }
+export class HomePageModule { }

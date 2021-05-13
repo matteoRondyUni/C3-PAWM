@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-promozioni-cliente',
-  templateUrl: './promozioni-cliente.page.html',
-  styleUrls: ['./promozioni-cliente.page.scss'],
+  selector: 'app-home',
+  templateUrl: './home.page.html',
+  styleUrls: ['./home.page.scss'],
 })
-export class PromozioniClientePage implements OnInit {
+export class HomePage implements OnInit {
 
   constructor() { }
 
   ngOnInit() {
   }
+
   openNav() {
     document.getElementById("mySidenav").style.width = "250px";
   }

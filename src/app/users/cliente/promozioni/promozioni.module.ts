@@ -4,21 +4,20 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { PromozioniClientePageRoutingModule } from './promozioni-cliente-routing.module';
+import { PromozioniPageRoutingModule } from './promozioni-routing.module';
 
-import { PromozioniClientePage } from './promozioni-cliente.page';
+import { PromozioniPage } from './promozioni.page';
 
 import { ComponentsModule } from '../../../components/components.module';
-
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    PromozioniClientePageRoutingModule,
+    PromozioniPageRoutingModule,
     ComponentsModule
   ],
-  declarations: [PromozioniClientePage]
+  declarations: [PromozioniPage]
 })
-export class PromozioniClientePageModule {}
+export class PromozioniPageModule { }

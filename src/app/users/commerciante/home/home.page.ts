@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-home-cliente',
-  templateUrl: './home-cliente.page.html',
-  styleUrls: ['./home-cliente.page.scss'],
+  selector: 'app-home',
+  templateUrl: './home.page.html',
+  styleUrls: ['./home.page.scss'],
 })
-export class HomeClientePage implements OnInit {
+export class HomePage implements OnInit {
 
   constructor() { }
 
@@ -15,4 +15,5 @@ export class HomeClientePage implements OnInit {
   openNav() {
     document.getElementById("mySidenav").style.width = "250px";
   }
+
 }

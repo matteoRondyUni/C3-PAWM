@@ -41,18 +41,24 @@ const routes: Routes = [
     loadChildren: () => import('./auth/registration/register-attivita/register-attivita.module').then(m => m.RegisterAttivitaPageModule)
   },
   {
-    path: 'cliente',
-    loadChildren: () => import('./users/cliente/menu-cliente/menu-cliente.module').then(m => m.MenuClientePageModule),
-    canLoad: [AuthGuard]
-  },
-  {
     path: 'about',
     loadChildren: () => import('./about/about.module').then(m => m.AboutPageModule)
   },
   {
+    path: 'cliente',
+    loadChildren: () => import('./users/cliente/menu/menu.module').then(m => m.MenuPageModule),
+    //  TODO
+    // canLoad: [AuthGuard]
+  },
+  {
     path: 'attivita',
-    loadChildren: () => import('./users/attivita/menu-attivita/menu-attivita.module').then( m => m.MenuAttivitaPageModule)
+    loadChildren: () => import('./users/attivita/menu-attivita/menu-attivita.module').then(m => m.MenuAttivitaPageModule)
+  },
+  {
+    path: 'commerciante',
+    loadChildren: () => import('./users/commerciante/menu/menu.module').then(m => m.MenuPageModule)
   }
+
 ];
 
 @NgModule({
