@@ -96,13 +96,28 @@ export class AuthenticationService {
       ))
   }
 
+  async registerDipendente(credenziali): Promise<Observable<any>> {
+    const token = await this.getToken();
+    const to_send = {
+      'nome': credenziali.nome,
+      'cognome': credenziali.cognome,
+      'email': credenziali.email,
+      'password': credenziali.password,
+      'telefono': credenziali.telefono,
+      'indirizzo': credenziali.indirizzo,
+      'token_value': token.value
+    }
+
+    console.log("to_send: ", to_send);
+
+    return this.http.post('/register/dipendente', to_send).pipe(
+      map((data: any) => data.esito),
+      switchMap(esito => { return esito; }))
+  }
+
   registerAttivita(credentials): Observable<any> {
     return this.http.post('/register/attivita', credentials).pipe(
       map((data: any) => data.esito),
-      switchMap(esito => {
-        return esito;
-      }
-      ))
+      switchMap(esito => { return esito; }))
   }
-
 }

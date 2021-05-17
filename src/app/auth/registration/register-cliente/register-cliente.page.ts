@@ -43,7 +43,6 @@ export class RegisterClientePage implements OnInit {
     const loading = await this.loadingController.create();
     await loading.present();
 
-
     this.authService.registerCliente(this.credenziali.value).subscribe(
       async (res) => {
         await loading.dismiss();

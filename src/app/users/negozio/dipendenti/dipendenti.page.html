@@ -8,13 +8,14 @@
 
   </ion-toolbar>
 
-
 </ion-header>
 
 <ion-content>
 
-  <ion-button>Aggiungi</ion-button>
-  <ion-button>Rimuovi</ion-button>
+  <ion-card>
+    <br>
+    <ion-button expand="full" (click)="creaDipendente()">Aggiungi</ion-button>
+  </ion-card>
 
   <ion-virtual-scroll [items]="dipendenti" approximateItemHeight="70px" [headerFn]="separateLetter">
 
@@ -22,15 +23,16 @@
       <ion-label>{{header}}</ion-label>
     </ion-item-divider>
 
-    <ion-item *virtualItem="let dipendente">
+    <ion-item *virtualItem="let dipendente" (click)="apriDettagli(dipendente)">
       <ion-avatar slot="start">
-        <ion-img [src]=""></ion-img>
+        <img src="../../../../../assets/user.png">
       </ion-avatar>
 
       <ion-label>
         <h2 text-capitalize>{{dipendente.cognome}} {{dipendente.nome}}</h2>
-        <p>{{dipendente.email}}</p>
       </ion-label>
+
+      <ion-icon name="information-circle-outline" slot="end"></ion-icon>
     </ion-item>
   </ion-virtual-scroll>
 

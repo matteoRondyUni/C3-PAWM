@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { MenuAttivitaPageRoutingModule } from './menu-attivita-routing.module';
+import { MenuPageRoutingModule } from './menu-routing.module';
 
-import { MenuAttivitaPage } from './menu-attivita.page';
+import { MenuPage } from './menu.page';
 
 import { ComponentsModule } from '../../../components/components.module';
 
@@ -16,8 +16,8 @@ import { ComponentsModule } from '../../../components/components.module';
     FormsModule,
     IonicModule,
     ComponentsModule,
-    MenuAttivitaPageRoutingModule
+    MenuPageRoutingModule
   ],
-  declarations: [MenuAttivitaPage]
+  declarations: [MenuPage]
 })
-export class MenuAttivitaPageModule { }
+export class MenuPageModule { }

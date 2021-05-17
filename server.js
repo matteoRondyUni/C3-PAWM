@@ -22,6 +22,30 @@ function verifyJWT(token) {
 }
 
 /**
+ * Controlla che il JWT corrisponda ad una attività
+ */
+function verificaAttivita(token) {
+    if (verifyJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "NEGOZIO" || tipo == "DITTA_TRASPORTI" || tipo == "MAGAZZINO");
+    } else {
+        return false;
+    }
+}
+
+/**
+ * REST - Elimina dipendente
+ */
+app.delete('/dipendenti/:id', (req, res) => {
+    const token = req.headers.token;
+    if (verificaAttivita(token)) {
+        return db.eliminaDipendente(req, res, jwt.decode(token));
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
+/**
  * REST - Login User
  */
 app.post('/users/login', (req, res) => {
@@ -79,6 +103,28 @@ app.post('/register/cliente', (req, res) => {
 });
 
 /**
+ * REST - Registrazione Dipendente
+ */
+app.post('/register/dipendente', (req, res) => {
+    const token = req.body.token_value;
+
+    if (verificaAttivita(token)) {
+        db.findUserByEmail(req.body.email, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const dipendenti = JSON.parse(JSON.stringify(results.rows));
+
+            if (dipendenti.length == 0) {
+                db.creaDipendente(req, res);
+            }
+            else return res.status(400).send("L'email \'" + dipendenti[0].email + "\' è già stata usata!");
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
+/**
  * REST - Registrazione Attivita'
  */
 app.post('/register/attivita', (req, res) => {
@@ -97,9 +143,9 @@ app.post('/register/attivita', (req, res) => {
 
 
 app.get('/dipendenti', (req, res) => {
-    //TODO: fai un metodo unico controllando il JWT dell'attività
     const token = req.headers.token;
-    if (verifyJWT(token)) {
+
+    if (verificaAttivita(token)) {
         db.getDipendenti(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
 

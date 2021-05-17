@@ -51,15 +51,17 @@ const routes: Routes = [
     // canLoad: [AuthGuard]
   },
   {
-    path: 'attivita',
-    loadChildren: () => import('./users/attivita/menu-attivita/menu-attivita.module').then(m => m.MenuAttivitaPageModule)
+    path: 'negozio',
+    loadChildren: () => import('./users/negozio/menu/menu.module').then(m => m.MenuPageModule)
+    //TODO: mettere il guard per l'attività
   },
   {
     path: 'commerciante',
     loadChildren: () => import('./users/commerciante/menu/menu.module').then(m => m.MenuPageModule)
   }
-
 ];
+
+
 
 @NgModule({
   imports: [

@@ -1,23 +1,23 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { MenuAttivitaPage } from './menu-attivita.page';
+import { MenuPage } from './menu.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: MenuAttivitaPage,
+    component: MenuPage,
     redirectTo: 'home',
     pathMatch: 'full'
   },
   {
     path: 'home',
-    component: MenuAttivitaPage,
-    loadChildren: () => import('../home-attivita/home-attivita.module').then(m => m.HomeAttivitaPageModule)
+    component: MenuPage,
+    loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
   },
   {
     path: 'dipendenti',
-    component: MenuAttivitaPage,
+    component: MenuPage,
     loadChildren: () => import('../dipendenti/dipendenti.module').then( m => m.DipendentiPageModule)
   }
 ];
@@ -26,4 +26,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class MenuAttivitaPageRoutingModule { }
+export class MenuPageRoutingModule { }

@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Nuovo dipendente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="register()" [formGroup]="credenziali">
+    <ion-card>
+      <br>
+      <br>
+      <img src="../../../../../assets/user.png" class="center">
+
+      <ion-card-content>
+
+        <ion-item lines="full">
+          <ion-label position="floating">Nome</ion-label>
+          <ion-input type="name" name="nome" formControlName="nome" required></ion-input>
+        </ion-item>
+
+
+        <ion-item lines="full">
+          <ion-label position="floating">Cognome</ion-label>
+          <ion-input type="family-name" name="cognome" formControlName="cognome" required></ion-input>
+        </ion-item>
+
+
+        <ion-item lines="full">
+          <ion-label position="floating">Indirizzo email</ion-label>
+          <ion-input type="email" name="email" formControlName="email" required></ion-input>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="floating">Password</ion-label>
+          <ion-input type="password" name="password" formControlName="password" required></ion-input>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="floating">Numero di telefono</ion-label>
+          <ion-input type="tel" name="telefono" formControlName="telefono" required></ion-input>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="floating">Indirizzo</ion-label>
+          <ion-input type="street-address" name="indirizzo" formControlName="indirizzo" required></ion-input>
+        </ion-item>
+
+        <br>
+        <br>
+        <br>
+
+        <ion-row>
+          <ion-col>
+            <ion-buttons>
+              <ion-button color="danger" expand="block" (click)="closeModal()" class="center">ANNULLA</ion-button>
+            </ion-buttons>
+          </ion-col>
+
+          <ion-col>
+            <ion-buttons>
+              <ion-button type="submit" color="primary" expand="block" class="center">CREA</ion-button>
+            </ion-buttons>
+          </ion-col>
+        </ion-row>
+
+      </ion-card-content>
+
+    </ion-card>
+  </form>
+
+</ion-content>
