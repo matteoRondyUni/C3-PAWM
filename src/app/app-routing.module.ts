@@ -58,6 +58,10 @@ const routes: Routes = [
   {
     path: 'commerciante',
     loadChildren: () => import('./users/commerciante/menu/menu.module').then(m => m.MenuPageModule)
+  },
+  {
+    path: 'corriere',
+    loadChildren: () => import('./users/corriere/menu/menu.module').then(m => m.MenuPageModule)
   }
 ];
 
