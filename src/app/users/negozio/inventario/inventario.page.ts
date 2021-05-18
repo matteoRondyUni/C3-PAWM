@@ -11,58 +11,7 @@ import { DettagliProdottoPage } from '../modal/dettagli-prodotto/dettagli-prodot
   styleUrls: ['./inventario.page.scss'],
 })
 export class InventarioPage implements OnInit {
-  // inventario = [];
-
-  inventario = [
-    {
-      'id': 1,
-      'nome': "Sony Playstation 1",
-      'quantita': 25,
-      'prezzo': 100
-    },
-    {
-      'id': 2,
-      'nome': "Sony Playstation 2",
-      'quantita': 12,
-      'prezzo': 799
-    },
-    {
-      'id': 3,
-      'nome': "Sony Playstation 3",
-      'quantita': 3,
-      'prezzo': 499
-    },
-    {
-      'id': 4,
-      'nome': "Sony Playstation 4",
-      'quantita': 5,
-      'prezzo': 499
-    },
-    {
-      'id': 5,
-      'nome': "Sony Playstation 5",
-      'quantita': 5,
-      'prezzo': 499
-    },
-    {
-      'id': 6,
-      'nome': "Xbox 360",
-      'quantita': 5,
-      'prezzo': 499
-    },
-    {
-      'id': 7,
-      'nome': "Xbox One",
-      'quantita': 5,
-      'prezzo': 499
-    },
-    {
-      'id': 8,
-      'nome': "Xbox Series X",
-      'quantita': 5,
-      'prezzo': 499
-    }
-  ];
+  inventario = [];
 
   constructor(
     private http: HttpClient,
@@ -146,5 +95,4 @@ export class InventarioPage implements OnInit {
 
     return await modal.present();
   }
-
 }

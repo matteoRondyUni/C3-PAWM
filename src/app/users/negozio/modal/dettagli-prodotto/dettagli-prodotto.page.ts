@@ -1,6 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, LoadingController, ModalController, NavParams } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthenticationService } from 'src/app/services/authentication.service';
+import { HttpClient } from '@angular/common/http';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dettagli-prodotto',
@@ -14,9 +17,11 @@ export class DettagliProdottoPage implements OnInit {
   @Input() nome: any;
   @Input() quantita: any;
   @Input() prezzo: any;
-  
+
   constructor(
     private fb: FormBuilder,
+    private http: HttpClient,
+    private authService: AuthenticationService,
     private modalController: ModalController,
     private loadingController: LoadingController,
     private alertController: AlertController,
@@ -40,41 +45,39 @@ export class DettagliProdottoPage implements OnInit {
   }
 
   async eliminaProdotto() {
-    this.closeModal();
-    //TODO
-    // const loading = await this.loadingController.create();
-    // await loading.present();
+    const loading = await this.loadingController.create();
+    await loading.present();
 
-    // const token_value = (await this.authService.getToken()).value;
-    // const headers = { 'token': token_value };
+    const token_value = (await this.authService.getToken()).value;
+    const headers = { 'token': token_value };
 
-    // this.http.delete('/dipendenti/' + this.id_dipendente, { headers }).pipe(
-    //   map((data: any) => data.esito),
-    //   switchMap(esito => { return esito; })).subscribe(
-    //     async (res) => {
-    //       const text = 'Il dipendente ' + this.nome + ' ' + this.cognome + ' è stato eliminato';
-    //       await loading.dismiss();
-    //       const alert = await this.alertController.create({
-    //         header: 'Dipendente eliminato',
-    //         message: text,
-    //         buttons: ['OK'],
-    //       });
-    //       this.modalController.dismiss(true);
-    //       await alert.present();
-    //     },
-    //     async (res) => {
-    //       await loading.dismiss();
-    //       const alert = await this.alertController.create({
-    //         header: 'Eliminazione fallita',
-    //         message: res.error,
-    //         buttons: ['OK'],
-    //       });
-    //       this.modalController.dismiss(false);
-    //       await alert.present();
-    //     });
+    this.http.delete('/prodotto/' + this.id_prodotto, { headers }).pipe(
+      map((data: any) => data.esito),
+      switchMap(esito => { return esito; })).subscribe(
+        async (res) => {
+          const text = 'Il prodotto ' + this.nome + ' è stato eliminato';
+          await loading.dismiss();
+          const alert = await this.alertController.create({
+            header: 'Prodotto eliminato',
+            message: text,
+            buttons: ['OK'],
+          });
+          this.modalController.dismiss(true);
+          await alert.present();
+        },
+        async (res) => {
+          await loading.dismiss();
+          const alert = await this.alertController.create({
+            header: 'Eliminazione fallita',
+            message: res.error,
+            buttons: ['OK'],
+          });
+          this.modalController.dismiss(false);
+          await alert.present();
+        });
   }
 
-  async modificaProdotto(){
+  async modificaProdotto() {
     this.closeModal();
     //TODO
   }

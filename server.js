@@ -202,6 +202,24 @@ app.get('/inventario', (req, res) => {
     }
 });
 
+app.post('/prodotto', (req, res) => {
+    if (verificaAttivita(req.body.token_value)) {
+        db.creaProdotto(req, res);
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
+app.delete('/prodotto/:id', (req, res) => {
+    const token = req.headers.token;
+    if (verificaAttivita(token)) {
+        return db.eliminaProdotto(req, res, jwt.decode(token));
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
+
 app.post('/control/JWT', (req, res) => {
     const token = req.body.value;
     try {

@@ -137,6 +137,17 @@ const cercaDipendenteById = (id, decoded_token, cb) => {
   });
 }
 
+const cercaProdottoById = (id, decoded_token, cb) => {
+  var id_negozio;
+
+  if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio;
+  if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
+
+  return pool.query('SELECT * FROM public.prodotti WHERE id = $1 AND id_negozio = $2', [id, id_negozio], (error, results) => {
+    cb(error, results)
+  });
+}
+
 const eliminaDipendente = (request, response, decoded_token) => {
   const id = parseInt(request.params.id);
 
@@ -215,10 +226,42 @@ getInventario = (token, cb) => {
   if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
 
-  return pool.query('select nome, quantita, prezzo from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
+  return pool.query('select id, nome, quantita, prezzo from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
     [idNegozio], (error, results) => {
       cb(error, results)
     });
+}
+
+//TODO fare commento
+const creaProdotto = (request, response) => {
+  const decoded_token = jwt.decode(request.body.token_value);
+  var id_negozio;
+
+  if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio
+  if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
+
+  pool.query('INSERT INTO public.prodotti (id_negozio, nome, quantita, prezzo) VALUES ($1, $2, $3, $4)',
+    [id_negozio, request.body.nome, request.body.quantita, request.body.prezzo], (error, results) => {
+      if (error) throw error
+      return response.status(200).send({ 'esito': "1" });
+    })
+}
+
+//TODO fare commento
+const eliminaProdotto = (request, response, decoded_token) => {
+  const id = parseInt(request.params.id);
+
+  cercaProdottoById(id, decoded_token, (err, results) => {
+    if (err) return response.status(500).send('Server Error!');
+
+    const prodotto = JSON.parse(JSON.stringify(results.rows));
+    if (prodotto.length == 0) return response.status(404).send('Prodotto non trovato!');
+
+    pool.query('DELETE FROM public.prodotti WHERE id = $1', [id], (error, results) => {
+      if (error) throw error
+      return response.status(200).send({ 'esito': "1" });
+    })
+  });
 }
 
 module.exports = {
@@ -231,6 +274,8 @@ module.exports = {
   findAttivitaByEmail,
   creaOrdine,
   getDipendenti,
+  creaProdotto,
+  eliminaProdotto,
   getCommercianteById,
   getInventario
 }
