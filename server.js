@@ -219,6 +219,15 @@ app.delete('/prodotto/:id', (req, res) => {
     }
 });
 
+app.put('/prodotto/:id', (req, res) => {
+    const token = req.body.token_value;
+    if (verificaAttivita(token)) {
+        return db.modificaProdotto(req, res, jwt.decode(token));
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
 
 app.post('/control/JWT', (req, res) => {
     const token = req.body.value;

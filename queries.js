@@ -264,6 +264,23 @@ const eliminaProdotto = (request, response, decoded_token) => {
   });
 }
 
+const modificaProdotto = (request, response, decoded_token) => {
+  const id = parseInt(request.params.id);
+
+  cercaProdottoById(id, decoded_token, (err, results) => {
+    if (err) return response.status(500).send('Server Error!');
+
+    const prodotto = JSON.parse(JSON.stringify(results.rows));
+    if (prodotto.length == 0) return response.status(404).send('Prodotto non trovato!');
+
+    pool.query('UPDATE public.prodotti SET nome = $1, quantita = $2, prezzo = $3 WHERE id = $4',
+      [request.body.nome, request.body.quantita, request.body.prezzo, id], (error, results) => {
+        if (error) throw error
+        return response.status(200).send({ 'esito': "1" });
+      })
+  });
+}
+
 module.exports = {
   creaCliente,
   creaDipendente,
@@ -276,6 +293,7 @@ module.exports = {
   getDipendenti,
   creaProdotto,
   eliminaProdotto,
+  modificaProdotto,
   getCommercianteById,
   getInventario
 }

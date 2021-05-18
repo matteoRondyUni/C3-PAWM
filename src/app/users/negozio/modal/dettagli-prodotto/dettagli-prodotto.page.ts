@@ -78,8 +78,41 @@ export class DettagliProdottoPage implements OnInit {
   }
 
   async modificaProdotto() {
-    this.closeModal();
-    //TODO
+    const loading = await this.loadingController.create();
+    await loading.present();
+
+    const token_value = (await this.authService.getToken()).value;
+    const to_send = {
+      'nome': this.dati.value.nome,
+      'quantita': this.dati.value.quantita,
+      'prezzo': this.dati.value.prezzo,
+      'token_value': token_value
+    }
+
+    this.http.put('/prodotto/' + this.id_prodotto, to_send).pipe(
+      map((data: any) => data.esito),
+      switchMap(esito => { return esito; })).subscribe(
+        async (res) => {
+          const text = 'I dati del prodotto sono stati aggiornati';
+          await loading.dismiss();
+          const alert = await this.alertController.create({
+            header: 'Prodotto modificato',
+            message: text,
+            buttons: ['OK'],
+          });
+          this.modalController.dismiss(true);
+          await alert.present();
+        },
+        async (res) => {
+          await loading.dismiss();
+          const alert = await this.alertController.create({
+            header: 'Modifica fallita',
+            message: res.error,
+            buttons: ['OK'],
+          });
+          this.modalController.dismiss(false);
+          await alert.present();
+        });
   }
 
 }
