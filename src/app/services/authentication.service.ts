@@ -16,8 +16,6 @@ const TOKEN_KEY = 'my-token';
 })
 export class AuthenticationService {
   isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
-  token = '';
-  type: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   constructor(private http: HttpClient) {
     this.loadToken();
@@ -107,8 +105,6 @@ export class AuthenticationService {
       'indirizzo': credenziali.indirizzo,
       'token_value': token.value
     }
-
-    console.log("to_send: ", to_send);
 
     return this.http.post('/register/dipendente', to_send).pipe(
       map((data: any) => data.esito),

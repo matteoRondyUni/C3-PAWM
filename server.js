@@ -74,6 +74,9 @@ app.post('/users/login', (req, res) => {
         const expiresIn = 24 * 60 * 60;
         //TODO fa finire lo switch
         switch (user[0].tipo) {
+            case "CLIENTE":
+                const accessToken = jwt.sign({ id: user[0].id, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+                return res.status(200).send({ "accessToken": accessToken });
             case "COMMERCIANTE":
                 db.getCommercianteById(user[0].id, (err, results) => {
                     const commerciante = JSON.parse(JSON.stringify(results.rows));
