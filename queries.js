@@ -19,6 +19,7 @@ function generateCodiceRitiro() {
   return toReturn;
 }
 
+//TODO Vecchio
 const getUsers = (request, response) => {
   pool.query('SELECT * FROM public.utenti ORDER BY id ASC', (error, results) => {
     if (error) throw error
@@ -26,6 +27,7 @@ const getUsers = (request, response) => {
   })
 }
 
+//TODO Vecchio
 const getUserById = (request, response) => {
   const id = parseInt(request.params.id)
 
@@ -121,13 +123,13 @@ const cercaDipendenteById = (id, decoded_token, cb) => {
   var query;
   switch (decoded_token.tipo) {
     case 'NEGOZIO':
-      query = 'SELECT FROM public.commercianti WHERE id = $1 AND id_negozio = $2';
+      query = 'SELECT * FROM public.commercianti WHERE id = $1 AND id_negozio = $2';
       break;
     case 'DITTA_TRASPORTI':
-      query = 'SELECT FROM public.corrieri WHERE id = $1 AND id_ditta = $2';
+      query = 'SELECT * FROM public.corrieri WHERE id = $1 AND id_ditta = $2';
       break;
     case 'MAGAZZINO':
-      query = 'SELECT FROM public.magazzinieri WHERE id = $1 AND id_magazzino = $2';
+      query = 'SELECT * FROM public.magazzinieri WHERE id = $1 AND id_magazzino = $2';
       break;
   }
   return pool.query(query, [id, decoded_token.id], (error, results) => {
@@ -197,10 +199,29 @@ const getDipendenti = (token, cb) => {
     cb(error, results)
   });
 }
+//TODO fare commento e riguardare l'inner join
+getCommercianteById = (id, cb) => {
+  return pool.query('select * from public.commercianti inner join public.utenti on public.commercianti.id=public.utenti.id where public.utenti.id=$1',
+    [id], (error, results) => {
+      cb(error, results)
+    })
+}
+
+//TODO fare commento
+getInventario = (token, cb) => {
+  const decoded_token = jwt.decode(token);
+  var idNegozio;
+
+  if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
+  if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
+
+  return pool.query('select nome, quantita, prezzo from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
+    [idNegozio], (error, results) => {
+      cb(error, results)
+    });
+}
 
 module.exports = {
-  getUsers,
-  getUserById,
   creaCliente,
   creaDipendente,
   creaAttivita,
@@ -209,5 +230,7 @@ module.exports = {
   findUserByEmail,
   findAttivitaByEmail,
   creaOrdine,
-  getDipendenti
+  getDipendenti,
+  getCommercianteById,
+  getInventario
 }

@@ -12,7 +12,7 @@ app.use(express.static(__dirname + '/www'));
 app.use(express.json());
 
 //TODO
-function verifyJWT(token) {
+function verificaJWT(token) {
     try {
         jwt.verify(token, SECRET_KEY);
         return true;
@@ -25,9 +25,21 @@ function verifyJWT(token) {
  * Controlla che il JWT corrisponda ad una attività
  */
 function verificaAttivita(token) {
-    if (verifyJWT(token)) {
+    if (verificaJWT(token)) {
         tipo = (jwt.decode(token)).tipo;
         return (tipo == "NEGOZIO" || tipo == "DITTA_TRASPORTI" || tipo == "MAGAZZINO");
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Controlla che il JWT corrisponda ad un negozio o ad un commerciante
+ */
+function verificaNegozio(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "NEGOZIO" || tipo == "COMMERCIANTE");
     } else {
         return false;
     }
@@ -60,8 +72,20 @@ app.post('/users/login', (req, res) => {
         if (!result) return res.status(401).send('Password non valida!');
 
         const expiresIn = 24 * 60 * 60;
-        const accessToken = jwt.sign({ id: user[0].id, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
-        return res.status(200).send({ "accessToken": accessToken });
+        //TODO fa finire lo switch
+        switch (user[0].tipo) {
+            case "COMMERCIANTE":
+                db.getCommercianteById(user[0].id, (err, results) => {
+                    const commerciante = JSON.parse(JSON.stringify(results.rows));
+                    const accessToken = jwt.sign({ id: commerciante[0].id, idNegozio: commerciante[0].id_negozio, tipo: "COMMERCIANTE" }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+                    return res.status(200).send({ "accessToken": accessToken });
+                });
+                break;
+            case "CORRIERE":
+                break;
+            case "MAGAZZINIERE":
+                break;
+        }
     })
 });
 
@@ -141,7 +165,6 @@ app.post('/register/attivita', (req, res) => {
     });
 });
 
-
 app.get('/dipendenti', (req, res) => {
     const token = req.headers.token;
 
@@ -159,6 +182,22 @@ app.get('/dipendenti', (req, res) => {
     }
 });
 
+app.get('/inventario', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaNegozio(token)) {
+        db.getInventario(token, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const inventario = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': inventario };
+
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
 
 app.post('/control/JWT', (req, res) => {
     const token = req.body.value;
