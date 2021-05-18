@@ -18,7 +18,7 @@ const routes: Routes = [
   {
     path: 'dipendenti',
     component: MenuPage,
-    loadChildren: () => import('../dipendenti/dipendenti.module').then( m => m.DipendentiPageModule)
+    loadChildren: () => import('../../attivita/dipendenti/dipendenti.module').then( m => m.DipendentiPageModule)
   },
   {
     path: 'inventario',

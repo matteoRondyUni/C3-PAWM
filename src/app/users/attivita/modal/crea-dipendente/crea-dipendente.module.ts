@@ -4,9 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { CreaCommerciantiPageRoutingModule } from './crea-commercianti-routing.module';
+import { CreaDipendentePageRoutingModule } from './crea-dipendente-routing.module';
 
-import { CreaCommerciantiPage } from './crea-commercianti.page';
+import { CreaDipendentePage } from './crea-dipendente.page';
 
 @NgModule({
   imports: [
@@ -14,8 +14,8 @@ import { CreaCommerciantiPage } from './crea-commercianti.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    CreaCommerciantiPageRoutingModule
+    CreaDipendentePageRoutingModule
   ],
-  declarations: [CreaCommerciantiPage]
+  declarations: [CreaDipendentePage]
 })
-export class CreaCommerciantiPageModule {}
+export class CreaDipendentePageModule {}

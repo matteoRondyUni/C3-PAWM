@@ -4,11 +4,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-crea-commercianti',
-  templateUrl: './crea-commercianti.page.html',
-  styleUrls: ['./crea-commercianti.page.scss'],
+  selector: 'app-crea-dipendente',
+  templateUrl: './crea-dipendente.page.html',
+  styleUrls: ['./crea-dipendente.page.scss'],
 })
-export class CreaCommerciantiPage implements OnInit {
+export class CreaDipendentePage implements OnInit {
   credenziali: FormGroup;
 
   constructor(

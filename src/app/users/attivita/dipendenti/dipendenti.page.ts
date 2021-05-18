@@ -4,7 +4,7 @@ import { AuthenticationService } from '../../../services/authentication.service'
 import { AlertController, LoadingController } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 
-import { CreaCommerciantiPage } from '../modal/crea-commercianti/crea-commercianti.page';
+import { CreaDipendentePage } from '../modal/crea-dipendente/crea-dipendente.page';
 import { DettagliDipendentePage } from '../modal/dettagli-dipendente/dettagli-dipendente.page';
 
 @Component({
@@ -66,7 +66,7 @@ export class DipendentiPage implements OnInit {
 
   async creaDipendente() {
     const modal = await this.modalController.create({
-      component: CreaCommerciantiPage,
+      component: CreaDipendentePage,
       cssClass: 'fullheight'
     });
 

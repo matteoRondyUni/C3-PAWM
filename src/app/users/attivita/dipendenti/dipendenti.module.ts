@@ -8,7 +8,7 @@ import { DipendentiPageRoutingModule } from './dipendenti-routing.module';
 
 import { DipendentiPage } from './dipendenti.page';
 import { DettagliDipendentePageModule } from '../modal/dettagli-dipendente/dettagli-dipendente.module';
-import { CreaCommerciantiPageModule } from '../modal/crea-commercianti/crea-commercianti.module';
+import { CreaDipendentePageModule } from '../modal/crea-dipendente/crea-dipendente.module';
 
 @NgModule({
   imports: [
@@ -18,7 +18,7 @@ import { CreaCommerciantiPageModule } from '../modal/crea-commercianti/crea-comm
     IonicModule,
     DipendentiPageRoutingModule,
     DettagliDipendentePageModule,
-    CreaCommerciantiPageModule
+    CreaDipendentePageModule
   ],
   declarations: [DipendentiPage]
 })
