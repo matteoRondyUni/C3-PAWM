@@ -5,11 +5,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-login-cliente',
-  templateUrl: './login-cliente.page.html',
-  styleUrls: ['./login-cliente.page.scss'],
+  selector: 'app-login-utente',
+  templateUrl: './login-utente.page.html',
+  styleUrls: ['./login-utente.page.scss'],
 })
-export class LoginClientePage implements OnInit {
+export class LoginUtentePage implements OnInit {
   credentials: FormGroup;
 
   constructor(
@@ -42,9 +42,29 @@ export class LoginClientePage implements OnInit {
       async (res) => {
         console.log("res: ", res);
         console.log("primo metodo: ", (await this.authService.getToken()).value);
-        console.log("secondo metodo: ", this.authService.token);
         await loading.dismiss();
-        this.router.navigateByUrl('/cliente', { replaceUrl: true });
+
+        switch (res) {
+          case "1":
+            this.router.navigateByUrl('/cliente', { replaceUrl: true });
+            break;
+          case "2":
+            this.router.navigateByUrl('/commerciante', { replaceUrl: true });
+            break;
+          case "3":
+            this.router.navigateByUrl('/corriere', { replaceUrl: true });
+            break;
+          case "4":
+            this.router.navigateByUrl('/magazziniere', { replaceUrl: true });
+            break;
+          default:
+            const alert = await this.alertController.create({
+              header: 'Login failed',
+              message: "Rieffettua il Login",
+              buttons: ['OK'],
+            });
+            await alert.present();
+        }
       },
       async (res) => {
         await loading.dismiss();
@@ -53,7 +73,6 @@ export class LoginClientePage implements OnInit {
           message: res.error,
           buttons: ['OK'],
         });
-
         await alert.present();
       }
     );

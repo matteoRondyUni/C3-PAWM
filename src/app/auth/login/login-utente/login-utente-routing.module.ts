@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { LoginClientePage } from './login-cliente.page';
+import { LoginUtentePage } from './login-utente.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: LoginClientePage
+    component: LoginUtentePage
   }
 ];
 

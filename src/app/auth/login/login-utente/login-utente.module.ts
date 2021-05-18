@@ -4,11 +4,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { LoginPageRoutingModule } from './login-cliente-routing.module';
+import { LoginPageRoutingModule } from './login-utente-routing.module';
 
 import { ComponentsModule } from '../../../components/components.module';
 
-import { LoginClientePage } from './login-cliente.page';
+import { LoginUtentePage } from './login-utente.page';
 
 @NgModule({
   imports: [
@@ -19,6 +19,6 @@ import { LoginClientePage } from './login-cliente.page';
     LoginPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [LoginClientePage]
+  declarations: [LoginUtentePage]
 })
-export class LoginClientePageModule { }
+export class LoginUtentePageModule { }
