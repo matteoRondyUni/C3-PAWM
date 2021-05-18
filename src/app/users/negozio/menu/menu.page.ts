@@ -19,6 +19,11 @@ export class MenuPage implements OnInit {
       title: 'Dipendenti',
       icon: 'people-outline',
       url: '/negozio/dipendenti'
+    },
+    {
+      title: 'Inventario',
+      icon: 'file-tray-stacked-outline',
+      url: '/negozio/inventario'
     }
   ]
 

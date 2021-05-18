@@ -19,6 +19,11 @@ const routes: Routes = [
     path: 'dipendenti',
     component: MenuPage,
     loadChildren: () => import('../dipendenti/dipendenti.module').then( m => m.DipendentiPageModule)
+  },
+  {
+    path: 'inventario',
+    component: MenuPage,
+    loadChildren: () => import('../inventario/inventario.module').then( m => m.InventarioPageModule)
   }
 ];
 

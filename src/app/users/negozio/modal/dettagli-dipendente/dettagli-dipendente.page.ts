@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, LoadingController, ModalController, NavParams } from '@ionic/angular';
-import { Router } from "@angular/router";
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -21,7 +20,6 @@ export class DettagliDipendentePage implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private router: Router,
     private authService: AuthenticationService,
     private modalController: ModalController,
     private loadingController: LoadingController,
