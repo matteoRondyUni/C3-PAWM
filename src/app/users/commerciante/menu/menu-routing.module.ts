@@ -23,7 +23,7 @@ const routes: Routes = [
   {
     path: 'inventario',
     component: MenuPage,
-    loadChildren: () => import('../inventario/inventario.module').then(m => m.InventarioPageModule)
+    loadChildren: () => import('../../negozio/inventario/inventario.module').then(m => m.InventarioPageModule)
   },
 ];
 
