@@ -15,10 +15,20 @@ const routes: Routes = [
     component: MenuPage,
     loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
   },
+  {
+    path: 'ordini',
+    component: MenuPage,
+    loadChildren: () => import('../ordini/ordini.module').then(m => m.OrdiniPageModule)
+  },
+  {
+    path: 'inventario',
+    component: MenuPage,
+    loadChildren: () => import('../inventario/inventario.module').then(m => m.InventarioPageModule)
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class MenuPageRoutingModule {}
+export class MenuPageRoutingModule { }
