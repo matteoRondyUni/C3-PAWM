@@ -58,9 +58,9 @@ app.delete('/dipendenti/:id', (req, res) => {
 });
 
 /**
- * REST - Login User
+ * REST - Login Utente
  */
-app.post('/users/login', (req, res) => {
+app.post('/login/utente', (req, res) => {
     const password = req.body.password;
     db.findUserByEmail(req.body.email, (err, results) => {
         if (err) return res.status(500).send('Server Error!');
@@ -95,7 +95,7 @@ app.post('/users/login', (req, res) => {
 /**
  * REST - Login Attività
  */
-app.post('/attivita/login', (req, res) => {
+app.post('/login/attivita', (req, res) => {
     const password = req.body.password;
     db.findAttivitaByEmail(req.body.email, (err, results) => {
         if (err) return res.status(500).send('Server Error!');
@@ -228,45 +228,13 @@ app.put('/prodotto/:id', (req, res) => {
     }
 });
 
-
-app.post('/control/JWT', (req, res) => {
-    const token = req.body.value;
-    try {
-        jwt.verify(token, SECRET_KEY);
-        return res.status(200).send();
-    } catch (err) {
-        // err
-        return res.status(400).send({ "error": err });
+app.post('/ordini', (req, res) => {
+    if (verificaAttivita(req.body.token_value)) {
+        db.creaOrdine(req, res);
+        return res.status(200).send({ 'esito': "1" });
+    } else {
+        return res.status(401).send('JWT non valido!');
     }
-})
-
-app.post('/verifica', (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
-
-    db.findUserByEmail(email, (err, results) => {
-        if (err) return res.status(500).send('Server Error!');
-        const user = JSON.parse(JSON.stringify(results.rows));
-        if (user.length == 0) return res.status(404).send('Utente non trovato!');
-
-        const salt = user[0].salt;
-        const hash = user[0].password;
-        const hash2 = bcrypt.hashSync(password + "secret", salt);
-        bool = (hash == hash2);
-
-        console.log("password in chiaro: ", password);
-        console.log("\npassword hash: ", hash);
-        console.log("\npassword hash2: ", hash2);
-        console.log("\nbool: ", bool);
-
-        return res.status(200).send({ "salt: ": salt });
-    })
-})
-
-app.post('/ordini/crea', (req, res) => {
-    console.log("ordini/crea");
-    db.creaOrdine(req, res);
-    return res.status(200).send({ 'esito': "1" });
 })
 
 app.get('/*', function (req, res) {

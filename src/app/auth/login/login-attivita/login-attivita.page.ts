@@ -43,8 +43,25 @@ export class LoginAttivitaPage implements OnInit {
         console.log("res: ", res);
         console.log("primo metodo: ", (await this.authService.getToken()).value);
         await loading.dismiss();
-        //TODO cambiare /cliente con /attivita
-        this.router.navigateByUrl('/attivita', { replaceUrl: true });
+
+        switch (res) {
+          case "1":
+            this.router.navigateByUrl('/negozio', { replaceUrl: true });
+            break;
+          case "2":
+            this.router.navigateByUrl('/magazzino', { replaceUrl: true });
+            break;
+          case "3":
+            this.router.navigateByUrl('/trasporti', { replaceUrl: true });
+            break;
+          default:
+            const alert = await this.alertController.create({
+              header: 'Login failed',
+              message: "Rieffettua il Login",
+              buttons: ['OK'],
+            });
+            await alert.present();
+        }
       },
       async (res) => {
         await loading.dismiss();

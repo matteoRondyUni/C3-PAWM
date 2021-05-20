@@ -36,7 +36,7 @@ export class AuthenticationService {
   }
 
   loginUser(credentials: { email, password }): Observable<any> {
-    return this.http.post('/users/login', credentials).pipe(
+    return this.http.post('/login/utente', credentials).pipe(
       map((data: any) => data.accessToken),
       switchMap(token => {
         console.log("token login", token);
@@ -58,7 +58,7 @@ export class AuthenticationService {
   }
 
   loginAttivita(credentials: { email, password }): Observable<any> {
-    return this.http.post('/attivita/login', credentials).pipe(
+    return this.http.post('/login/attivita', credentials).pipe(
       map((data: any) => data.accessToken),
       switchMap(token => {
         console.log("token login", token);
@@ -66,11 +66,9 @@ export class AuthenticationService {
         console.log("tmp: ", tipoAttivita.tipo);
         Storage.set({ key: TOKEN_KEY, value: token });
         switch (tipoAttivita.tipo) {
-          //TODO da finire
-          case "CLIENTE": return "1";
-          case "COMMERCIANTE": return "2";
-          case "CORRIERE": return "3";
-          case "MAGAZZINIERE": return "4";
+          case "NEGOZIO": return "1";
+          case "MAGAZZINO": return "2";
+          case "DITTA_TRASPORTI": return "3";
           default: return "0";
         }
       }),
