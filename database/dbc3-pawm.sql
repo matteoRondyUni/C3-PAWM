@@ -56,7 +56,7 @@ CREATE TABLE public.prodotti
     "id" serial NOT NULL,
     "id_negozio" serial NOT NULL,
     nome text NOT NULL,
-    quantita integer NOT NULL,
+    disponibilita integer NOT NULL,
     prezzo numeric NOT NULL,
     PRIMARY KEY ("id")
 );
@@ -83,6 +83,7 @@ CREATE TABLE public.ordini
 	tipo character varying(15) NOT NULL,
     stato character varying(30) NOT NULL,
     codice_ritiro character varying(30) NOT NULL,
+	data_ordine DATE NOT NULL DEFAULT CURRENT_DATE,
     PRIMARY KEY ("id")
 );
 

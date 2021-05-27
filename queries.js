@@ -276,6 +276,20 @@ getInventario = (token, cb) => {
 }
 
 //TODO fare commento
+getOrdini = (token, cb) => {
+  const decoded_token = jwt.decode(token);
+  var idNegozio;
+
+  if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
+  if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
+
+  return pool.query('select id, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data from public.ordini where id_negozio=$1 ORDER BY data DESC',
+    [idNegozio], (error, results) => {
+      cb(error, results)
+    });
+}
+
+//TODO fare commento
 const creaProdotto = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   var id_negozio;
@@ -338,5 +352,6 @@ module.exports = {
   eliminaProdotto,
   modificaProdotto,
   getCommercianteById,
-  getInventario
+  getInventario,
+  getOrdini
 }

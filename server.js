@@ -202,6 +202,23 @@ app.get('/inventario', (req, res) => {
     }
 });
 
+app.get('/ordini', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaNegozio(token)) {
+        db.getOrdini(token, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const ordini = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': ordini };
+
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
 app.post('/prodotto', (req, res) => {
     if (verificaNegozio(req.body.token_value)) {
         db.creaProdotto(req, res);
