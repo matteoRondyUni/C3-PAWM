@@ -65,7 +65,7 @@ CREATE TABLE public.merci_ordine
 (
     "id" serial NOT NULL,
     "id_prodotto" serial NOT NULL,
-    "id_corriere" serial,
+    "id_corriere" integer,
 	"id_ordine" serial NOT NULL,
     quantita integer NOT NULL,
     prezzo_acquisto numeric NOT NULL,
@@ -77,9 +77,9 @@ CREATE TABLE public.ordini
 (
     "id" serial NOT NULL,
 	"id_negozio" serial NOT NULL,
-    "id_magazzino" serial,
+    "id_magazzino" integer,
     "id_cliente" serial NOT NULL,
-	"id_ditta" serial,
+	"id_ditta" integer,
 	tipo character varying(15) NOT NULL,
     stato character varying(30) NOT NULL,
     codice_ritiro character varying(30) NOT NULL,
@@ -134,14 +134,6 @@ ALTER TABLE public.merci_ordine
     NOT VALid;
 
 
-ALTER TABLE public.merci_ordine
-    ADD FOREIGN KEY ("id_corriere")
-    REFERENCES public.corrieri ("id")
-	ON DELETE CASCADE
-	ON UPDATE CASCADE
-    NOT VALid;
-
-
 ALTER TABLE public.ordini
     ADD FOREIGN KEY ("id_cliente")
     REFERENCES public.utenti ("id")
@@ -155,24 +147,10 @@ ALTER TABLE public.ordini
 	ON DELETE CASCADE
 	ON UPDATE CASCADE
     NOT VALid;
-
-ALTER TABLE public.ordini
-    ADD FOREIGN KEY ("id_ditta")
-    REFERENCES public.attivita ("id")
-	ON DELETE CASCADE
-	ON UPDATE CASCADE
-    NOT VALid;
+	
 
 ALTER TABLE public.prodotti
     ADD FOREIGN KEY ("id_negozio")
-    REFERENCES public.attivita ("id")
-	ON DELETE CASCADE
-	ON UPDATE CASCADE
-    NOT VALid;
-
-
-ALTER TABLE public.ordini
-    ADD FOREIGN KEY ("id_magazzino")
     REFERENCES public.attivita ("id")
 	ON DELETE CASCADE
 	ON UPDATE CASCADE
@@ -185,7 +163,6 @@ ALTER TABLE public.magazzinieri
 	ON DELETE CASCADE
 	ON UPDATE CASCADE
     NOT VALid;
-
 
 ALTER TABLE public.commercianti
     ADD FOREIGN KEY ("id_negozio")

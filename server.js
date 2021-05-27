@@ -203,7 +203,7 @@ app.get('/inventario', (req, res) => {
 });
 
 app.post('/prodotto', (req, res) => {
-    if (verificaAttivita(req.body.token_value)) {
+    if (verificaNegozio(req.body.token_value)) {
         db.creaProdotto(req, res);
     } else {
         return res.status(401).send('JWT non valido!');
@@ -212,7 +212,7 @@ app.post('/prodotto', (req, res) => {
 
 app.delete('/prodotto/:id', (req, res) => {
     const token = req.headers.token;
-    if (verificaAttivita(token)) {
+    if (verificaNegozio(token)) {
         return db.eliminaProdotto(req, res, jwt.decode(token));
     } else {
         return res.status(401).send('JWT non valido!');
@@ -221,17 +221,16 @@ app.delete('/prodotto/:id', (req, res) => {
 
 app.put('/prodotto/:id', (req, res) => {
     const token = req.body.token_value;
-    if (verificaAttivita(token)) {
+    if (verificaNegozio(token)) {
         return db.modificaProdotto(req, res, jwt.decode(token));
     } else {
         return res.status(401).send('JWT non valido!');
     }
 });
 
-app.post('/ordini', (req, res) => {
-    if (verificaAttivita(req.body.token_value)) {
+app.post('/ordine', (req, res) => {
+    if (verificaNegozio(req.body.token_value)) {
         db.creaOrdine(req, res);
-        return res.status(200).send({ 'esito': "1" });
     } else {
         return res.status(401).send('JWT non valido!');
     }
