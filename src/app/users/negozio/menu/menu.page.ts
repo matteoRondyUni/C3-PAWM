@@ -24,7 +24,13 @@ export class MenuPage implements OnInit {
       title: 'Inventario',
       icon: 'file-tray-stacked-outline',
       url: '/negozio/inventario'
-    }
+    },
+    {
+      title: 'Ordini',
+      icon: 'file-tray-stacked-outline',
+      url: '/negozio/ordini'
+    },
+
   ]
 
   selectedPath = '';

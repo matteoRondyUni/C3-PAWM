@@ -18,12 +18,17 @@ const routes: Routes = [
   {
     path: 'dipendenti',
     component: MenuPage,
-    loadChildren: () => import('../../attivita/dipendenti/dipendenti.module').then( m => m.DipendentiPageModule)
+    loadChildren: () => import('../../attivita/dipendenti/dipendenti.module').then(m => m.DipendentiPageModule)
   },
   {
     path: 'inventario',
     component: MenuPage,
-    loadChildren: () => import('../inventario/inventario.module').then( m => m.InventarioPageModule)
+    loadChildren: () => import('../inventario/inventario.module').then(m => m.InventarioPageModule)
+  },
+  {
+    path: 'ordini',
+    component: MenuPage,
+    loadChildren: () => import('../ordini/ordini.module').then(m => m.OrdiniPageModule)
   }
 ];
 

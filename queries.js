@@ -184,10 +184,10 @@ const findOrdineByCodice = (codice, cb) => {
 
 const vendiProdotto = (prodotto, id_ordine, response) => {
   pool.query('INSERT INTO public.merci_ordine (id_prodotto, id_ordine, quantita, prezzo_acquisto, stato) VALUES ($1, $2, $3, $4, $5)',
-    [prodotto.id, id_ordine, prodotto.quantita, prodotto.prezzo_acquisto, "PAGATO"], (error, results) => {
+    [prodotto.id, id_ordine, prodotto.quantita, prodotto.prezzo, "PAGATO"], (error, results) => {
       if (error) throw error
 
-      pool.query('UPDATE public.prodotti SET quantita = $1 WHERE id = $2',
+      pool.query('UPDATE public.prodotti SET disponibilita = $1 WHERE id = $2',
         [(prodotto.disponibilita - prodotto.quantita), prodotto.id], (error, results) => {
           if (error) throw error
         });
@@ -254,7 +254,7 @@ const getDipendenti = (token, cb) => {
   });
 }
 //TODO fare commento e riguardare l'inner join
-getCommercianteById = (id, cb) => {
+const getCommercianteById = (id, cb) => {
   return pool.query('select * from public.commercianti inner join public.utenti on public.commercianti.id=public.utenti.id where public.utenti.id=$1',
     [id], (error, results) => {
       cb(error, results)
@@ -262,14 +262,14 @@ getCommercianteById = (id, cb) => {
 }
 
 //TODO fare commento
-getInventario = (token, cb) => {
+const getInventario = (token, cb) => {
   const decoded_token = jwt.decode(token);
   var idNegozio;
 
   if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
 
-  return pool.query('select id, nome, quantita, prezzo from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
+  return pool.query('select id, nome, disponibilita, prezzo from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
     [idNegozio], (error, results) => {
       cb(error, results)
     });
@@ -289,7 +289,23 @@ getOrdini = (token, cb) => {
     });
 }
 
+const getMagazzini = (cb) => {
+  return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
+    ["MAGAZZINO"], (error, results) => {
+      cb(error, results)
+    });
+}
+
 //TODO fare commento
+const getDitteTrasporti = (cb) => {
+  return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
+    ["DITTA_TRASPORTI"], (error, results) => {
+      cb(error, results)
+    });
+}
+
+//TODO fare commento
+//TODO rinomina quantita
 const creaProdotto = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   var id_negozio;
@@ -297,7 +313,7 @@ const creaProdotto = (request, response) => {
   if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
 
-  pool.query('INSERT INTO public.prodotti (id_negozio, nome, quantita, prezzo) VALUES ($1, $2, $3, $4)',
+  pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
     [id_negozio, request.body.nome, request.body.quantita, request.body.prezzo], (error, results) => {
       if (error) throw error
       return response.status(200).send({ 'esito': "1" });
@@ -321,6 +337,7 @@ const eliminaProdotto = (request, response, decoded_token) => {
   });
 }
 
+//TODO rinomina quantita
 const modificaProdotto = (request, response, decoded_token) => {
   const id = parseInt(request.params.id);
 
@@ -330,7 +347,7 @@ const modificaProdotto = (request, response, decoded_token) => {
     const prodotto = JSON.parse(JSON.stringify(results.rows));
     if (prodotto.length == 0) return response.status(404).send('Prodotto non trovato!');
 
-    pool.query('UPDATE public.prodotti SET nome = $1, quantita = $2, prezzo = $3 WHERE id = $4',
+    pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
       [request.body.nome, request.body.quantita, request.body.prezzo, id], (error, results) => {
         if (error) throw error
         return response.status(200).send({ 'esito': "1" });
@@ -353,5 +370,7 @@ module.exports = {
   modificaProdotto,
   getCommercianteById,
   getInventario,
-  getOrdini
+  getOrdini,
+  getMagazzini,
+  getDitteTrasporti
 }

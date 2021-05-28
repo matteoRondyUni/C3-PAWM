@@ -217,6 +217,30 @@ app.get('/ordini', (req, res) => {
     } else {
         return res.status(401).send('JWT non valido!');
     }
+})
+
+//TODO controllare errori
+app.get('/magazzini', (req, res) => {
+    db.getMagazzini((err, results) => {
+        if (err) return res.status(500).send('Server error!');
+
+        const magazzini = JSON.parse(JSON.stringify(results.rows));
+        const to_return = { 'results': magazzini };
+
+        return res.status(200).send(to_return);
+    })
+});
+
+//TODO controllare errori
+app.get('/ditte-trasporti', (req, res) => {
+    db.getDitteTrasporti((err, results) => {
+        if (err) return res.status(500).send('Server error!');
+
+        const ditte = JSON.parse(JSON.stringify(results.rows));
+        const to_return = { 'results': ditte };
+
+        return res.status(200).send(to_return);
+    })
 });
 
 app.post('/prodotto', (req, res) => {

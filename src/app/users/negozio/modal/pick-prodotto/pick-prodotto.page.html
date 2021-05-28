@@ -1,31 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Inventario</ion-title>
-
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-
+    <ion-title>Aggiungi Merce all'Ordine</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
-  <ion-card>
-    <br>
-    <ion-button expand="full" (click)="creaProdotto()">
-      Aggiungi
-      <ion-icon name="add-circle-outline"></ion-icon>
-    </ion-button>
-  </ion-card>
-
   <ion-virtual-scroll [items]="inventario" approximateItemHeight="70px" [headerFn]="separateLetter">
 
     <ion-item-divider *virtualHeader="let header" color="gray">
       <ion-label>{{header}}</ion-label>
     </ion-item-divider>
 
-    <ion-item *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
+    <ion-item *virtualItem="let prodotto" (click)="pick(prodotto)">
       <ion-avatar slot="start">
         <img src="../../../../../assets/box.png">
       </ion-avatar>
