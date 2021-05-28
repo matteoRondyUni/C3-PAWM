@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { AuthenticationService } from '../../../services/authentication.service';
+import { ErrorManagerService } from '../../../services/error-manager.service';
 import { map, switchMap } from 'rxjs/operators';
 import { PickDittaPage } from '../modal/pick-ditta/pick-ditta.page';
 import { PickMagazzinoPage } from '../modal/pick-magazzino/pick-magazzino.page';
@@ -24,6 +25,7 @@ export class OrdiniPage implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private authService: AuthenticationService,
+    private errorManager: ErrorManagerService,
     private alertController: AlertController,
     private modalController: ModalController,
     private loadingController: LoadingController,
@@ -111,12 +113,7 @@ export class OrdiniPage implements OnInit {
         },
         async (res) => {
           await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Creazione ordine fallita',
-            message: res.error,
-            buttons: ['OK'],
-          });
-          await alert.present();
+          this.errorManager.stampaErrore(res, 'Creazione ordine fallita');
         });
   }
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../../../services/authentication.service';
+import { ErrorManagerService } from '../../../../services/error-manager.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 
@@ -15,6 +16,7 @@ export class CreaDipendentePage implements OnInit {
     private fb: FormBuilder,
     private authService: AuthenticationService,
     private alertController: AlertController,
+    private errorManager: ErrorManagerService,
     private loadingController: LoadingController,
     private modalController: ModalController
   ) { }
@@ -51,13 +53,8 @@ export class CreaDipendentePage implements OnInit {
       },
       async (res) => {
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Creazione dipendente fallita',
-          message: res.error,
-          buttons: ['OK'],
-        });
         this.modalController.dismiss(false);
-        await alert.present();
+        this.errorManager.stampaErrore(res, 'Creazione dipendente fallita');
       });
   }
 }

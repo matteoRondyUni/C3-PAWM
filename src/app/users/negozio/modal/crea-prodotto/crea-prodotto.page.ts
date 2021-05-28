@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../../../services/authentication.service';
+import { ErrorManagerService } from '../../../../services/error-manager.service';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { map, switchMap } from 'rxjs/operators';
@@ -17,6 +18,7 @@ export class CreaProdottoPage implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private authService: AuthenticationService,
+    private errorManager: ErrorManagerService,
     private modalController: ModalController,
     private loadingController: LoadingController,
     private alertController: AlertController
@@ -62,13 +64,8 @@ export class CreaProdottoPage implements OnInit {
         },
         async (res) => {
           await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Creazione prodotto fallita',
-            message: res.error,
-            buttons: ['OK'],
-          });
           this.modalController.dismiss(false);
-          await alert.present();
+          this.errorManager.stampaErrore(res, 'Creazione prodotto fallita');
         });
   }
 }

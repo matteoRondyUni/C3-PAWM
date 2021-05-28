@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, LoadingController, ModalController, NavParams } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from 'src/app/services/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager.service';
 import { HttpClient } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -22,6 +23,7 @@ export class DettagliProdottoPage implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private authService: AuthenticationService,
+    private errorManager: ErrorManagerService,
     private modalController: ModalController,
     private loadingController: LoadingController,
     private alertController: AlertController,
@@ -67,13 +69,8 @@ export class DettagliProdottoPage implements OnInit {
         },
         async (res) => {
           await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Eliminazione fallita',
-            message: res.error,
-            buttons: ['OK'],
-          });
           this.modalController.dismiss(false);
-          await alert.present();
+          this.errorManager.stampaErrore(res, 'Eliminazione Fallita');
         });
   }
 
@@ -105,13 +102,8 @@ export class DettagliProdottoPage implements OnInit {
         },
         async (res) => {
           await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Modifica fallita',
-            message: res.error,
-            buttons: ['OK'],
-          });
           this.modalController.dismiss(false);
-          await alert.present();
+          this.errorManager.stampaErrore(res, 'Modifica Fallita');
         });
   }
 

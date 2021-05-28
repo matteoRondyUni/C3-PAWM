@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { AuthenticationService } from '../../../services/authentication.service';
+import { ErrorManagerService } from '../../../services/error-manager.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController } from '@ionic/angular';
 
@@ -15,6 +16,7 @@ export class LoginAttivitaPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthenticationService,
+    private errorManager: ErrorManagerService,
     private alertController: AlertController,
     private router: Router,
     private loadingController: LoadingController
@@ -65,13 +67,7 @@ export class LoginAttivitaPage implements OnInit {
       },
       async (res) => {
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Login failed',
-          message: res.error,
-          buttons: ['OK'],
-        });
-
-        await alert.present();
+        this.errorManager.stampaErrore(res, 'Login Failed');
       }
     );
   }

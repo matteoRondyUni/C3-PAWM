@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, LoadingController, ModalController, NavParams } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/services/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager.service';
 import { map, switchMap } from 'rxjs/operators';
 
 @Component({
@@ -21,6 +22,7 @@ export class DettagliDipendentePage implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService,
+    private errorManager: ErrorManagerService,
     private modalController: ModalController,
     private loadingController: LoadingController,
     private alertController: AlertController,
@@ -63,13 +65,8 @@ export class DettagliDipendentePage implements OnInit {
         },
         async (res) => {
           await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Eliminazione fallita',
-            message: res.error,
-            buttons: ['OK'],
-          });
           this.modalController.dismiss(false);
-          await alert.present();
+          this.errorManager.stampaErrore(res, 'Eliminazione Fallita');
         });
   }
 }

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { AuthenticationService } from '../../../services/authentication.service';
+import { ErrorManagerService } from '../../../services/error-manager.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController } from '@ionic/angular';
-
 
 @Component({
   selector: 'app-register-attivita',
@@ -16,6 +16,7 @@ export class RegisterAttivitaPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthenticationService,
+    private errorManager: ErrorManagerService,
     private router: Router,
     private alertController: AlertController,
     private loadingController: LoadingController
@@ -57,13 +58,7 @@ export class RegisterAttivitaPage implements OnInit {
       },
       async (res) => {
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Registrazione fallita',
-          message: res.error,
-          buttons: ['OK'],
-        });
-
-        await alert.present();
+        this.errorManager.stampaErrore(res, 'Registrazione fallita');
       }
     );
   }
