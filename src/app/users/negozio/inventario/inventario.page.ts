@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/services/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager.service';
 import { CreaProdottoPage } from '../modal/crea-prodotto/crea-prodotto.page';
 import { DettagliProdottoPage } from '../modal/dettagli-prodotto/dettagli-prodotto.page';
 
@@ -16,7 +17,7 @@ export class InventarioPage implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService,
-    private alertController: AlertController,
+    private errorManager: ErrorManagerService,
     private modalController: ModalController) {
     this.loadInventario();
   }
@@ -29,16 +30,11 @@ export class InventarioPage implements OnInit {
     const headers = { 'token': token_value };
 
     this.http.get('/inventario', { headers }).subscribe(
-      async res => {
+      async (res) => {
         this.inventario = res['results'];
       },
-      async res => {
-        const alert = await this.alertController.create({
-          header: 'Errore nella sessione',
-          message: "Rieffettua il login",
-          buttons: ['OK'],
-        });
-        await alert.present();
+      async (res) => {
+        this.errorManager.stampaErrore(res, 'Errore');
       });
   }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AuthenticationService } from 'src/app/services/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager.service';
 import { ModalController } from '@ionic/angular';
 
 import { CreaDipendentePage } from '../modal/crea-dipendente/crea-dipendente.page';
@@ -20,7 +20,7 @@ export class DipendentiPage implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService,
-    private alertController: AlertController,
+    private errorManager: ErrorManagerService,
     private modalController: ModalController) {
     this.loadDipendenti();
   }
@@ -37,16 +37,11 @@ export class DipendentiPage implements OnInit {
     const headers = { 'token': token_value };
 
     this.http.get('/dipendenti', { headers }).subscribe(
-      async res => {
+      async (res) => {
         this.dipendenti = res['results'];
       },
-      async res => {
-        const alert = await this.alertController.create({
-          header: 'Errore nella sessione',
-          message: "Rieffettua il login",
-          buttons: ['OK'],
-        });
-        await alert.present();
+      async (res) => {
+        this.errorManager.stampaErrore(res, 'Errore');
       });
   }
 

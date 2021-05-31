@@ -32,6 +32,7 @@ export class AuthenticationService {
 
   async getToken() {
     const toReturn = await Storage.get({ key: TOKEN_KEY });
+    if (toReturn.value == null) toReturn.value = '';
     return toReturn;
   }
 

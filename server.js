@@ -14,6 +14,7 @@ app.use(express.json());
 //TODO
 function verificaJWT(token) {
     try {
+        if (token == null || token == '' || token == undefined) return false;
         jwt.verify(token, SECRET_KEY);
         return true;
     } catch (error) {

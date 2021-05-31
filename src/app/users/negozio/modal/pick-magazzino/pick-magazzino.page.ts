@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
+import { ErrorManagerService } from 'src/app/services/error-manager.service';
 
 @Component({
   selector: 'app-pick-magazzino',
@@ -12,7 +13,7 @@ export class PickMagazzinoPage implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private alertController: AlertController,
+    private errorManager: ErrorManagerService,
     private modalController: ModalController,
   ) {
     this.loadMagazzini();
@@ -27,17 +28,12 @@ export class PickMagazzinoPage implements OnInit {
 
   async loadMagazzini() {
     this.http.get('/magazzini').subscribe(
-      async res => {
+      async (res) => {
         this.magazzini = res['results'];
         console.log("magazzini:", this.magazzini);
       },
-      async res => {
-        const alert = await this.alertController.create({
-          header: 'Errore nella sessione',
-          message: "Rieffettua il login",
-          buttons: ['OK'],
-        });
-        await alert.present();
+      async (res) => {
+        this.errorManager.stampaErrore(res, 'Errore');
       });
   }
 

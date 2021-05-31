@@ -144,5 +144,4 @@ export class OrdiniPage implements OnInit {
     });
   }
 
-
 }
