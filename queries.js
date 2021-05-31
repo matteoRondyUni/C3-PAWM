@@ -276,7 +276,7 @@ const getInventario = (token, cb) => {
 }
 
 //TODO fare commento
-getOrdini = (token, cb) => {
+const getOrdini = (token, cb) => {
   const decoded_token = jwt.decode(token);
   var idNegozio;
 
@@ -289,6 +289,15 @@ getOrdini = (token, cb) => {
     });
 }
 
+//TODO fare commento
+const getMerciOrdine = (req, cb) => {
+  return pool.query('select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome',
+    [req.headers.id_ordine], (error, results) => {
+      cb(error, results)
+    });
+}
+
+//TODO fare commento
 const getMagazzini = (cb) => {
   return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
     ["MAGAZZINO"], (error, results) => {
@@ -371,6 +380,7 @@ module.exports = {
   getCommercianteById,
   getInventario,
   getOrdini,
+  getProdottiOrdine: getMerciOrdine,
   getMagazzini,
   getDitteTrasporti
 }

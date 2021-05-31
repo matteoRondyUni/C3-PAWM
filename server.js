@@ -46,6 +46,15 @@ function verificaNegozio(token) {
     }
 }
 
+function verificaAttivita(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "NEGOZIO" || tipo == "DITTA_TRASPORTI" || tipo == "MAGAZZINO");
+    } else {
+        return false;
+    }
+}
+
 /**
  * REST - Elimina dipendente
  */
@@ -212,6 +221,23 @@ app.get('/ordini', (req, res) => {
 
             const ordini = JSON.parse(JSON.stringify(results.rows));
             const to_return = { 'results': ordini };
+
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+})
+
+app.get('/ordine/prodotti', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaJWT(token)) {
+        db.getMerciOrdine(req, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const prodotti = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': prodotti };
 
             return res.status(200).send(to_return);
         });
