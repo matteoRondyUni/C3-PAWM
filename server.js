@@ -56,6 +56,18 @@ function verificaAttivita(token) {
 }
 
 /**
+ * Controlla che il JWT corrisponda ad una ditta di trasporto
+ */
+function verificaDittaTrasporto(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "DITTA_TRASPORTI");
+    } else {
+        return false;
+    }
+}
+
+/**
  * REST - Elimina dipendente
  */
 app.delete('/dipendenti/:id', (req, res) => {
@@ -216,7 +228,7 @@ app.get('/ordini', (req, res) => {
     const token = req.headers.token;
 
     if (verificaNegozio(token)) {
-        db.getOrdini(token, (err, results) => {
+        db.getOrdiniNegozio(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
 
             const ordini = JSON.parse(JSON.stringify(results.rows));
@@ -229,7 +241,8 @@ app.get('/ordini', (req, res) => {
     }
 })
 
-app.get('/ordine/prodotti', (req, res) => {
+//TODO controllare che l'id dell'Ordine passato sia collegato all'id del token
+app.get('/merci/:id', (req, res) => {
     const token = req.headers.token;
 
     if (verificaJWT(token)) {
@@ -268,6 +281,23 @@ app.get('/ditte-trasporti', (req, res) => {
 
         return res.status(200).send(to_return);
     })
+});
+
+app.get('/spedizioni', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaDittaTrasporto(token)) {
+        db.getOrdiniDittaTrasporto(token, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const ordini = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': ordini };
+
+            return res.status(200).send(to_return);
+        })
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
 });
 
 app.post('/prodotto', (req, res) => {

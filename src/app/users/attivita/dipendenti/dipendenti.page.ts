@@ -15,8 +15,6 @@ import { DettagliDipendentePage } from '../modal/dettagli-dipendente/dettagli-di
 export class DipendentiPage implements OnInit {
   dipendenti = [];
 
-  token: JSON;
-
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService,
@@ -28,6 +26,7 @@ export class DipendentiPage implements OnInit {
   ngOnInit() {
   }
 
+  //TODO eliminare
   openNav() {
     document.getElementById("mySidenav").style.width = "250px";
   }

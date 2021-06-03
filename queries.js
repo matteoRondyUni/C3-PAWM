@@ -276,7 +276,7 @@ const getInventario = (token, cb) => {
 }
 
 //TODO fare commento
-const getOrdini = (token, cb) => {
+const getOrdiniNegozio = (token, cb) => {
   const decoded_token = jwt.decode(token);
   var idNegozio;
 
@@ -290,9 +290,41 @@ const getOrdini = (token, cb) => {
 }
 
 //TODO fare commento
+const getOrdiniDittaTrasporto = (token, cb) => {
+  const decoded_token = jwt.decode(token);
+  var idDittaTrasporto = decoded_token.id;
+
+  return pool.query('select id, id_negozio, id_magazzino, id_cliente, tipo, stato, data_ordine from public.ordini where id_ditta=$1 ORDER BY data_ordine DESC',
+    [idDittaTrasporto], (error, results) => {
+      cb(error, results)
+    });
+}
+
+//TODO fare commento
 const getMerciOrdine = (req, cb) => {
+  const decoded_token = jwt.decode(req.headers.token);
+  var query;
+
+  //TODO da finire
+  switch (decoded_token.tipo) {
+    case 'NEGOZIO':
+      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
+      break;
+    case 'COMMERCIANTE':
+      break;
+    case 'DITTA_TRASPORTI':
+      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
+      break;
+    case 'MAGAZZINO':
+      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
+      break;
+    case 'CLIENTE':
+      break;
+  }
+
+  const id = parseInt(req.params.id);
   return pool.query('select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome',
-    [req.headers.id_ordine], (error, results) => {
+    [id], (error, results) => {
       cb(error, results)
     });
 }
@@ -379,8 +411,9 @@ module.exports = {
   modificaProdotto,
   getCommercianteById,
   getInventario,
-  getOrdini,
-  getProdottiOrdine: getMerciOrdine,
+  getOrdiniNegozio,
+  getOrdiniDittaTrasporto,
+  getMerciOrdine,
   getMagazzini,
   getDitteTrasporti
 }
