@@ -8,6 +8,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { PickDittaPage } from '../modal/pick-ditta/pick-ditta.page';
 import { PickMagazzinoPage } from '../modal/pick-magazzino/pick-magazzino.page';
 import { PickProdottoPage } from '../modal/pick-prodotto/pick-prodotto.page';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ordini',
@@ -15,14 +16,96 @@ import { PickProdottoPage } from '../modal/pick-prodotto/pick-prodotto.page';
   styleUrls: ['./ordini.page.scss'],
 })
 export class OrdiniPage implements OnInit {
+  public segment: string = "crea";
   ordine: FormGroup;
   magazzino = { "id": null, "ragione_sociale": null, "indirizzo": null };
   ditta = { "id": null, "ragione_sociale": null, "indirizzo": null };
   prodotti = [];
+  ordini = [
+    {
+      id: 3,
+      data_ordine: '2021-05-27',
+      stato: 'IN TRANSITO',
+      tipo: 'DOMICILIO',
+      merci: [
+        {
+          nome: 'Pizza',
+          prezzo_acquisto: '6.50',
+          quantita: 5,
+          stato: 'PAGATO'
+        },
+        {
+          nome: 'Burrito',
+          prezzo_acquisto: '3.50',
+          quantita: 50,
+          stato: 'PAGATO'
+        },
+        {
+          nome: 'Salame',
+          prezzo_acquisto: '8.50',
+          quantita: 1,
+          stato: 'PAGATO'
+        }
+      ]
+    },
+    {
+      id: 2,
+      data_ordine: '2021-04-12',
+      stato: 'CONSEGNATO',
+      tipo: 'MAGAZZINO',
+      merci: [
+        {
+          nome: 'Calzino',
+          prezzo_acquisto: '0.50',
+          quantita: 5,
+          stato: 'PAGATO'
+        },
+        {
+          nome: 'M60',
+          prezzo_acquisto: '1103.50',
+          quantita: 1,
+          stato: 'PAGATO'
+        },
+        {
+          nome: 'Cavo HDMI',
+          prezzo_acquisto: '4.50',
+          quantita: 3,
+          stato: 'PAGATO'
+        }
+      ]
+    },
+    {
+      id: 1,
+      data_ordine: '2021-06-01',
+      stato: 'PAGATO',
+      tipo: 'DOMICILIO',
+      merci: [
+        {
+          nome: 'Brasile',
+          prezzo_acquisto: '2.50',
+          quantita: 1,
+          stato: 'PAGATO'
+        },
+        {
+          nome: 'Ford Focus',
+          prezzo_acquisto: '16500.50',
+          quantita: 1,
+          stato: 'PAGATO'
+        },
+        {
+          nome: 'Lenticchia',
+          prezzo_acquisto: '9.50',
+          quantita: 25,
+          stato: 'PAGATO'
+        }
+      ]
+    }
+  ];
   consegnaADomicilio: boolean;
 
   constructor(
     private fb: FormBuilder,
+    private router: Router,
     private http: HttpClient,
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
@@ -36,6 +119,14 @@ export class OrdiniPage implements OnInit {
       email: ['', [Validators.required]],
       tipo: ['', [Validators.required]],
     });
+  }
+
+  segmentChanged(ev: any) {
+    this.segment = ev.detail.value;
+  }
+
+  apriCronologia() {
+    this.router.navigateByUrl('/negozio/ordini/cronologia');
   }
 
   async pickMagazzini() {
@@ -144,4 +235,28 @@ export class OrdiniPage implements OnInit {
     });
   }
 
-}
+  async apriDettagli(ordine) {
+    //   const modal = await this.modalController.create({
+    //     component: DettagliDipendentePage,
+    //     componentProps: {
+    //       id_dipendente: dipendente.id,
+    //       nome: dipendente.nome,
+    //       cognome: dipendente.cognome,
+    //       email: dipendente.email,
+    //       telefono: dipendente.telefono,
+    //       indirizzo: dipendente.indirizzo,
+    //     },
+    //     cssClass: 'fullheight'
+    //   });
+
+    //   modal.onDidDismiss().then((data) => {
+    //     const eliminato = data['data'];
+
+    //     if (eliminato) {
+    //       this.loadDipendenti();
+    //     }
+    //   });
+
+    //   return await modal.present();
+    }
+  }

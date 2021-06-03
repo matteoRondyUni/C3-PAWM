@@ -40,6 +40,8 @@ export class MenuPage implements OnInit {
       if (event.url != undefined) {
         if (event.url == '/negozio') {
           this.selectedPath = '/negozio/home';
+        } else if (event.url == '/negozio/ordini/cronologia') {
+          this.selectedPath = '/negozio/ordini';
         } else {
           this.selectedPath = event.url;
         }

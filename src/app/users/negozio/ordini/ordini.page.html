@@ -1,96 +1,142 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Ordini</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+
+    <ion-segment (ionChange)="segmentChanged($event)" value="crea">
+      <ion-segment-button value="crea">
+        <ion-label>Crea</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="cronologia">
+        <ion-label>Cronologia</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <form (ngSubmit)="creaOrdine()" [formGroup]="ordine" *ngIf="segment === 'crea'">
+    <ion-card>
+      <br>
+      <br>
+      <ion-card-header>
+        <ion-card-title style="font-size:35px"><strong>Crea ordine</strong></ion-card-title>
+      </ion-card-header>
 
-  <ion-button color="primary" href="/home">Storia Ordini</ion-button>
+      <ion-card-content>
+        <ion-item lines="full">
+          <ion-label position="floating">Tipologia consegna</ion-label>
+          <ion-select value="" name="tipo" formControlName="tipo" (ionChange)="changeForm($event)" required>
+            <ion-select-option value="DOMICILIO">Domicilio</ion-select-option>
+            <ion-select-option value="MAGAZZINO">Magazzino</ion-select-option>
+          </ion-select>
+        </ion-item>
 
-  <form (ngSubmit)="creaOrdine()" [formGroup]="ordine">
-    <div>
-      <ion-card>
+        <ion-item lines="full">
+          <ion-label position="floating">Email cliente</ion-label>
+          <ion-input type="email" name="email" formControlName="email" required></ion-input>
+        </ion-item>
+
+        <ion-button color="primary" expand="block" (click)="pickMagazzini()"
+          [class.button-disabled]="consegnaADomicilio">Scegli Magazzino</ion-button>
+
+        <ion-item lines="full">
+          <ion-label>
+            <h2>{{magazzino.ragione_sociale}}</h2>
+            <h3>{{magazzino.indirizzo}}</h3>
+          </ion-label>
+        </ion-item>
+
+        <br>
+
+        <ion-button color="primary" expand="block" (click)="pickDitta()" [class.button-disabled]="consegnaADomicilio">
+          Scegli Ditta Trasporti</ion-button>
+
+        <ion-item lines="full">
+          <ion-label>
+            <h2>{{ditta.ragione_sociale}}</h2>
+            <h3>{{ditta.indirizzo}}</h3>
+          </ion-label>
+        </ion-item>
+
         <br>
         <br>
-        <ion-card-header>
-          <ion-card-title style="font-size:35px"><strong>Crea Ordine</strong></ion-card-title>
-        </ion-card-header>
 
-        <ion-card-content>
+        <ion-button color="primary" expand="block" (click)="scegliProdotto()">Aggiungi Merce</ion-button>
 
-          <!-- //TODO DA FINIRE -->
-          <ion-item lines="full">
-            <ion-label position="floating">Tipologia consegna</ion-label>
-            <ion-select value="" name="tipo" formControlName="tipo" (ionChange)="changeForm($event)" required>
-              <ion-select-option value="DOMICILIO">Domicilio</ion-select-option>
-              <ion-select-option value="MAGAZZINO">Magazzino</ion-select-option>
-            </ion-select>
-          </ion-item>
+        <ion-virtual-scroll [items]="prodotti" approximateItemHeight="70px">
+          <ion-item *virtualItem="let prodotto">
+            <ion-avatar slot="start">
+              <img src="../../../../../assets/box.png">
+            </ion-avatar>
 
-          <ion-item lines="full">
-            <ion-label position="floating">Email cliente</ion-label>
-            <ion-input type="email" name="email" formControlName="email" required></ion-input>
-          </ion-item>
-
-          <ion-button color="primary" expand="block" (click)="pickMagazzini()"
-            [class.button-disabled]="consegnaADomicilio">Scegli Magazzino</ion-button>
-
-          <ion-item lines="full">
             <ion-label>
-              <h2>{{magazzino.ragione_sociale}}</h2>
-              <h3>{{magazzino.indirizzo}}</h3>
+              <h2 text-capitalize>{{prodotto.nome}}</h2>
+              <h3>Quantita:</h3>
+              <ion-input type="number" value={{prodotto.quantita}} (ionChange)="modificaQuantita(prodotto, $event)"
+                required></ion-input>
             </ion-label>
+
+            <ion-icon name="information-circle-outline" slot="end"></ion-icon>
           </ion-item>
+        </ion-virtual-scroll>
 
-          <br>
+        <ion-button type="submit" color="danger" expand="block">Crea Ordine</ion-button>
 
-          <ion-button color="primary" expand="block" (click)="pickDitta()" [class.button-disabled]="consegnaADomicilio">
-            Scegli Ditta Trasporti</ion-button>
-
-          <ion-item lines="full">
-            <ion-label>
-              <h2>{{ditta.ragione_sociale}}</h2>
-              <h3>{{ditta.indirizzo}}</h3>
-            </ion-label>
-          </ion-item>
-
-          <br>
-          <br>
-
-          <ion-button color="primary" expand="block" (click)="scegliProdotto()">Aggiungi Merce</ion-button>
-
-          <div id="scoll-prodotti">
-            <ion-virtual-scroll [items]="prodotti" approximateItemHeight="70px">
-              <ion-item *virtualItem="let prodotto">
-                <ion-avatar slot="start">
-                  <img src="../../../../../assets/box.png">
-                </ion-avatar>
-
-                <ion-label>
-                  <h2 text-capitalize>{{prodotto.nome}}</h2>
-                  <h3>Quantita:</h3>
-                  <ion-input type="number" value={{prodotto.quantita}} (ionChange)="modificaQuantita(prodotto, $event)"
-                    required></ion-input>
-                </ion-label>
-
-                <ion-icon name="information-circle-outline" slot="end"></ion-icon>
-              </ion-item>
-
-            </ion-virtual-scroll>
-
-            <!-- TODO da eliminare -->
-            <ion-button color="primary" expand="block" (click)="stampaArray()">Stampa Array</ion-button>
-
-          </div>
-
-          <div>
-            <ion-button type="submit" color="danger" expand="block">Crea Ordine</ion-button>
-          </div>
-
-        </ion-card-content>
-      </ion-card>
-    </div>
+      </ion-card-content>
+    </ion-card>
   </form>
+
+  <div *ngIf="segment === 'cronologia'">
+
+    <ion-virtual-scroll [items]="ordini">
+
+      <ion-card *virtualItem="let ordine" (click)="apriDettagli(ordine)">
+        <ion-item class="item-background-color">
+
+          <ion-avatar slot="start">
+            <img src="../../../../../assets/box.png">
+          </ion-avatar>
+
+          <ion-label>
+            <h2 text-capitalize style="font-size:22px">Ordine #{{ordine.id}}</h2>
+            <h2>Data ordine: {{ordine.data_ordine}}</h2>
+            <h2>Stato: {{ordine.stato}}</h2>
+            <h2>Tipo: {{ordine.tipo}}</h2>
+          </ion-label>
+
+          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+        </ion-item>
+
+        <ion-item>
+          <ion-virtual-scroll [items]="ordine.merci">
+            <ion-item *virtualItem="let merce">
+              <ion-avatar slot="start">
+                <img src="../../../../../assets/shopping-bag.png">
+              </ion-avatar>
+
+              <ion-label>
+                <h3 text-capitalize style="font-size:18px">{{merce.nome}}</h3>
+                <h3>Quantità: {{merce.quantita}}</h3>
+                <h3>Prezzo acquisto: {{merce.prezzo_acquisto}}</h3>
+                <h3>Stato: {{merce.stato}}</h3>
+              </ion-label>
+            </ion-item>
+
+          </ion-virtual-scroll>
+        </ion-item>
+      </ion-card>
+
+
+    </ion-virtual-scroll>
+
+  </div>
 
 </ion-content>

@@ -23,6 +23,10 @@ export class PickProdottoPage implements OnInit {
   ngOnInit() {
   }
 
+  async closeModal() {
+    this.modalController.dismiss();
+  }
+
   async loadInventario() {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
