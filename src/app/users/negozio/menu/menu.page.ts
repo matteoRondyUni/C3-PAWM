@@ -27,7 +27,7 @@ export class MenuPage implements OnInit {
     },
     {
       title: 'Ordini',
-      icon: 'file-tray-stacked-outline',
+      icon: 'cart-outline',
       url: '/negozio/ordini'
     },
 

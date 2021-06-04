@@ -283,7 +283,7 @@ const getOrdiniNegozio = (token, cb) => {
   if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
 
-  return pool.query('select id, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data from public.ordini where id_negozio=$1 ORDER BY data DESC',
+  return pool.query('select id, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine from public.ordini where id_negozio=$1 ORDER BY id DESC',
     [idNegozio], (error, results) => {
       cb(error, results)
     });

@@ -229,7 +229,11 @@ app.get('/ordini', (req, res) => {
 
     if (verificaNegozio(token)) {
         db.getOrdiniNegozio(token, (err, results) => {
-            if (err) return res.status(500).send('Server error!');
+            // if (err) return res.status(500).send('Server error!');
+            if (err) {
+                console.log('err:', err)
+                return res.status(500).send('Server error!');
+            }
 
             const ordini = JSON.parse(JSON.stringify(results.rows));
             const to_return = { 'results': ordini };

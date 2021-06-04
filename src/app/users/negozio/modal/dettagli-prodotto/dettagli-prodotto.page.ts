@@ -16,7 +16,7 @@ export class DettagliProdottoPage implements OnInit {
 
   @Input() id_prodotto: any;
   @Input() nome: any;
-  @Input() quantita: any;
+  @Input() disponibilita: any;
   @Input() prezzo: any;
 
   constructor(
@@ -33,11 +33,11 @@ export class DettagliProdottoPage implements OnInit {
   ngOnInit() {
     this.id_prodotto = this.navParams.get('id_prodotto');
     this.nome = this.navParams.get('nome');
-    this.quantita = this.navParams.get('quantita');
+    this.disponibilita = this.navParams.get('disponibilita');
     this.prezzo = this.navParams.get('prezzo');
     this.dati = this.fb.group({
       nome: [this.nome, [Validators.required]],
-      quantita: [this.quantita, [Validators.required]],
+      quantita: [this.disponibilita, [Validators.required]],
       prezzo: [this.prezzo, [Validators.required]]
     });
   }
@@ -81,7 +81,7 @@ export class DettagliProdottoPage implements OnInit {
     const token_value = (await this.authService.getToken()).value;
     const to_send = {
       'nome': this.dati.value.nome,
-      'quantita': this.dati.value.quantita,
+      'disponibilita': this.dati.value.disponibilita,
       'prezzo': this.dati.value.prezzo,
       'token_value': token_value
     }

@@ -75,7 +75,7 @@ export class InventarioPage implements OnInit {
       componentProps: {
         id_prodotto: prodotto.id,
         nome: prodotto.nome,
-        quantita: prodotto.quantita,
+        disponibilita: prodotto.disponibilita,
         prezzo: prodotto.prezzo
       },
       cssClass: 'fullheight'

@@ -8,7 +8,6 @@ import { map, switchMap } from 'rxjs/operators';
 import { PickDittaPage } from '../modal/pick-ditta/pick-ditta.page';
 import { PickMagazzinoPage } from '../modal/pick-magazzino/pick-magazzino.page';
 import { PickProdottoPage } from '../modal/pick-prodotto/pick-prodotto.page';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ordini',
@@ -20,99 +19,54 @@ export class OrdiniPage implements OnInit {
   ordine: FormGroup;
   magazzino = { "id": null, "ragione_sociale": null, "indirizzo": null };
   ditta = { "id": null, "ragione_sociale": null, "indirizzo": null };
-  prodotti = [];
-  ordini = [
-    {
-      id: 3,
-      data_ordine: '2021-05-27',
-      stato: 'IN TRANSITO',
-      tipo: 'DOMICILIO',
-      merci: [
-        {
-          nome: 'Pizza',
-          prezzo_acquisto: '6.50',
-          quantita: 5,
-          stato: 'PAGATO'
-        },
-        {
-          nome: 'Burrito',
-          prezzo_acquisto: '3.50',
-          quantita: 50,
-          stato: 'PAGATO'
-        },
-        {
-          nome: 'Salame',
-          prezzo_acquisto: '8.50',
-          quantita: 1,
-          stato: 'PAGATO'
-        }
-      ]
-    },
-    {
-      id: 2,
-      data_ordine: '2021-04-12',
-      stato: 'CONSEGNATO',
-      tipo: 'MAGAZZINO',
-      merci: [
-        {
-          nome: 'Calzino',
-          prezzo_acquisto: '0.50',
-          quantita: 5,
-          stato: 'PAGATO'
-        },
-        {
-          nome: 'M60',
-          prezzo_acquisto: '1103.50',
-          quantita: 1,
-          stato: 'PAGATO'
-        },
-        {
-          nome: 'Cavo HDMI',
-          prezzo_acquisto: '4.50',
-          quantita: 3,
-          stato: 'PAGATO'
-        }
-      ]
-    },
-    {
-      id: 1,
-      data_ordine: '2021-06-01',
-      stato: 'PAGATO',
-      tipo: 'DOMICILIO',
-      merci: [
-        {
-          nome: 'Brasile',
-          prezzo_acquisto: '2.50',
-          quantita: 1,
-          stato: 'PAGATO'
-        },
-        {
-          nome: 'Ford Focus',
-          prezzo_acquisto: '16500.50',
-          quantita: 1,
-          stato: 'PAGATO'
-        },
-        {
-          nome: 'Lenticchia',
-          prezzo_acquisto: '9.50',
-          quantita: 25,
-          stato: 'PAGATO'
-        }
-      ]
-    }
-  ];
   consegnaADomicilio: boolean;
+  // prodotti = [
+  //   {
+  //     id: 1234,
+  //     nome: 'pippo',
+  //     quantita: 3
+  //   }
+  // ];
+  prodotti = [];
+  ordini = [];
+  // ordini = [
+  //   {
+  //     id: 3, data_ordine: '2021-05-27', stato: 'IN TRANSITO', tipo: 'DOMICILIO',
+  //     merci: [
+  //       { nome: 'Pizza', prezzo_acquisto: '6.50', quantita: 5, stato: 'PAGATO' },
+  //       { nome: 'Burrito', prezzo_acquisto: '3.50', quantita: 50, stato: 'PAGATO' },
+  //       { nome: 'Salame', prezzo_acquisto: '8.50', quantita: 1, stato: 'PAGATO' }
+  //     ]
+  //   },
+  //   {
+  //     id: 2, data_ordine: '2021-04-12', stato: 'CONSEGNATO', tipo: 'MAGAZZINO',
+  //     merci: [
+  //       { nome: 'Calzino', prezzo_acquisto: '0.50', quantita: 5, stato: 'PAGATO' },
+  //       { nome: 'M60', prezzo_acquisto: '1103.50', quantita: 1, stato: 'PAGATO' },
+  //       { nome: 'Cavo HDMI', prezzo_acquisto: '4.50', quantita: 3, stato: 'PAGATO' }
+  //     ]
+  //   },
+  //   {
+  //     id: 1, data_ordine: '2021-06-01', stato: 'PAGATO', tipo: 'DOMICILIO',
+  //     merci: [
+  //       { nome: 'Brasile', prezzo_acquisto: '2.50', quantita: 1, stato: 'PAGATO' },
+  //       { nome: 'Ford Focus', prezzo_acquisto: '16500.50', quantita: 1, stato: 'PAGATO' },
+  //       { nome: 'Lenticchia', prezzo_acquisto: '9.50', quantita: 25, stato: 'PAGATO' }
+  //     ]
+  //   }
+  // ];
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
     private http: HttpClient,
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
     private alertController: AlertController,
     private modalController: ModalController,
     private loadingController: LoadingController,
-  ) { }
+  ) {
+    this.loadOrdini()
+  }
 
   ngOnInit() {
     this.ordine = this.fb.group({
@@ -123,10 +77,6 @@ export class OrdiniPage implements OnInit {
 
   segmentChanged(ev: any) {
     this.segment = ev.detail.value;
-  }
-
-  apriCronologia() {
-    this.router.navigateByUrl('/negozio/ordini/cronologia');
   }
 
   async pickMagazzini() {
@@ -165,9 +115,7 @@ export class OrdiniPage implements OnInit {
 
     modal.onDidDismiss().then((data) => {
       const prodottoSelezionato = data['data'];
-      if (prodottoSelezionato != null) {
-        this.prodotti.push(prodottoSelezionato);
-      }
+      if (prodottoSelezionato != null) this.prodotti = [...this.prodotti, prodottoSelezionato];
       console.log(this.prodotti);
     });
 
@@ -201,11 +149,42 @@ export class OrdiniPage implements OnInit {
             buttons: ['OK'],
           });
           await alert.present();
+          this.loadOrdini();
         },
         async (res) => {
           await loading.dismiss();
           this.errorManager.stampaErrore(res, 'Creazione ordine fallita');
         });
+  }
+
+  async loadOrdini() {
+    const token_value = (await this.authService.getToken()).value;
+    const headers = { 'token': token_value };
+
+    this.http.get('/ordini', { headers }).subscribe(
+      async (res) => {
+        this.ordini = res['results'];
+        this.loadMerci(this.ordini, token_value);
+      },
+      async (res) => {
+        this.errorManager.stampaErrore(res, 'Errore');
+      });
+  }
+
+  loadMerci(ordini, token_value) {
+    ordini.forEach(ordine => {
+      const headers = { 'token': token_value };
+      this.http.get('/merci/' + ordine.id, { headers }).subscribe(
+        async (res) => {
+          var merci = res['results'];
+          ordine[merci];
+          ordine.merci = merci;
+          console.log("ordine: ", ordine);
+        },
+        async (res) => {
+          this.errorManager.stampaErrore(res, 'Errore');
+        });
+    });
   }
 
   changeForm(event) {
@@ -220,10 +199,6 @@ export class OrdiniPage implements OnInit {
     }
   }
 
-  stampaArray() {
-    console.log("prodotti:", this.prodotti);
-  }
-
   modificaQuantita(prodotto, event) {
     var quantita = parseInt(event.target.value);
     this.prodotti.forEach(element => {
@@ -234,29 +209,4 @@ export class OrdiniPage implements OnInit {
       }
     });
   }
-
-  async apriDettagli(ordine) {
-    //   const modal = await this.modalController.create({
-    //     component: DettagliDipendentePage,
-    //     componentProps: {
-    //       id_dipendente: dipendente.id,
-    //       nome: dipendente.nome,
-    //       cognome: dipendente.cognome,
-    //       email: dipendente.email,
-    //       telefono: dipendente.telefono,
-    //       indirizzo: dipendente.indirizzo,
-    //     },
-    //     cssClass: 'fullheight'
-    //   });
-
-    //   modal.onDidDismiss().then((data) => {
-    //     const eliminato = data['data'];
-
-    //     if (eliminato) {
-    //       this.loadDipendenti();
-    //     }
-    //   });
-
-    //   return await modal.present();
-    }
-  }
+}

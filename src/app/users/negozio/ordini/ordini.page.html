@@ -95,11 +95,10 @@
   </form>
 
   <div *ngIf="segment === 'cronologia'">
-
     <ion-virtual-scroll [items]="ordini">
 
-      <ion-card *virtualItem="let ordine" (click)="apriDettagli(ordine)">
-        <ion-item class="item-background-color">
+      <ion-card *virtualItem="let ordine">
+        <ion-item lines="none" class="item-background-color">
 
           <ion-avatar slot="start">
             <img src="../../../../../assets/box.png">
@@ -107,7 +106,7 @@
 
           <ion-label>
             <h2 text-capitalize style="font-size:22px">Ordine #{{ordine.id}}</h2>
-            <h2>Data ordine: {{ordine.data_ordine}}</h2>
+            <h2>Data ordine: {{ordine.data_ordine.substring(0, 10)}}</h2>
             <h2>Stato: {{ordine.stato}}</h2>
             <h2>Tipo: {{ordine.tipo}}</h2>
           </ion-label>
@@ -134,9 +133,7 @@
         </ion-item>
       </ion-card>
 
-
     </ion-virtual-scroll>
-
   </div>
 
 </ion-content>
