@@ -20,41 +20,8 @@ export class OrdiniPage implements OnInit {
   magazzino = { "id": null, "ragione_sociale": null, "indirizzo": null };
   ditta = { "id": null, "ragione_sociale": null, "indirizzo": null };
   consegnaADomicilio: boolean;
-  // prodotti = [
-  //   {
-  //     id: 1234,
-  //     nome: 'pippo',
-  //     quantita: 3
-  //   }
-  // ];
   prodotti = [];
   ordini = [];
-  // ordini = [
-  //   {
-  //     id: 3, data_ordine: '2021-05-27', stato: 'IN TRANSITO', tipo: 'DOMICILIO',
-  //     merci: [
-  //       { nome: 'Pizza', prezzo_acquisto: '6.50', quantita: 5, stato: 'PAGATO' },
-  //       { nome: 'Burrito', prezzo_acquisto: '3.50', quantita: 50, stato: 'PAGATO' },
-  //       { nome: 'Salame', prezzo_acquisto: '8.50', quantita: 1, stato: 'PAGATO' }
-  //     ]
-  //   },
-  //   {
-  //     id: 2, data_ordine: '2021-04-12', stato: 'CONSEGNATO', tipo: 'MAGAZZINO',
-  //     merci: [
-  //       { nome: 'Calzino', prezzo_acquisto: '0.50', quantita: 5, stato: 'PAGATO' },
-  //       { nome: 'M60', prezzo_acquisto: '1103.50', quantita: 1, stato: 'PAGATO' },
-  //       { nome: 'Cavo HDMI', prezzo_acquisto: '4.50', quantita: 3, stato: 'PAGATO' }
-  //     ]
-  //   },
-  //   {
-  //     id: 1, data_ordine: '2021-06-01', stato: 'PAGATO', tipo: 'DOMICILIO',
-  //     merci: [
-  //       { nome: 'Brasile', prezzo_acquisto: '2.50', quantita: 1, stato: 'PAGATO' },
-  //       { nome: 'Ford Focus', prezzo_acquisto: '16500.50', quantita: 1, stato: 'PAGATO' },
-  //       { nome: 'Lenticchia', prezzo_acquisto: '9.50', quantita: 25, stato: 'PAGATO' }
-  //     ]
-  //   }
-  // ];
 
   constructor(
     private fb: FormBuilder,
@@ -110,16 +77,30 @@ export class OrdiniPage implements OnInit {
   async scegliProdotto() {
     const modal = await this.modalController.create({
       component: PickProdottoPage,
+      componentProps: {
+        prodotti_inseriti: this.prodotti
+      },
       cssClass: 'fullheight'
     });
 
     modal.onDidDismiss().then((data) => {
       const prodottoSelezionato = data['data'];
-      if (prodottoSelezionato != null) this.prodotti = [...this.prodotti, prodottoSelezionato];
+      if (prodottoSelezionato != null) {
+        var quantita;
+        prodottoSelezionato[quantita];
+        prodottoSelezionato.quantita = 1
+        this.prodotti = [...this.prodotti, prodottoSelezionato];
+      }
       console.log(this.prodotti);
     });
 
     return await modal.present();
+  }
+
+  rimuoviProdotto(prodotto) {
+    const index = this.prodotti.indexOf(prodotto, 0);
+    if (index > -1) this.prodotti.splice(index, 1);
+    this.prodotti = [...this.prodotti];
   }
 
   //TODO controllare dati da inviare
@@ -179,7 +160,6 @@ export class OrdiniPage implements OnInit {
           var merci = res['results'];
           ordine[merci];
           ordine.merci = merci;
-          console.log("ordine: ", ordine);
         },
         async (res) => {
           this.errorManager.stampaErrore(res, 'Errore');
@@ -204,7 +184,6 @@ export class OrdiniPage implements OnInit {
     this.prodotti.forEach(element => {
       console.log(element.id);
       if (element.id == prodotto.id) {
-        element[quantita];
         element.quantita = quantita
       }
     });

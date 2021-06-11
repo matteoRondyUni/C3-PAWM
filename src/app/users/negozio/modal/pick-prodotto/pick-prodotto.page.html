@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-virtual-scroll [items]="inventario" approximateItemHeight="70px" [headerFn]="separateLetter">
+  <ion-virtual-scroll [items]="prodotti_selezionabili" approximateItemHeight="70px" [headerFn]="separateLetter">
 
     <ion-item-divider *virtualHeader="let header" color="gray">
       <ion-label>{{header}}</ion-label>

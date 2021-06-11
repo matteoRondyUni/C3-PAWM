@@ -1,0 +1,184 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ordini</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+
+    <ion-segment (ionChange)="segmentChanged($event)" value="cerca">
+      <ion-segment-button value="cerca">
+        <ion-label>Cerca</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="attivi">
+        <ion-label>Attivi</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="ritirati">
+        <ion-label>Ritirati</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="segment === 'cerca'">
+    <ion-card>
+      <br>
+      <br>
+      <ion-card-header>
+        <ion-card-title style="font-size:35px"><strong>Cerca ordine</strong></ion-card-title>
+        <ion-card-subtitle>Inserisci qui sotto il codice univoco relativo all'ordine da cercare</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <!-- <ion-searchbar showSearchButton searchIcon="search" animated cancel-button-icon
+          (search)="cercaOrdine($event.target.value)" placeholder="Inserisci il codice">
+        </ion-searchbar> -->
+
+        <ion-searchbar showcancelbutton="" (search)="cercaOrdine($event)" placeholder="Inserisci il codice">
+        </ion-searchbar>
+
+        <br *ngIf="nessun_risultato === true">
+        <h1 *ngIf="nessun_risultato === true" style="text-align: center;">Nessun ordine trovato</h1>
+        <br *ngIf="nessun_risultato === true">
+
+        <ion-virtual-scroll [items]="risultati_ricerca">
+
+          <ion-card *virtualItem="let ordine">
+            <ion-item lines="none" class="ordine-attivo">
+
+              <ion-avatar slot="start">
+                <img src="../../../../../assets/box.png">
+              </ion-avatar>
+
+              <ion-label>
+                <h2 text-capitalize style="font-size:22px">Ordine #{{ordine.id}}</h2>
+                <h2>Data ordine: {{ordine.data_ordine.substring(0, 10)}}</h2>
+                <h2>Stato: {{ordine.stato}}</h2>
+                <h2>Tipo: {{ordine.tipo}}</h2>
+                <h2>Codice ritiro: {{ordine.codice_ritiro}}</h2>
+              </ion-label>
+
+              <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+            </ion-item>
+
+            <ion-item>
+              <ion-virtual-scroll [items]="ordine.merci">
+                <ion-item *virtualItem="let merce">
+                  <ion-avatar slot="start">
+                    <img src="../../../../../assets/shopping-bag.png">
+                  </ion-avatar>
+
+                  <ion-label>
+                    <h3 text-capitalize style="font-size:18px">{{merce.nome}}</h3>
+                    <h3>Quantità: {{merce.quantita}}</h3>
+                    <h3>Stato: {{merce.stato}}</h3>
+                  </ion-label>
+                </ion-item>
+
+              </ion-virtual-scroll>
+            </ion-item>
+
+            <ion-button color="primary" expand="block" (click)="segnaComeRitirato(ordine)">Segna come ritirato
+            </ion-button>
+          </ion-card>
+
+        </ion-virtual-scroll>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div *ngIf="segment === 'attivi'">
+    <ion-virtual-scroll [items]="ordini_attivi">
+
+      <ion-card *virtualItem="let ordine">
+        <ion-item lines="none" class="ordine-attivo">
+
+          <ion-avatar slot="start">
+            <img src="../../../../../assets/box.png">
+          </ion-avatar>
+
+          <ion-label>
+            <h2 text-capitalize style="font-size:22px">Ordine #{{ordine.id}}</h2>
+            <h2>Data ordine: {{ordine.data_ordine.substring(0, 10)}}</h2>
+            <h2>Stato: {{ordine.stato}}</h2>
+            <h2>Tipo: {{ordine.tipo}}</h2>
+            <h2>Codice ritiro: {{ordine.codice_ritiro}}</h2>
+          </ion-label>
+
+          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+        </ion-item>
+
+        <ion-item>
+          <h3 text-capitalize style="font-size:18px">Articoli:</h3>
+        </ion-item>
+
+        <ion-item>
+          <ion-virtual-scroll [items]="ordine.merci">
+            <ion-item *virtualItem="let merce">
+              <ion-avatar slot="start">
+                <img src="../../../../../assets/shopping-bag.png">
+              </ion-avatar>
+
+              <ion-label>
+                <h3 text-capitalize style="font-size:18px">{{merce.nome}}</h3>
+                <h3>Quantità: {{merce.quantita}}</h3>
+                <h3>Stato: {{merce.stato}}</h3>
+              </ion-label>
+            </ion-item>
+
+          </ion-virtual-scroll>
+        </ion-item>
+      </ion-card>
+
+    </ion-virtual-scroll>
+  </div>
+
+  <div *ngIf="segment === 'ritirati'">
+
+    <ion-virtual-scroll [items]="ordini_ritirati">
+
+      <ion-card *virtualItem="let ordine">
+        <ion-item lines="none" class="ordine-ritirato">
+
+          <ion-avatar slot="start">
+            <img src="../../../../../assets/box.png">
+          </ion-avatar>
+
+          <ion-label>
+            <h2 text-capitalize style="font-size:22px">Ordine #{{ordine.id}}</h2>
+            <h2>Data ordine: {{ordine.data_ordine.substring(0, 10)}}</h2>
+            <h2>Stato: {{ordine.stato}}</h2>
+            <h2>Tipo: {{ordine.tipo}}</h2>
+            <h2>Codice ritiro: {{ordine.codice_ritiro}}</h2>
+          </ion-label>
+
+          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+        </ion-item>
+
+        <ion-item>
+          <ion-virtual-scroll [items]="ordine.merci">
+            <ion-item *virtualItem="let merce">
+              <ion-avatar slot="start">
+                <img src="../../../../../assets/shopping-bag.png">
+              </ion-avatar>
+
+              <ion-label>
+                <h3 text-capitalize style="font-size:18px">{{merce.nome}}</h3>
+                <h3>Quantità: {{merce.quantita}}</h3>
+                <h3>Stato: {{merce.stato}}</h3>
+              </ion-label>
+            </ion-item>
+
+          </ion-virtual-scroll>
+        </ion-item>
+      </ion-card>
+
+    </ion-virtual-scroll>
+  </div>
+
+</ion-content>

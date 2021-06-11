@@ -66,6 +66,10 @@ const routes: Routes = [
   {
     path: 'trasporti',
     loadChildren: () => import('./users/ditta/menu/menu.module').then(m => m.MenuPageModule)
+  },
+  {
+    path: 'magazzino',
+    loadChildren: () => import('./users/magazzino/menu/menu.module').then( m => m.MenuPageModule)
   }
 ];
 
