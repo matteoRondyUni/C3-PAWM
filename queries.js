@@ -148,6 +148,20 @@ const cercaProdottoById = (id, decoded_token, cb) => {
   });
 }
 
+//TODO commento
+const cercaOrdineById = (id_ordine, decoded_token, cb) => {
+  pool.query('SELECT * FROM public.ordini WHERE id = $1 AND id_ditta = $2', [id_ordine, decoded_token.id], (error, results) => {
+    cb(error, results);
+  });
+}
+
+//TODO commento
+const cercaCorriereById = (id_corriere, decoded_token, cb) => {
+  pool.query('SELECT * FROM public.corrieri WHERE id = $1 AND id_ditta = $2', [id_corriere, decoded_token.id], (error, results) => {
+    cb(error, results);
+  });
+}
+
 const eliminaDipendente = (request, response, decoded_token) => {
   const id = parseInt(request.params.id);
 
@@ -313,7 +327,7 @@ const getMerciOrdine = (req, cb) => {
     case 'COMMERCIANTE':
       break;
     case 'DITTA_TRASPORTI':
-      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
+      query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
       break;
     case 'MAGAZZINO':
       query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
@@ -323,7 +337,7 @@ const getMerciOrdine = (req, cb) => {
   }
 
   const id = parseInt(req.params.id);
-  return pool.query('select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome',
+  return pool.query('select public.merci_ordine.id, public.merci_ordine.id_ordine, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome',
     [id], (error, results) => {
       cb(error, results)
     });
@@ -396,6 +410,31 @@ const modificaProdotto = (request, response, decoded_token) => {
   });
 }
 
+const aggiungiCorriere = async (request, response, decoded_token) => {
+  const id_merce_ordine = parseInt(request.params.id);
+  const id_ordine = parseInt(request.body.id_ordine);
+
+  cercaOrdineById(id_ordine, decoded_token, (err, results) => {
+    if (err) return response.status(500).send('Server Error!');
+
+    const ordine = JSON.parse(JSON.stringify(results.rows));
+    if (ordine.length == 0) return response.status(404).send('Ordine non trovato!');
+
+    cercaCorriereById(request.body.id_corriere, decoded_token, (err, results) => {
+      if (err) return response.status(500).send('Server Error!');
+
+      const corriere = JSON.parse(JSON.stringify(results.rows));
+      if (corriere.length == 0) return response.status(404).send('Corriere non trovato!');
+
+      pool.query('UPDATE public.merci_ordine SET id_corriere = $1 WHERE id = $2',
+        [request.body.id_corriere, id_merce_ordine], (error, results) => {
+          if (error) throw error
+          return response.status(200).send({ 'esito': "1" });
+        })
+    });
+  });
+}
+
 module.exports = {
   creaCliente,
   creaDipendente,
@@ -415,5 +454,6 @@ module.exports = {
   getOrdiniDittaTrasporto,
   getMerciOrdine,
   getMagazzini,
-  getDitteTrasporti
+  getDitteTrasporti,
+  aggiungiCorriere
 }

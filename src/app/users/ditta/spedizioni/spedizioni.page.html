@@ -5,26 +5,110 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
+  </ion-toolbar>
 
+  <ion-toolbar>
+    <ion-segment (ionChange)="segmentChanged($event)" value="consegnare">
+      <ion-segment-button value="consegnare">
+        <ion-label>Merci da consegnare</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="storico">
+        <ion-label>Storico Ordini</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-virtual-scroll [items]="ordini" approximateItemHeight="70px">
+  <div *ngIf="segment === 'consegnare'">
 
-    <ion-item *virtualItem="let ordine" (click)="apriDettagli(ordine)">
-      <ion-avatar slot="start">
-        <img src="../../../../../assets/box.png">
-      </ion-avatar>
+    <ion-virtual-scroll [items]="ordiniDaConsegnare">
 
-      <ion-label>
-        <h2 text-capitalize style="font-size:22px">Ordine #{{ordine.id}}</h2>
-        <h2>Data ordine: {{ordine.data_ordine}}</h2>
-        <h2>Stato: {{ordine.stato}}</h2>
-      </ion-label>
+      <ion-card *virtualItem="let ordine">
+        <ion-item class="item-background-color">
 
-      <ion-icon name="information-circle-outline" slot="end"></ion-icon>
-    </ion-item>
-  </ion-virtual-scroll>
+          <ion-avatar slot="start">
+            <img src="../../../../../assets/box.png">
+          </ion-avatar>
+
+          <ion-label>
+            <h2 text-capitalize style="font-size:22px">Ordine #{{ordine.id}}</h2>
+            <h2>Data ordine: {{ordine.data_ordine}}</h2>
+            <h2>Stato: {{ordine.stato}}</h2>
+            <h2>Tipo: {{ordine.tipo}}</h2>
+          </ion-label>
+
+          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+        </ion-item>
+
+        <ion-item>
+          <ion-virtual-scroll [items]="ordine.prodotti">
+            <ion-item *virtualItem="let prodotto" (click)="aggiungiCorriere(prodotto)">
+              <ion-avatar slot="start">
+                <img src="../../../../../assets/shopping-bag.png">
+              </ion-avatar>
+
+              <ion-label>
+                <h3 text-capitalize style="font-size:18px">{{prodotto.nome}}</h3>
+                <h3>Quantità: {{prodotto.quantita}}</h3>
+                <h3>ID Corriere: {{prodotto.id_corriere}}</h3>
+                <h3>Stato: {{prodotto.stato}}</h3>
+              </ion-label>
+            </ion-item>
+
+          </ion-virtual-scroll>
+        </ion-item>
+      </ion-card>
+
+
+    </ion-virtual-scroll>
+
+  </div>
+
+  <div *ngIf="segment === 'storico'">
+
+    <ion-virtual-scroll [items]="ordiniCompletati">
+
+      <ion-card *virtualItem="let ordine">
+        <ion-item class="item-background-color">
+
+          <ion-avatar slot="start">
+            <img src="../../../../../assets/box.png">
+          </ion-avatar>
+
+          <ion-label>
+            <h2 text-capitalize style="font-size:22px">Ordine #{{ordine.id}}</h2>
+            <h2>Data ordine: {{ordine.data_ordine}}</h2>
+            <h2>Stato: {{ordine.stato}}</h2>
+            <h2>Tipo: {{ordine.tipo}}</h2>
+          </ion-label>
+
+          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+        </ion-item>
+
+        <ion-item>
+          <ion-virtual-scroll [items]="ordine.prodotti">
+            <ion-item *virtualItem="let prodotto">
+              <ion-avatar slot="start">
+                <img src="../../../../../assets/shopping-bag.png">
+              </ion-avatar>
+
+              <ion-label>
+                <h3 text-capitalize style="font-size:18px">{{prodotto.nome}}</h3>
+                <h3>Quantità: {{prodotto.quantita}}</h3>
+                <h3>Prezzo acquisto: {{prodotto.prezzo_acquisto}}</h3>
+                <h3>ID Corriere: {{prodotto.id_corriere}}</h3>
+                <h3>Stato: {{prodotto.stato}}</h3>
+              </ion-label>
+            </ion-item>
+
+          </ion-virtual-scroll>
+        </ion-item>
+      </ion-card>
+
+
+    </ion-virtual-scroll>
+
+  </div>
 
 </ion-content>

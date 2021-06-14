@@ -330,6 +330,15 @@ app.put('/prodotto/:id', (req, res) => {
     }
 });
 
+app.put('/ditta-trasporto/ordine/merce/:id', (req, res) => {
+    const token = req.body.token_value;
+    if (verificaDittaTrasporto(token)) {
+        db.aggiungiCorriere(req, res, jwt.decode(token));
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
 app.post('/ordine', (req, res) => {
     if (verificaNegozio(req.body.token_value)) {
         db.creaOrdine(req, res);

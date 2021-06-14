@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
-import { DettagliOrdinePage } from '../modal/dettagli-ordine/dettagli-ordine.page';
+import { AggiungiCorrierePage } from '../modal/aggiungi-corriere/aggiungi-corriere.page';
 
 @Component({
   selector: 'app-spedizioni',
@@ -11,7 +11,10 @@ import { DettagliOrdinePage } from '../modal/dettagli-ordine/dettagli-ordine.pag
   styleUrls: ['./spedizioni.page.scss'],
 })
 export class SpedizioniPage implements OnInit {
+  public segment: string = "consegnare";
   ordini = [];
+  ordiniDaConsegnare = [];
+  ordiniCompletati = [];
 
   constructor(
     private http: HttpClient,
@@ -24,9 +27,17 @@ export class SpedizioniPage implements OnInit {
   ngOnInit() {
   }
 
+  segmentChanged(ev: any) {
+    this.segment = ev.detail.value;
+  }
+
   async loadOrdini() {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
+
+    this.ordini = [];
+    this.ordiniDaConsegnare = [];
+    this.ordiniCompletati = [];
 
     this.http.get('/spedizioni', { headers }).subscribe(
       async (res) => {
@@ -46,7 +57,7 @@ export class SpedizioniPage implements OnInit {
           var prodotti = res['results'];
           ordine[prodotti];
           ordine.prodotti = prodotti;
-          console.log("ordine: ", ordine);
+          this.dividiListaOridini();
         },
         async (res) => {
           this.errorManager.stampaErrore(res, 'Errore');
@@ -54,7 +65,46 @@ export class SpedizioniPage implements OnInit {
     });
   }
 
-  async apriDettagli() {
+  dividiListaOridini() {
+    this.ordini.forEach(ordine => {
+      var daConsegnare = false;
 
+      if (ordine.prodotti != undefined && ordine.prodotti != null)
+        for (let i = 0; i < ordine.prodotti.length; i++)
+          if (ordine.prodotti[i].id_corriere == null) daConsegnare = true;
+
+      if (daConsegnare) {
+        if (!this.ordiniDaConsegnare.includes(ordine))
+          this.ordiniDaConsegnare = [...this.ordiniDaConsegnare, ordine];
+      } else
+        if (!this.ordiniCompletati.includes(ordine))
+          this.ordiniCompletati = [...this.ordiniCompletati, ordine];
+    })
+  }
+
+  async aggiungiCorriere(prodotto) {
+    const modal = await this.modalController.create({
+      component: AggiungiCorrierePage,
+      componentProps: {
+        id: prodotto.id,
+        id_ordine: prodotto.id_ordine,
+        id_corriere: prodotto.id_corriere,
+        nome: prodotto.nome,
+        prezzo_acquisto: prodotto.prezzo_acquisto,
+        quantita: prodotto.quantita,
+        stato: prodotto.stato,
+      },
+      cssClass: 'fullheight'
+    });
+
+    modal.onDidDismiss().then((data) => {
+      const corriereAggiunto = data['data'];
+
+      if (corriereAggiunto) {
+        this.loadOrdini();
+      }
+    });
+
+    return await modal.present();
   }
 }

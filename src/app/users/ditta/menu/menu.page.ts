@@ -15,6 +15,11 @@ export class MenuPage implements OnInit {
       url: '/trasporti/home'
     },
     {
+      title: 'Dipendenti',
+      icon: 'people-outline',
+      url: '/trasporti/dipendenti'
+    },
+    {
       title: 'Spedizioni',
       icon: 'pricetags-outline',
       url: '/trasporti/spedizioni'

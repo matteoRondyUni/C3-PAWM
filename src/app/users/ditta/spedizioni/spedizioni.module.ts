@@ -8,13 +8,16 @@ import { SpedizioniPageRoutingModule } from './spedizioni-routing.module';
 
 import { SpedizioniPage } from './spedizioni.page';
 
+import { AggiungiCorrierePageModule } from '../modal/aggiungi-corriere/aggiungi-corriere.module'
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    SpedizioniPageRoutingModule
+    SpedizioniPageRoutingModule,
+    AggiungiCorrierePageModule
   ],
   declarations: [SpedizioniPage]
 })
-export class SpedizioniPageModule {}
+export class SpedizioniPageModule { }

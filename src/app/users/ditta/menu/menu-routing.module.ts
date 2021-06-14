@@ -16,6 +16,11 @@ const routes: Routes = [
     loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
   },
   {
+    path: 'dipendenti',
+    component: MenuPage,
+    loadChildren: () => import('../../attivita/dipendenti/dipendenti.module').then(m => m.DipendentiPageModule)
+  },
+  {
     path: 'spedizioni',
     component: MenuPage,
     loadChildren: () => import('../spedizioni/spedizioni.module').then(m => m.SpedizioniPageModule)
