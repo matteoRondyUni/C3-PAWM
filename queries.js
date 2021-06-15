@@ -37,6 +37,11 @@ const getUserById = (request, response) => {
   })
 }
 
+/**
+ * Crea un nuovo Cliente.
+ * @param {*} request 
+ * @param {*} response 
+ */
 const creaCliente = (request, response) => {
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
@@ -49,6 +54,11 @@ const creaCliente = (request, response) => {
     })
 }
 
+/**
+ * Crea un nuovo Dipendente.
+ * @param {*} request 
+ * @param {*} response 
+ */
 const creaDipendente = (request, response) => {
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
@@ -90,6 +100,11 @@ const creaDipendente = (request, response) => {
   });
 }
 
+/**
+ * Crea una nuova Attività.
+ * @param {*} request 
+ * @param {*} response 
+ */
 const creaAttivita = (request, response) => {
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
@@ -119,6 +134,13 @@ const updateUser = (request, response) => {
   )
 }
 
+/**
+ * Ricerca un Dipendente tramite il suo ID.
+ * @param {*} id Codice Identificativo del Dipendente
+ * @param {*} decoded_token JWT decodificato dell'Attività
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const cercaDipendenteById = (id, decoded_token, cb) => {
   var query;
   switch (decoded_token.tipo) {
@@ -137,6 +159,13 @@ const cercaDipendenteById = (id, decoded_token, cb) => {
   });
 }
 
+/**
+ * Ricerca un Prodotto tramite il suo ID.
+ * @param {*} id Codice Identificativo del Prodotto
+ * @param {*} decoded_token JWT decodificato del Negozio o del Commerciante
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const cercaProdottoById = (id, decoded_token, cb) => {
   var id_negozio;
 
@@ -148,20 +177,38 @@ const cercaProdottoById = (id, decoded_token, cb) => {
   });
 }
 
-//TODO commento
+/**
+ * Ricerca un Ordine tramite il suo ID.
+ * @param {*} id_ordine Codice Identificativo dell'Ordine
+ * @param {*} decoded_token JWT decodificato della Ditta di Trasporto
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const cercaOrdineById = (id_ordine, decoded_token, cb) => {
   pool.query('SELECT * FROM public.ordini WHERE id = $1 AND id_ditta = $2', [id_ordine, decoded_token.id], (error, results) => {
     cb(error, results);
   });
 }
 
-//TODO commento
+/**
+ * Ricerca un Corriere tramite il suo ID.
+ * @param {*} id_corriere Codice Identificativo del Corriere
+ * @param {*} decoded_token JWT decodificato della Ditta di Trasporto
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const cercaCorriereById = (id_corriere, decoded_token, cb) => {
   pool.query('SELECT * FROM public.corrieri WHERE id = $1 AND id_ditta = $2', [id_corriere, decoded_token.id], (error, results) => {
     cb(error, results);
   });
 }
 
+/**
+ * Elimina il Dipendente selezionato.
+ * @param {*} request Request con il parametro "id" del Dipendente da eliminare
+ * @param {*} response 
+ * @param {*} decoded_token JWT decodificato dell'Attività
+ */
 const eliminaDipendente = (request, response, decoded_token) => {
   const id = parseInt(request.params.id);
 
@@ -178,24 +225,43 @@ const eliminaDipendente = (request, response, decoded_token) => {
   });
 }
 
+/**
+ * Ricerca un Utente tramite la sua email.
+ * @param {*} email email dell'Utente
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const findUserByEmail = (email, cb) => {
   return pool.query('SELECT * FROM public.utenti WHERE email = $1', [email], (error, results) => {
     cb(error, results)
   });
 }
 
+/**
+ * Ricerca un'Attività tramite la sua email.
+ * @param {*} email email dell'Attività
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const findAttivitaByEmail = (email, cb) => {
   return pool.query('SELECT * FROM public.attivita WHERE email = $1', [email], (error, results) => {
     cb(error, results)
   });
 }
 
+/**
+ * Ricerca un Ordine tramite il suo Codice di Ritiro.
+ * @param {*} codice Codice di Ritiro
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const findOrdineByCodice = (codice, cb) => {
   return pool.query('SELECT * FROM public.ordini WHERE codice_ritiro = $1', [codice], (error, results) => {
     cb(error, results)
   });
 }
 
+//TODO da rivedere response
 const vendiProdotto = (prodotto, id_ordine, response) => {
   pool.query('INSERT INTO public.merci_ordine (id_prodotto, id_ordine, quantita, prezzo_acquisto, stato) VALUES ($1, $2, $3, $4, $5)',
     [prodotto.id, id_ordine, prodotto.quantita, prodotto.prezzo, "PAGATO"], (error, results) => {
@@ -247,6 +313,12 @@ const creaOrdine = (request, response) => {
   });
 }
 
+/**
+ * Ritorna la lista dei Dipendenti.
+ * @param {*} token JWT dell'Attività
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getDipendenti = (token, cb) => {
   const decoded_token = jwt.decode(token);
   var query;
@@ -275,7 +347,12 @@ const getCommercianteById = (id, cb) => {
     })
 }
 
-//TODO fare commento
+/**
+ * Ritorna l'Inventario di un Negozio.
+ * @param {*} token JWT del Negozio o del Commerciante
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getInventario = (token, cb) => {
   const decoded_token = jwt.decode(token);
   var idNegozio;
@@ -289,7 +366,12 @@ const getInventario = (token, cb) => {
     });
 }
 
-//TODO fare commento
+/**
+ * Ritorna la lista degli Ordini di un Negozio.
+ * @param {*} token JWT del Negozio o del Commerciante
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getOrdiniNegozio = (token, cb) => {
   const decoded_token = jwt.decode(token);
   var idNegozio;
@@ -303,7 +385,12 @@ const getOrdiniNegozio = (token, cb) => {
     });
 }
 
-//TODO fare commento
+/**
+ * Ritorna la lista degli Ordini di una Ditta di Trasporto.
+ * @param {*} token JWT della Ditta
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getOrdiniDittaTrasporto = (token, cb) => {
   const decoded_token = jwt.decode(token);
   var idDittaTrasporto = decoded_token.id;
@@ -343,7 +430,11 @@ const getMerciOrdine = (req, cb) => {
     });
 }
 
-//TODO fare commento
+/**
+ * Ritorna la lista dei Magazzini.
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getMagazzini = (cb) => {
   return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
     ["MAGAZZINO"], (error, results) => {
@@ -351,7 +442,11 @@ const getMagazzini = (cb) => {
     });
 }
 
-//TODO fare commento
+/**
+ * Ritorna la lista delle Ditte di Trasporto.
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getDitteTrasporti = (cb) => {
   return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
     ["DITTA_TRASPORTI"], (error, results) => {
@@ -375,7 +470,13 @@ const creaProdotto = (request, response) => {
     })
 }
 
-//TODO fare commento
+/**
+ * Elimina il prodotto dell'Inventario del Negozio.
+ * @param {*} request 
+ * @param {*} response
+ * @param {*} decoded_token JWT decodificato del Negozio
+ * @returns il risultato della query
+ */
 const eliminaProdotto = (request, response, decoded_token) => {
   const id = parseInt(request.params.id);
 
@@ -410,7 +511,14 @@ const modificaProdotto = (request, response, decoded_token) => {
   });
 }
 
-const aggiungiCorriere = async (request, response, decoded_token) => {
+/**
+ * Aggiunge il Corriere ad una Merce di un Ordine.
+ * @param {*} request 
+ * @param {*} response
+ * @param {*} decoded_token JWT decodificato della Ditta di Trasporto 
+ * @returns il risultato della query
+ */
+const aggiungiCorriere = (request, response, decoded_token) => {
   const id_merce_ordine = parseInt(request.params.id);
   const id_ordine = parseInt(request.body.id_ordine);
 
