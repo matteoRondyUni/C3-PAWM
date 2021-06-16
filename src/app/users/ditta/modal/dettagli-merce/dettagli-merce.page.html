@@ -23,34 +23,6 @@
         <h2 *ngIf="corriere.id!=null">Corriere: {{corriere.cognome}}, {{corriere.nome}}</h2>
       </ion-label>
 
-      <br>
-
-      <ion-button color="primary" expand="block" (click)="assegnaCorriere()">Assegna Corriere</ion-button>
-
-    </ion-card-content>
-
-  </ion-card>
-
-  <ion-card>
-
-    <ion-card-header>
-      <ion-card-title style="font-size:25px"><strong>Corrieri Disponibili:</strong></ion-card-title>
-    </ion-card-header>
-
-    <ion-card-content>
-      <ion-virtual-scroll [items]="dipendenti" approximateItemHeight="70px">
-        <ion-item *virtualItem="let dipendente" (click)="pickCorriere(dipendente)">
-          <ion-avatar slot="start">
-            <img src="../../../../../assets/user.png">
-          </ion-avatar>
-
-          <ion-label>
-            <h2 text-capitalize>{{dipendente.cognome}} {{dipendente.nome}}</h2>
-          </ion-label>
-
-          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
-        </ion-item>
-      </ion-virtual-scroll>
     </ion-card-content>
 
   </ion-card>

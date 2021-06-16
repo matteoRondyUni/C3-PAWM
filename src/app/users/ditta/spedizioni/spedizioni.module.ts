@@ -8,7 +8,8 @@ import { SpedizioniPageRoutingModule } from './spedizioni-routing.module';
 
 import { SpedizioniPage } from './spedizioni.page';
 
-import { AggiungiCorrierePageModule } from '../modal/aggiungi-corriere/aggiungi-corriere.module'
+import { AggiungiCorrierePageModule } from '../modal/aggiungi-corriere/aggiungi-corriere.module';
+import { DettagliMercePageModule } from '../modal/dettagli-merce/dettagli-merce.module';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { AggiungiCorrierePageModule } from '../modal/aggiungi-corriere/aggiungi-
     FormsModule,
     IonicModule,
     SpedizioniPageRoutingModule,
-    AggiungiCorrierePageModule
+    AggiungiCorrierePageModule,
+    DettagliMercePageModule
   ],
   declarations: [SpedizioniPage]
 })

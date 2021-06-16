@@ -69,7 +69,7 @@ const routes: Routes = [
   },
   {
     path: 'magazzino',
-    loadChildren: () => import('./users/magazzino/menu/menu.module').then( m => m.MenuPageModule)
+    loadChildren: () => import('./users/magazzino/menu/menu.module').then(m => m.MenuPageModule)
   }
 ];
 

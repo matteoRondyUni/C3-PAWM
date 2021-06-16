@@ -88,7 +88,7 @@
 
         <ion-item>
           <ion-virtual-scroll [items]="ordine.prodotti">
-            <ion-item *virtualItem="let prodotto">
+            <ion-item *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
               <ion-avatar slot="start">
                 <img src="../../../../../assets/shopping-bag.png">
               </ion-avatar>

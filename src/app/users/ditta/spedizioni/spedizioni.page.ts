@@ -4,6 +4,7 @@ import { ModalController } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
 import { AggiungiCorrierePage } from '../modal/aggiungi-corriere/aggiungi-corriere.page';
+import { DettagliMercePage } from '../modal/dettagli-merce/dettagli-merce.page';
 
 @Component({
   selector: 'app-spedizioni',
@@ -107,4 +108,23 @@ export class SpedizioniPage implements OnInit {
 
     return await modal.present();
   }
+
+  async apriDettagli(prodotto) {
+    const modal = await this.modalController.create({
+      component: DettagliMercePage,
+      componentProps: {
+        id: prodotto.id,
+        id_ordine: prodotto.id_ordine,
+        id_corriere: prodotto.id_corriere,
+        nome: prodotto.nome,
+        prezzo_acquisto: prodotto.prezzo_acquisto,
+        quantita: prodotto.quantita,
+        stato: prodotto.stato,
+      },
+      cssClass: 'fullheight'
+    });
+
+    return await modal.present();
+  }
+
 }
