@@ -191,19 +191,6 @@ const cercaOrdineById = (id_ordine, decoded_token, cb) => {
 }
 
 /**
- * Ricerca un Corriere tramite il suo ID.
- * @param {*} id_corriere Codice Identificativo del Corriere
- * @param {*} decoded_token JWT decodificato della Ditta di Trasporto
- * @param {*} cb Callback
- * @returns il risultato della query
- */
-const cercaCorriereById = (id_corriere, decoded_token, cb) => {
-  pool.query('SELECT * FROM public.corrieri WHERE id = $1 AND id_ditta = $2', [id_corriere, decoded_token.id], (error, results) => {
-    cb(error, results);
-  });
-}
-
-/**
  * Elimina il Dipendente selezionato.
  * @param {*} request Request con il parametro "id" del Dipendente da eliminare
  * @param {*} response 
@@ -339,10 +326,24 @@ const getDipendenti = (token, cb) => {
     cb(error, results)
   });
 }
+
 //TODO fare commento e riguardare l'inner join
-const getCommercianteById = (id, cb) => {
-  return pool.query('select * from public.commercianti inner join public.utenti on public.commercianti.id=public.utenti.id where public.utenti.id=$1',
-    [id], (error, results) => {
+const verificaDipendenteLogin = (id, tipo, cb) => {
+  var query;
+
+  switch (tipo) {
+    case 'COMMERCIANTE':
+      query = 'select * from public.commercianti inner join public.utenti on public.commercianti.id=public.utenti.id where public.utenti.id=$1';
+      break;
+    case 'CORRIERE':
+      query = 'select * from public.corrieri inner join public.utenti on public.corrieri.id=public.utenti.id where public.utenti.id=$1';
+      break;
+    case 'MAGAZZINIERE':
+      query = 'select * from public.magazzinieri inner join public.utenti on public.magazzinieri.id=public.utenti.id where public.utenti.id=$1';
+      break;
+  }
+
+  return pool.query(query,[id], (error, results) => {
       cb(error, results)
     })
 }
@@ -397,6 +398,25 @@ const getOrdiniDittaTrasporto = (token, cb) => {
 
   return pool.query('select id, id_negozio, id_magazzino, id_cliente, tipo, stato, data_ordine from public.ordini where id_ditta=$1 ORDER BY data_ordine DESC',
     [idDittaTrasporto], (error, results) => {
+      cb(error, results)
+    });
+}
+
+/**
+ * Ritorna la lista degli Ordini di un Magazzino.
+ * @param {*} token JWT del Magazzino o del Magazziniere
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
+ const getOrdiniMagazzino = (token, cb) => {
+  const decoded_token = jwt.decode(token);
+  var idMagazzino;
+
+  if (decoded_token.tipo == "MAGAZZINIERE") idMagazzino = decoded_token.idMagazzino
+  if (decoded_token.tipo == "MAGAZZINO") idMagazzino = decoded_token.id;
+
+  return pool.query('select id, id_negozio, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine from public.ordini where id_magazzino=$1 ORDER BY id DESC',
+    [idMagazzino], (error, results) => {
       cb(error, results)
     });
 }
@@ -528,7 +548,7 @@ const aggiungiCorriere = (request, response, decoded_token) => {
     const ordine = JSON.parse(JSON.stringify(results.rows));
     if (ordine.length == 0) return response.status(404).send('Ordine non trovato!');
 
-    cercaCorriereById(request.body.id_corriere, decoded_token, (err, results) => {
+    cercaDipendenteById(request.body.id_corriere, decoded_token, (err, results) => {
       if (err) return response.status(500).send('Server Error!');
 
       const corriere = JSON.parse(JSON.stringify(results.rows));
@@ -556,9 +576,10 @@ module.exports = {
   creaProdotto,
   eliminaProdotto,
   modificaProdotto,
-  getCommercianteById,
+  verificaDipendenteLogin,
   getInventario,
   getOrdiniNegozio,
+  getOrdiniMagazzino,
   getOrdiniDittaTrasporto,
   getMerciOrdine,
   getMagazzini,

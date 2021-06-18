@@ -13,24 +13,8 @@ export class OrdiniPage implements OnInit {
   public segment: string = "cerca";
   nessun_risultato = false;
   searchbar = document.querySelector('ion-searchbar');
-  ordini_attivi = [
-    {
-      'id': 1, 'data_ordine': '2021-06-11', 'stato': 'PAGATO', 'tipo': 'MAGAZZINO', 'codice_ritiro': 'abc123',
-      'merci': [
-        { 'id': 1, 'nome': 'Pizza', 'quantita': 8, 'stato': 'PAGATO' },
-        { 'id': 2, 'nome': 'Panino', 'quantita': 2, 'stato': 'PAGATO' },
-        { 'id': 3, 'nome': 'Lasagna', 'quantita': 21, 'stato': 'PAGATO' }
-      ]
-    },
-    {
-      'id': 2, 'data_ordine': '2021-06-09', 'stato': 'PAGATO', 'tipo': 'MAGAZZINO', 'codice_ritiro': '777dpg',
-      'merci': [
-        { 'id': 4, 'nome': 'Piadina', 'quantita': 300, 'stato': 'PAGATO' },
-        { 'id': 5, 'nome': 'Bruschetta', 'quantita': 15, 'stato': 'PAGATO' },
-        { 'id': 6, 'nome': 'Gelato', 'quantita': 3, 'stato': 'PAGATO' }
-      ]
-    }
-  ];
+  ordini = [];
+  ordini_attivi = [];
   ordini_ritirati = [];
   risultati_ricerca = [];
 
@@ -42,7 +26,6 @@ export class OrdiniPage implements OnInit {
     private modalController: ModalController,
     private loadingController: LoadingController,
   ) {
-    //this.searchbar.addEventListener('ionInput', this.handleInput);
     this.loadOrdini()
   }
 
@@ -67,8 +50,33 @@ export class OrdiniPage implements OnInit {
     if (!trovato) this.nessun_risultato = true;
   }
 
-  loadOrdini() {
+  async loadOrdini() {
+    const token_value = (await this.authService.getToken()).value;
+    const headers = { 'token': token_value };
 
+    this.http.get('/ordini', { headers }).subscribe(
+      async (res) => {
+        this.ordini = res['results'];
+        this.loadMerci(this.ordini, token_value);
+      },
+      async (res) => {
+        this.errorManager.stampaErrore(res, 'Errore');
+      });
+  }
+
+  loadMerci(ordini, token_value) {
+    ordini.forEach(ordine => {
+      const headers = { 'token': token_value };
+      this.http.get('/merci/' + ordine.id, { headers }).subscribe(
+        async (res) => {
+          var merci = res['results'];
+          ordine[merci];
+          ordine.merci = merci;
+        },
+        async (res) => {
+          this.errorManager.stampaErrore(res, 'Errore');
+        });
+    });
   }
 
   segnaComeRitirato(ordine) {

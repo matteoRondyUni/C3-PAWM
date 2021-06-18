@@ -46,10 +46,10 @@ function verificaNegozio(token) {
     }
 }
 
-function verificaAttivita(token) {
+function verificaMagazzino(token) {
     if (verificaJWT(token)) {
         tipo = (jwt.decode(token)).tipo;
-        return (tipo == "NEGOZIO" || tipo == "DITTA_TRASPORTI" || tipo == "MAGAZZINO");
+        return (tipo == "MAGAZZINO" || tipo == "MAGAZZINIERE");
     } else {
         return false;
     }
@@ -94,21 +94,31 @@ app.post('/login/utente', (req, res) => {
         if (!result) return res.status(401).send('Password non valida!');
 
         const expiresIn = 24 * 60 * 60;
-        //TODO fa finire lo switch
+
         switch (user[0].tipo) {
             case "CLIENTE":
                 const accessToken = jwt.sign({ id: user[0].id, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                 return res.status(200).send({ "accessToken": accessToken });
             case "COMMERCIANTE":
-                db.getCommercianteById(user[0].id, (err, results) => {
+                db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
                     const commerciante = JSON.parse(JSON.stringify(results.rows));
-                    const accessToken = jwt.sign({ id: commerciante[0].id, idNegozio: commerciante[0].id_negozio, tipo: "COMMERCIANTE" }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+                    const accessToken = jwt.sign({ id: commerciante[0].id, idNegozio: commerciante[0].id_negozio, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                     return res.status(200).send({ "accessToken": accessToken });
                 });
                 break;
             case "CORRIERE":
+                db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
+                    const corriere = JSON.parse(JSON.stringify(results.rows));
+                    const accessToken = jwt.sign({ id: corriere[0].id, idDitta: corriere[0].id_ditta, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+                    return res.status(200).send({ "accessToken": accessToken });
+                });
                 break;
             case "MAGAZZINIERE":
+                db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
+                    const magazziniere = JSON.parse(JSON.stringify(results.rows));
+                    const accessToken = jwt.sign({ id: magazziniere[0].id, idMagazzino: magazziniere[0].id_magazzino, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+                    return res.status(200).send({ "accessToken": accessToken });
+                });
                 break;
         }
     })
@@ -229,17 +239,31 @@ app.get('/ordini', (req, res) => {
 
     if (verificaNegozio(token)) {
         db.getOrdiniNegozio(token, (err, results) => {
-            // if (err) return res.status(500).send('Server error!');
-            if (err) {
-                console.log('err:', err)
-                return res.status(500).send('Server error!');
-            }
+            if (err) return res.status(500).send('Server error!');
 
             const ordini = JSON.parse(JSON.stringify(results.rows));
             const to_return = { 'results': ordini };
 
             return res.status(200).send(to_return);
         });
+    } else if (verificaMagazzino(token)) {
+        db.getOrdiniMagazzino(token, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const ordini = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': ordini };
+
+            return res.status(200).send(to_return);
+        });
+    } else if (verificaDittaTrasporto(token)) {
+        db.getOrdiniDittaTrasporto(token, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const ordini = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': ordini };
+
+            return res.status(200).send(to_return);
+        })
     } else {
         return res.status(401).send('JWT non valido!');
     }
@@ -285,23 +309,6 @@ app.get('/ditte-trasporti', (req, res) => {
 
         return res.status(200).send(to_return);
     })
-});
-
-app.get('/spedizioni', (req, res) => {
-    const token = req.headers.token;
-
-    if (verificaDittaTrasporto(token)) {
-        db.getOrdiniDittaTrasporto(token, (err, results) => {
-            if (err) return res.status(500).send('Server error!');
-
-            const ordini = JSON.parse(JSON.stringify(results.rows));
-            const to_return = { 'results': ordini };
-
-            return res.status(200).send(to_return);
-        })
-    } else {
-        return res.status(401).send('JWT non valido!');
-    }
 });
 
 app.post('/prodotto', (req, res) => {

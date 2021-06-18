@@ -40,7 +40,7 @@ export class SpedizioniPage implements OnInit {
     this.ordiniDaConsegnare = [];
     this.ordiniCompletati = [];
 
-    this.http.get('/spedizioni', { headers }).subscribe(
+    this.http.get('/ordini', { headers }).subscribe(
       async (res) => {
         this.ordini = res['results'];
         this.loadProdotti(this.ordini, token_value);
