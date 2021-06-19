@@ -437,28 +437,47 @@ const getOrdiniMagazzino = (token, cb) => {
 const getMerciOrdine = (req, cb) => {
   const decoded_token = jwt.decode(req.headers.token);
   var query;
+  var controlId;
 
-  query = 'select public.merci_ordine.id, public.merci_ordine.id_ordine, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
-
-  //TODO da finire
   switch (decoded_token.tipo) {
     case 'NEGOZIO':
-      // query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
+      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine' +
+        ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 AND public.prodotti.id_negozio=$2 ORDER BY public.prodotti.nome';
+      controlId = decoded_token.id;
       break;
     case 'COMMERCIANTE':
+      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine' +
+        ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 AND public.prodotti.id_negozio=$2 ORDER BY public.prodotti.nome';
+      controlId = decoded_token.idNegozio;
       break;
     case 'DITTA_TRASPORTI':
-      // query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
+      query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
+        ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
+        ' where id_ordine=$1 AND public.ordini.id_ditta=$2 ORDER BY public.prodotti.nome';
+      controlId = decoded_token.id;
       break;
     case 'MAGAZZINO':
-      // query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 ORDER BY public.prodotti.nome';
+      query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
+        ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
+        ' where id_ordine=$1 AND public.ordini.id_magazzino=$2 ORDER BY public.prodotti.nome';
+      controlId = decoded_token.id;
+      break;
+    case 'MAGAZZINIERE':
+      query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
+        ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
+        ' where id_ordine=$1 AND public.ordini.id_magazzino=$2 ORDER BY public.prodotti.nome';
+      controlId = decoded_token.idMagazzino;
       break;
     case 'CLIENTE':
+      query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
+        ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
+        ' where id_ordine=$1 AND public.ordini.id_cliente=$2 ORDER BY public.prodotti.nome';
+      controlId = decoded_token.id;
       break;
   }
 
-  const id = parseInt(req.params.id);
-  return pool.query(query, [id], (error, results) => {
+  const idOrdine = parseInt(req.params.id);
+  return pool.query(query, [idOrdine, controlId], (error, results) => {
     cb(error, results)
   });
 }
