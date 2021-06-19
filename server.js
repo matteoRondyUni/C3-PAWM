@@ -68,6 +68,18 @@ function verificaDittaTrasporto(token) {
 }
 
 /**
+ * Controlla che il JWT corrisponda ad un corriere
+ */
+function verificaCorriere(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "CORRIERE");
+    } else {
+        return false;
+    }
+}
+
+/**
  * REST - Elimina dipendente
  */
 app.delete('/dipendenti/:id', (req, res) => {
@@ -285,7 +297,25 @@ app.get('/merci/:id', (req, res) => {
     } else {
         return res.status(401).send('JWT non valido!');
     }
-})
+});
+
+//TODO commentare
+app.get('/corriere/consegna/merci', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaCorriere(token)) {
+        db.getMerciCorriere(req, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const merci = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': merci };
+
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
 
 //TODO controllare errori
 app.get('/magazzini', (req, res) => {
@@ -345,6 +375,15 @@ app.put('/ditta-trasporto/ordine/merce/:id', (req, res) => {
         return res.status(401).send('JWT non valido!');
     }
 });
+
+app.put('/merci/:id', (req, res) => {
+    const token = req.body.token_value;
+    if (verificaCorriere(token)) {
+        db.cambiaStatoMerce(req, res, jwt.decode(token));
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+})
 
 app.post('/ordine', (req, res) => {
     if (verificaNegozio(req.body.token_value)) {

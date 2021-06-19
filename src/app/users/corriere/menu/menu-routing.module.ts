@@ -15,6 +15,11 @@ const routes: Routes = [
     component: MenuPage,
     loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
   },
+  {
+    path: 'merci',
+    component: MenuPage,
+    loadChildren: () => import('../merci/merci.module').then(m => m.MerciPageModule)
+  }
 ];
 
 @NgModule({

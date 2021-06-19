@@ -13,6 +13,11 @@ export class MenuPage implements OnInit {
       title: 'Home',
       icon: 'home-outline',
       url: '/corriere/home'
+    },
+    {
+      title: 'Merci da consegnare',
+      icon: 'file-tray-stacked-outline',
+      url: '/corriere/merci'
     }
   ]
 

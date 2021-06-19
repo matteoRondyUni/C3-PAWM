@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Merci da Consegnare</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment (ionChange)="segmentChanged($event)" value="ritirate">
+      <ion-segment-button value="ritirate">
+        <ion-label>Merci da ritirare</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="transito">
+        <ion-label>Merci in transito</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+  <div *ngIf="segment === 'ritirate'">
+
+    <ion-virtual-scroll [items]="merciDaRitirare">
+
+      <ion-card *virtualItem="let merce" (click)="presentAlertConfirm(merce)">
+        <ion-item class="item-background-color">
+
+          <ion-avatar slot="start">
+            <img src="../../../../../assets/box.png">
+          </ion-avatar>
+
+          <ion-label>
+            <h2 text-capitalize style="font-size:22px">Merce #{{merce.id}}</h2>
+            <h2>Quantità: {{merce.quantita}}</h2>
+            <h2>Stato: {{merce.stato}}</h2>
+          </ion-label>
+
+          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+        </ion-item>
+      </ion-card>
+
+    </ion-virtual-scroll>
+  </div>
+
+  <div *ngIf="segment === 'transito'">
+
+    <ion-virtual-scroll [items]="merciInTransito">
+
+      <ion-card *virtualItem="let merce" (click)="presentAlertConfirm(merce)">
+        <ion-item class="item-background-color">
+
+          <ion-avatar slot="start">
+            <img src="../../../../../assets/box.png">
+          </ion-avatar>
+
+          <ion-label>
+            <h2 text-capitalize style="font-size:22px">Merce #{{merce.id}}</h2>
+            <h2>Quantità: {{merce.quantita}}</h2>
+            <h2>Stato: {{merce.stato}}</h2>
+          </ion-label>
+
+          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+        </ion-item>
+      </ion-card>
+
+    </ion-virtual-scroll>
+  </div>
+
+</ion-content>
