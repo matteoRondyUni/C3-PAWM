@@ -46,6 +46,9 @@ function verificaNegozio(token) {
     }
 }
 
+/**
+ * Controlla che il JWT corrisponda ad un magazzino o ad un magazziniere
+ */
 function verificaMagazzino(token) {
     if (verificaJWT(token)) {
         tipo = (jwt.decode(token)).tipo;
@@ -280,6 +283,15 @@ app.get('/ordini', (req, res) => {
         return res.status(401).send('JWT non valido!');
     }
 })
+
+app.put('/ordine/:id', (req, res) => {
+    const token = req.body.token_value;
+    if (verificaMagazzino(token)) {
+        return db.modificaOrdine(req, res, jwt.decode(token));
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
 
 //TODO controllare che l'id dell'Ordine passato sia collegato all'id del token
 app.get('/merci/:id', (req, res) => {

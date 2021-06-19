@@ -70,7 +70,15 @@ const routes: Routes = [
   {
     path: 'magazzino',
     loadChildren: () => import('./users/magazzino/menu/menu.module').then(m => m.MenuPageModule)
+  },
+  {
+    path: 'magazziniere',
+    loadChildren: () => import('./users/magazziniere/menu/menu.module').then( m => m.MenuPageModule)
+  },  {
+    path: 'impostazioni',
+    loadChildren: () => import('./users/attivita/impostazioni/impostazioni.module').then( m => m.ImpostazioniPageModule)
   }
+
 ];
 
 @NgModule({

@@ -180,12 +180,38 @@ const cercaProdottoById = (id, decoded_token, cb) => {
 /**
  * Ricerca un Ordine tramite il suo ID.
  * @param {*} id_ordine Codice Identificativo dell'Ordine
- * @param {*} decoded_token JWT decodificato della Ditta di Trasporto
+ * @param {*} decoded_token JWT decodificato del richiedente
  * @param {*} cb Callback
  * @returns il risultato della query
  */
 const cercaOrdineById = (id_ordine, decoded_token, cb) => {
-  pool.query('SELECT * FROM public.ordini WHERE id = $1 AND id_ditta = $2', [id_ordine, decoded_token.id], (error, results) => {
+  var query;
+  var id_owner;
+
+  switch (decoded_token.tipo) {
+    case 'NEGOZIO':
+      query = 'SELECT * FROM public.ordini WHERE id = $1 AND id_negozio = $2';
+      id_owner = decoded_token.id;
+      break;
+    case 'COMMERCIANTE':
+      query = 'SELECT * FROM public.ordini WHERE id = $1 AND id_negozio = $2';
+      id_owner = decoded_token.idNegozio;
+      break;
+    case 'DITTA_TRASPORTI':
+      query = 'SELECT * FROM public.ordini WHERE id = $1 AND id_ditta = $2';
+      id_owner = decoded_token.id;
+      break;
+    case 'MAGAZZINO':
+      query = 'SELECT * FROM public.ordini WHERE id = $1 AND id_magazzino = $2';
+      id_owner = decoded_token.id;
+      break;
+    case 'MAGAZZINIERE':
+      query = 'SELECT * FROM public.ordini WHERE id = $1 AND id_magazzino = $2';
+      id_owner = decoded_token.idMagazzino;
+      break;
+  }
+
+  pool.query(query, [id_ordine, id_owner], (error, results) => {
     cb(error, results);
   });
 }
@@ -433,6 +459,23 @@ const getOrdiniMagazzino = (token, cb) => {
     });
 }
 
+const modificaOrdine = (request, response, decoded_token) => {
+  const id = parseInt(request.params.id);
+
+  cercaOrdineById(id, decoded_token, (err, results) => {
+    if (err) return response.status(500).send('Server Error!');
+
+    const ordine = JSON.parse(JSON.stringify(results.rows));
+    if (ordine.length == 0) return response.status(404).send('Ordine non trovato!');
+
+    pool.query('UPDATE public.ordini SET stato = $1 WHERE id = $2',
+      ['RITIRATO', id], (error, results) => {
+        if (error) throw error
+        return response.status(200).send({ 'esito': "1" });
+      })
+  });
+}
+
 //TODO fare commento
 const getMerciOrdine = (req, cb) => {
   const decoded_token = jwt.decode(req.headers.token);
@@ -653,6 +696,7 @@ module.exports = {
   getDipendenti,
   creaProdotto,
   eliminaProdotto,
+  modificaOrdine,
   modificaProdotto,
   verificaDipendenteLogin,
   getInventario,

@@ -12,22 +12,12 @@ export class MenuPage implements OnInit {
     {
       title: 'Home',
       icon: 'home-outline',
-      url: '/magazzino/home'
-    },
-    {
-      title: 'Dipendenti',
-      icon: 'people-outline',
-      url: '/magazzino/dipendenti'
+      url: '/magazziniere/home'
     },
     {
       title: 'Ordini',
       icon: 'cart-outline',
-      url: '/magazzino/ordini'
-    },
-    {
-      title: 'Impostazioni',
-      icon: 'settings-outline',
-      url: '/magazzino/impostazioni'
+      url: '/magazziniere/ordini'
     }
   ];
 
@@ -36,10 +26,10 @@ export class MenuPage implements OnInit {
   constructor(private authService: AuthenticationService, private router: Router) {
     this.router.events.subscribe((event: RouterEvent) => {
       if (event.url != undefined) {
-        if (event.url == '/magazzino') {
-          this.selectedPath = '/magazzino/home';
-        } else if (event.url == '/magazzino/ordini/cronologia') {
-          this.selectedPath = '/magazzino/ordini';
+        if (event.url == '/magazziniere') {
+          this.selectedPath = '/magazziniere/home';
+        } else if (event.url == '/magazziniere/ordini/cronologia') {
+          this.selectedPath = '/magazziniere/ordini';
         } else {
           this.selectedPath = event.url;
         }

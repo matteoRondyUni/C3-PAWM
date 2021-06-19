@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
+import { map, switchMap } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
 
@@ -23,7 +24,6 @@ export class OrdiniPage implements OnInit {
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
     private alertController: AlertController,
-    private modalController: ModalController,
     private loadingController: LoadingController,
   ) {
     this.loadOrdini()
@@ -58,6 +58,7 @@ export class OrdiniPage implements OnInit {
       async (res) => {
         this.ordini = res['results'];
         this.loadMerci(this.ordini, token_value);
+        this.filtraOrdini();
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
@@ -79,13 +80,40 @@ export class OrdiniPage implements OnInit {
     });
   }
 
-  segnaComeRitirato(ordine) {
+  filtraOrdini() {
+    this.ordini_attivi = this.ordini.filter(ordine => {
+      if (ordine.stato != 'RITIRATO') return ordine;
+    });
+    this.ordini_ritirati = this.ordini.filter(ordine => {
+      if (ordine.stato === 'RITIRATO') return ordine;
+    });
+  }
+
+  async segnaComeRitirato(ordine) {
     this.risultati_ricerca = [];
+    const loading = await this.loadingController.create();
+    await loading.present();
 
-    const index = this.ordini_attivi.indexOf(ordine, 0);
-    if (index > -1) this.ordini_attivi.splice(index, 1);
-    this.ordini_attivi = [...this.ordini_attivi];
+    const token_value = (await this.authService.getToken()).value;
+    const to_send = { 'token_value': token_value };
 
-    this.ordini_ritirati = [...this.ordini_ritirati, ordine];
+    this.http.put('/ordine/' + ordine.id, to_send).pipe(
+      map((data: any) => data.esito),
+      switchMap(esito => { return esito; })).subscribe(
+        async (res) => {
+          const text = 'L\'ordine è stato contrassegnato come ritirato';
+          await loading.dismiss();
+          const alert = await this.alertController.create({
+            header: 'Ordine ritirato',
+            message: text,
+            buttons: ['OK'],
+          });
+          this.loadOrdini();
+          await alert.present();
+        },
+        async (res) => {
+          await loading.dismiss();
+          this.errorManager.stampaErrore(res, 'Modifica Fallita');
+        });
   }
 }

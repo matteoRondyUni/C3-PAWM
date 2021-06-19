@@ -35,11 +35,7 @@
       </ion-card-header>
 
       <ion-card-content>
-        <!-- <ion-searchbar showSearchButton searchIcon="search" animated cancel-button-icon
-          (search)="cercaOrdine($event.target.value)" placeholder="Inserisci il codice">
-        </ion-searchbar> -->
-
-        <ion-searchbar showcancelbutton="" (search)="cercaOrdine($event)" placeholder="Inserisci il codice">
+          <ion-searchbar showcancelbutton="" (search)="cercaOrdine($event)" placeholder="Inserisci il codice">
         </ion-searchbar>
 
         <br *ngIf="nessun_risultato === true">
@@ -113,13 +109,13 @@
           <ion-icon name="information-circle-outline" slot="end"></ion-icon>
         </ion-item>
 
-        <ion-item>
+        <ion-item lines="none" class="articoli-attivo">
           <h3 text-capitalize style="font-size:18px">Articoli:</h3>
         </ion-item>
 
-        <ion-item>
-          <ion-virtual-scroll [items]="ordine.merci">
-            <ion-item *virtualItem="let merce">
+        <ion-item class="articoli-attivo">
+          <ion-virtual-scroll [items]="ordine.merci" class="virtual-attivo">
+            <ion-item lines="full" *virtualItem="let merce" class="articoli-attivo">
               <ion-avatar slot="start">
                 <img src="../../../../../assets/shopping-bag.png">
               </ion-avatar>
@@ -143,7 +139,7 @@
     <ion-virtual-scroll [items]="ordini_ritirati">
 
       <ion-card *virtualItem="let ordine">
-        <ion-item lines="none" class="ordine-ritirato">
+        <ion-item lines="none">
 
           <ion-avatar slot="start">
             <img src="../../../../../assets/box.png">
@@ -160,13 +156,13 @@
           <ion-icon name="information-circle-outline" slot="end"></ion-icon>
         </ion-item>
 
-        <ion-item>
+        <ion-item lines="none">
           <h3 text-capitalize style="font-size:18px">Articoli:</h3>
         </ion-item>
 
         <ion-item>
           <ion-virtual-scroll [items]="ordine.merci">
-            <ion-item *virtualItem="let merce">
+            <ion-item lines="full" *virtualItem="let merce">
               <ion-avatar slot="start">
                 <img src="../../../../../assets/shopping-bag.png">
               </ion-avatar>
