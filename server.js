@@ -353,6 +353,35 @@ app.get('/ditte-trasporti', (req, res) => {
     })
 });
 
+//TODO commentare
+app.get('/info/utente', (req, res) => {
+    const token = req.headers.token;
+    if (verificaJWT(token)) {
+        db.getUserInfo(jwt.decode(token).id, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+            const info = JSON.parse(JSON.stringify(results.rows));
+            return res.status(200).send(info);
+        })
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
+//TODO commentare
+app.get('/info/attivita', (req, res) => {
+    const token = req.headers.token;
+    if (verificaAttivita(token)) {
+        db.getAttivitaInfo(jwt.decode(token).id, (err, results) => {
+            //TODO fare refactor con /info/utente
+            if (err) return res.status(500).send('Server error!');
+            const info = JSON.parse(JSON.stringify(results.rows));
+            return res.status(200).send(info);
+        })
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
 app.post('/prodotto', (req, res) => {
     if (verificaNegozio(req.body.token_value)) {
         db.creaProdotto(req, res);

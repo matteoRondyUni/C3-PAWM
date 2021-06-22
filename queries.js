@@ -684,6 +684,32 @@ const cambiaStatoMerce = (request, response, decoded_token) => {
   })
 }
 
+/**
+ * //TODO commentare
+ * @param {*} cb 
+ * @param {*} idUtente 
+ * @returns 
+ */
+const getUserInfo = (idUtente, cb) => {
+  return pool.query('select id, nome, cognome, email, telefono, indirizzo from public.utenti where id=$1',
+    [idUtente], (error, results) => {
+      cb(error, results)
+    });
+}
+
+/**
+ * //TODO commentare
+ * @param {*} cb 
+ * @param {*} idAttivita 
+ * @returns 
+ */
+const getAttivitaInfo = (idAttivita, cb) => {
+  return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
+    [idAttivita], (error, results) => {
+      cb(error, results)
+    });
+}
+
 module.exports = {
   creaCliente,
   creaDipendente,
@@ -708,5 +734,7 @@ module.exports = {
   getMagazzini,
   getDitteTrasporti,
   aggiungiCorriere,
-  cambiaStatoMerce
+  cambiaStatoMerce,
+  getUserInfo,
+  getAttivitaInfo
 }
