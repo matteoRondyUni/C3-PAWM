@@ -73,12 +73,8 @@ const routes: Routes = [
   },
   {
     path: 'magazziniere',
-    loadChildren: () => import('./users/magazziniere/menu/menu.module').then( m => m.MenuPageModule)
-  },  {
-    path: 'impostazioni',
-    loadChildren: () => import('./users/attivita/impostazioni/impostazioni.module').then( m => m.ImpostazioniPageModule)
+    loadChildren: () => import('./users/magazziniere/menu/menu.module').then(m => m.MenuPageModule)
   }
-
 ];
 
 @NgModule({

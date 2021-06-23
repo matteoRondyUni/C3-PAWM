@@ -24,6 +24,11 @@ const routes: Routes = [
     path: 'spedizioni',
     component: MenuPage,
     loadChildren: () => import('../spedizioni/spedizioni.module').then(m => m.SpedizioniPageModule)
+  },
+  {
+    path: 'impostazioni',
+    component: MenuPage,
+    loadChildren: () => import('../../attivita/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule)
   }
 ];
 

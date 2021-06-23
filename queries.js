@@ -160,6 +160,30 @@ const cercaDipendenteById = (id, decoded_token, cb) => {
 }
 
 /**
+ * Ricerca un'attività tramite il suo ID.
+ * @param {*} id Codice Identificativo dell'attività
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
+const cercaAttivitaById = (id, cb) => {
+  return pool.query('SELECT * FROM public.attivita WHERE id = $1', [id], (error, results) => {
+    cb(error, results)
+  });
+}
+
+/**
+ * Ricerca un utente tramite il suo ID.
+ * @param {*} id Codice Identificativo dell'utente
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
+const cercaUtenteById = (id, cb) => {
+  return pool.query('SELECT * FROM public.utenti WHERE id = $1', [id], (error, results) => {
+    cb(error, results)
+  });
+}
+
+/**
  * Ricerca un Prodotto tramite il suo ID.
  * @param {*} id Codice Identificativo del Prodotto
  * @param {*} decoded_token JWT decodificato del Negozio o del Commerciante
@@ -682,6 +706,83 @@ const modificaProdotto = (request, response, decoded_token) => {
   });
 }
 
+const modificaAttivita = (request, response) => {
+  const id = parseInt(request.params.id);
+
+  cercaAttivitaById(id, (err, results) => {
+    if (err) return response.status(500).send('Server Error!');
+
+    const attivita = JSON.parse(JSON.stringify(results.rows));
+    if (attivita.length == 0) return response.status(404).send('Attivita non trovata!');
+
+    pool.query('UPDATE public.attivita SET ragione_sociale = $1, email = $2, telefono = $3, indirizzo = $4 WHERE id = $5',
+      [request.body.ragione_sociale, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {
+        if (error) throw error
+        return response.status(200).send({ 'esito': "1" });
+      })
+  });
+}
+
+const modificaPassword = (request, response, decoded_token) => {
+  const id = parseInt(request.params.id);
+  var tipo;
+  switch (decoded_token.tipo) {
+    case 'DITTA_TRASPORTI':
+    case 'MAGAZZINO':
+    case 'NEGOZIO':
+      tipo = 'ATTIVITA'; break;
+    case 'CLIENTE':
+    case 'COMMERCIANTE':
+    case 'CORRIERE':
+    case 'MAGAZZINIERE':
+      tipo = 'UTENTE'; break;
+    default:
+      return response.status(400).send('Bad request!');
+  }
+
+  if (tipo === 'ATTIVITA') {
+    cercaAttivitaById(id, (err, results) => {
+      if (err) return response.status(500).send('Server Error!');
+
+      const risultati = JSON.parse(JSON.stringify(results.rows));
+      if (risultati.length == 0) return response.status(404).send('Attivita non trovata!');
+
+      const attivita = risultati[0];
+      const hash = bcrypt.hashSync(request.body.old_password + "secret", attivita.salt);
+
+      if (hash == attivita.password) {
+        const new_hash = bcrypt.hashSync(request.body.new_password + "secret", attivita.salt);
+
+        pool.query('UPDATE public.attivita SET password = $1 WHERE id = $2',
+          [new_hash, id], (error, results) => {
+            if (error) throw error
+            return response.status(200).send({ 'esito': "1" });
+          });
+      } else return response.status(401).send('La vecchia password non è corretta');
+    });
+  } else if (tipo == 'UTENTE') {
+    cercaUtenteById(id, (err, results) => {
+      if (err) return response.status(500).send('Server Error!');
+
+      const risultati = JSON.parse(JSON.stringify(results.rows));
+      if (risultati.length == 0) return response.status(404).send('Utente non trovato!');
+
+      const utente = risultati[0];
+      const hash = bcrypt.hashSync(request.body.old_password + "secret", utente.salt);
+
+      if (hash == utente.password) {
+        const new_hash = bcrypt.hashSync(request.body.new_password + "secret", utente.salt);
+
+        pool.query('UPDATE public.utenti SET password = $1 WHERE id = $2',
+          [new_hash, id], (error, results) => {
+            if (error) throw error
+            return response.status(200).send({ 'esito': "1" });
+          });
+      } else return response.status(401).send('La vecchia password non è corretta');
+    });
+  }
+}
+
 /**
  * Aggiunge il Corriere ad una Merce di un Ordine.
  * @param {*} request 
@@ -789,6 +890,8 @@ module.exports = {
   creaProdotto,
   eliminaProdotto,
   modificaOrdine,
+  modificaAttivita,
+  modificaPassword,
   modificaProdotto,
   verificaDipendenteLogin,
   getInventario,

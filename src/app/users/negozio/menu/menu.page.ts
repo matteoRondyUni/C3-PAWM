@@ -30,7 +30,11 @@ export class MenuPage implements OnInit {
       icon: 'cart-outline',
       url: '/negozio/ordini'
     },
-
+    {
+      title: 'Impostazioni',
+      icon: 'settings-outline',
+      url: '/magazzino/impostazioni'
+    }
   ]
 
   selectedPath = '';

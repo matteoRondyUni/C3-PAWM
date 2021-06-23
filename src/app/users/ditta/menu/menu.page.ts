@@ -23,6 +23,11 @@ export class MenuPage implements OnInit {
       title: 'Spedizioni',
       icon: 'pricetags-outline',
       url: '/trasporti/spedizioni'
+    },
+    {
+      title: 'Impostazioni',
+      icon: 'settings-outline',
+      url: '/magazzino/impostazioni'
     }
   ]
 

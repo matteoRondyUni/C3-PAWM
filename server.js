@@ -486,13 +486,22 @@ app.delete('/prodotto/:id', (req, res) => {
     }
 });
 
+app.put('/attivita/:id', (req, res) => {
+    const token = req.body.token_value;
+    if (verificaAttivita(token)) return db.modificaAttivita(req, res);
+    else return res.status(401).send('JWT non valido!');
+});
+
+app.put('/modifica/password/:id', (req, res) => {
+    const token = req.body.token_value;
+    if (verificaJWT(token)) return db.modificaPassword(req, res, jwt.decode(token));
+    else return res.status(401).send('JWT non valido!');
+});
+
 app.put('/prodotto/:id', (req, res) => {
     const token = req.body.token_value;
-    if (verificaNegozio(token)) {
-        return db.modificaProdotto(req, res, jwt.decode(token));
-    } else {
-        return res.status(401).send('JWT non valido!');
-    }
+    if (verificaNegozio(token)) return db.modificaProdotto(req, res, jwt.decode(token));
+    else return res.status(401).send('JWT non valido!');
 });
 
 app.put('/ditta-trasporto/ordine/merce/:id', (req, res) => {
