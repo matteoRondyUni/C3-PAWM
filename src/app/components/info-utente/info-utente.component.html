@@ -1,0 +1,17 @@
+<ion-card style="background-color: rgba(0, 0, 0, 0.6) !important;">
+
+  <ion-card-header>
+    <ion-card-title class="card-title">
+      <strong>Informazioni Account:</strong>
+    </ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <h2 *ngIf="utente.nome!=null">Nome: {{utente.nome}}</h2>
+    <h2 *ngIf="utente.cognome!=null">Cognome: {{utente.cognome}}</h2>
+    <h2 *ngIf="utente.email!=null">Email: {{utente.email}}</h2>
+    <h2 *ngIf="utente.telefono!=null">Telefono: {{utente.telefono}}</h2>
+    <h2 *ngIf="utente.telefono!=null">Indirizzo: {{utente.indirizzo}}</h2>
+  </ion-card-content>
+
+</ion-card>

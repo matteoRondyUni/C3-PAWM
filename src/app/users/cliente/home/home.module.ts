@@ -8,7 +8,7 @@ import { HomePageRoutingModule } from './home-routing.module';
 
 import { HomePage } from './home.page';
 
-import { ComponentsModule } from '../../../components/components.module';
+import { InfoUtenteModule } from 'src/app/components/info-utente/info-utente.component.module';
 
 @NgModule({
   imports: [
@@ -16,7 +16,7 @@ import { ComponentsModule } from '../../../components/components.module';
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    ComponentsModule
+    InfoUtenteModule
   ],
   declarations: [HomePage]
 })

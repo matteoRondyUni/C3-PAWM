@@ -83,6 +83,30 @@ function verificaCorriere(token) {
 }
 
 /**
+ * Controlla che il JWT corrisponda ad un cliente
+ */
+function verificaCliente(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "CLIENTE");
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Controlla che il JWT corrisponda ad un utente
+ */
+function verificaUtente(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "CLIENTE" || tipo == "CORRIERE" || tipo == "MAGAZZINIERE" || tipo == "COMMERCIANTE");
+    } else {
+        return false;
+    }
+}
+
+/**
  * REST - Elimina dipendente
  */
 app.delete('/dipendenti/:id', (req, res) => {
@@ -278,7 +302,16 @@ app.get('/ordini', (req, res) => {
             const to_return = { 'results': ordini };
 
             return res.status(200).send(to_return);
-        })
+        });
+    } else if (verificaCliente(token)) {
+        db.getOrdiniCliente(token, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const ordini = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': ordini };
+
+            return res.status(200).send(to_return);
+        });
     } else {
         return res.status(401).send('JWT non valido!');
     }
@@ -356,11 +389,14 @@ app.get('/ditte-trasporti', (req, res) => {
 //TODO commentare
 app.get('/info/utente', (req, res) => {
     const token = req.headers.token;
-    if (verificaJWT(token)) {
+    if (verificaUtente(token)) {
         db.getUserInfo(jwt.decode(token).id, (err, results) => {
             if (err) return res.status(500).send('Server error!');
+
             const info = JSON.parse(JSON.stringify(results.rows));
-            return res.status(200).send(info);
+            const to_return = { 'results': info };
+
+            return res.status(200).send(to_return);
         })
     } else {
         return res.status(401).send('JWT non valido!');
@@ -374,8 +410,11 @@ app.get('/info/attivita', (req, res) => {
         db.getAttivitaInfo(jwt.decode(token).id, (err, results) => {
             //TODO fare refactor con /info/utente
             if (err) return res.status(500).send('Server error!');
+
             const info = JSON.parse(JSON.stringify(results.rows));
-            return res.status(200).send(info);
+            const to_return = { 'results': info };
+
+            return res.status(200).send(to_return);
         })
     } else {
         return res.status(401).send('JWT non valido!');
