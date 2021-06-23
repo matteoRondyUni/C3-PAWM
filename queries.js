@@ -523,35 +523,35 @@ const getMerciOrdine = (req, cb) => {
 
   switch (decoded_token.tipo) {
     case 'NEGOZIO':
-      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine' +
+      query = 'select public.merci_ordine.id, public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine' +
         ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 AND public.prodotti.id_negozio=$2 ORDER BY public.prodotti.nome';
       controlId = decoded_token.id;
       break;
     case 'COMMERCIANTE':
-      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine' +
+      query = 'select public.merci_ordine.id, public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine' +
         ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 AND public.prodotti.id_negozio=$2 ORDER BY public.prodotti.nome';
       controlId = decoded_token.idNegozio;
       break;
     case 'DITTA_TRASPORTI':
-      query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
+      query = 'select public.merci_ordine.id, public.merci_ordine.id_ordine, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
         ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
         ' where id_ordine=$1 AND public.ordini.id_ditta=$2 ORDER BY public.prodotti.nome';
       controlId = decoded_token.id;
       break;
     case 'MAGAZZINO':
-      query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
+      query = 'select public.merci_ordine.id, public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
         ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
         ' where id_ordine=$1 AND public.ordini.id_magazzino=$2 ORDER BY public.prodotti.nome';
       controlId = decoded_token.id;
       break;
     case 'MAGAZZINIERE':
-      query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
+      query = 'select public.merci_ordine.id, public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
         ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
         ' where id_ordine=$1 AND public.ordini.id_magazzino=$2 ORDER BY public.prodotti.nome';
       controlId = decoded_token.idMagazzino;
       break;
     case 'CLIENTE':
-      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
+      query = 'select public.merci_ordine.id, public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
         ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
         ' where id_ordine=$1 AND public.ordini.id_cliente=$2 ORDER BY public.prodotti.nome';
       controlId = decoded_token.id;
@@ -792,7 +792,9 @@ const modificaPassword = (request, response, decoded_token) => {
  */
 const aggiungiCorriere = (request, response, decoded_token) => {
   const id_merce_ordine = parseInt(request.params.id);
-  const id_ordine = parseInt(request.body.id_ordine);
+  const id_ordine = request.body.id_ordine;
+  console.log('id_ordine:', id_ordine);
+
 
   cercaOrdineById(id_ordine, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
@@ -801,6 +803,7 @@ const aggiungiCorriere = (request, response, decoded_token) => {
     if (ordine.length == 0) return response.status(404).send('Ordine non trovato!');
 
     cercaDipendenteById(request.body.id_corriere, decoded_token, (err, results) => {
+      console.log('err:', err);
       if (err) return response.status(500).send('Server Error!');
 
       const corriere = JSON.parse(JSON.stringify(results.rows));

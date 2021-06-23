@@ -78,7 +78,7 @@ export class OrdiniPage implements OnInit {
     this.ordiniInTransito = this.ordini.filter(ordine => {
       var inTransito = false;
 
-      if (ordine.prodotti != undefined && ordine.prodotti != null)
+      if (ordine.prodotti != undefined && ordine.prodotti != null && ordine.stato != 'RITIRATO')
         for (let i = 0; i < ordine.prodotti.length; i++)
           if (ordine.prodotti[i].stato == 'IN_TRANSITO' || ordine.prodotti[i].stato == 'PAGATO') inTransito = true;
 
@@ -88,17 +88,14 @@ export class OrdiniPage implements OnInit {
 
   dividiOrdiniDaRitirare() {
     this.ordiniDaRitirare = this.ordini.filter(ordine => {
-      var inTransito = false;
-      var consegnato = false;
+      if (ordine.prodotti != undefined && ordine.prodotti != null && ordine.stato != 'RITIRATO') {
+        var consegnato = true;
 
-      if (ordine.prodotti != undefined && ordine.prodotti != null)
-        for (let i = 0; i < ordine.prodotti.length; i++) {
-          if (ordine.prodotti[i].stato == 'IN_TRANSITO') inTransito = true;
-          if (ordine.prodotti[i].stato == 'CONSEGNATO') consegnato = true;
-        }
+        for (let i = 0; i < ordine.prodotti.length; i++)
+          if (ordine.prodotti[i].stato != 'CONSEGNATO') consegnato = false;
 
-      if (!inTransito)
         if (consegnato) return ordine;
+      }
     });
   }
 
