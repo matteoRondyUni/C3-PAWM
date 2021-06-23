@@ -19,7 +19,12 @@ const routes: Routes = [
     path: 'promo',
     component: MenuPage,
     loadChildren: () => import('../promozioni/promozioni.module').then(m => m.PromozioniPageModule)
-  }
+  },
+  {
+    path: 'ordini',
+    component: MenuPage,
+    loadChildren: () => import('../ordini/ordini.module').then(m => m.OrdiniPageModule)
+  },
 ];
 
 @NgModule({

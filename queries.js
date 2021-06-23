@@ -459,6 +459,21 @@ const getOrdiniMagazzino = (token, cb) => {
     });
 }
 
+/**
+ * Ritorna la lista degli Ordini di un Cliente.
+ * @param {*} token JWT del Cliente
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
+const getOrdiniCliente = (token, cb) => {
+  const decoded_token = jwt.decode(token);
+
+  return pool.query('select id, id_negozio, id_magazzino, id_ditta, stato, codice_ritiro, data_ordine from public.ordini where id_cliente=$1 ORDER BY id DESC',
+    [decoded_token.id], (error, results) => {
+      cb(error, results)
+    });
+}
+
 const modificaOrdine = (request, response, decoded_token) => {
   const id = parseInt(request.params.id);
 
@@ -512,14 +527,14 @@ const getMerciOrdine = (req, cb) => {
       controlId = decoded_token.idMagazzino;
       break;
     case 'CLIENTE':
-      query = 'select public.merci_ordine.id, public.prodotti.nome, id_corriere, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
+      query = 'select public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
         ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
         ' where id_ordine=$1 AND public.ordini.id_cliente=$2 ORDER BY public.prodotti.nome';
       controlId = decoded_token.id;
       break;
   }
 
-  const idOrdine = parseInt(req.params.id);
+  const idOrdine = parseInt(req.params.idOrdine);
   return pool.query(query, [idOrdine, controlId], (error, results) => {
     cb(error, results)
   });
@@ -548,6 +563,19 @@ const getMagazzini = (cb) => {
 }
 
 /**
+ * Ritorna le informazioni del Magazzino.
+ * @param {*} idMagazzino ID del Magazzino
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
+const getMagazzino = (idMagazzino, cb) => {
+  return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
+    [idMagazzino], (error, results) => {
+      cb(error, results)
+    });
+}
+
+/**
  * Ritorna la lista delle Ditte di Trasporto.
  * @param {*} cb Callback
  * @returns il risultato della query
@@ -555,6 +583,44 @@ const getMagazzini = (cb) => {
 const getDitteTrasporti = (cb) => {
   return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
     ["DITTA_TRASPORTI"], (error, results) => {
+      cb(error, results)
+    });
+}
+
+/**
+ * Ritorna le informazioni della Ditta di Trasporti.
+ * @param {*} idDitta ID della Ditta
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
+const getDittaTrasporti = (idDitta, cb) => {
+  return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
+    [idDitta], (error, results) => {
+      cb(error, results)
+    });
+}
+
+/**
+ * Ritorna la lista dei Negozi.
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
+const getNegozi = (cb) => {
+  return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
+    ["NEGOZIO"], (error, results) => {
+      cb(error, results)
+    });
+}
+
+/**
+ * Ritorna le informazioni del Negozio.
+ * @param {*} idNegozio ID del Negozio
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
+const getNegozio = (idNegozio, cb) => {
+  return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
+    [idNegozio], (error, results) => {
       cb(error, results)
     });
 }
@@ -729,10 +795,15 @@ module.exports = {
   getOrdiniNegozio,
   getOrdiniMagazzino,
   getOrdiniDittaTrasporto,
+  getOrdiniCliente,
   getMerciOrdine,
   getMerciCorriere,
   getMagazzini,
+  getMagazzino,
   getDitteTrasporti,
+  getDittaTrasporti,
+  getNegozi,
+  getNegozio,
   aggiungiCorriere,
   cambiaStatoMerce,
   getUserInfo,

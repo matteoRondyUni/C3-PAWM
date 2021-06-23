@@ -327,7 +327,7 @@ app.put('/ordine/:id', (req, res) => {
 });
 
 //TODO controllare che l'id dell'Ordine passato sia collegato all'id del token
-app.get('/merci/:id', (req, res) => {
+app.get('/merci/:idOrdine', (req, res) => {
     const token = req.headers.token;
 
     if (verificaJWT(token)) {
@@ -375,12 +375,60 @@ app.get('/magazzini', (req, res) => {
 });
 
 //TODO controllare errori
+app.get('/magazzini/:id', (req, res) => {
+    db.getMagazzino(req.params.id, (err, results) => {
+        if (err) return res.status(500).send('Server error!');
+
+        const magazzino = JSON.parse(JSON.stringify(results.rows));
+        const to_return = { 'results': magazzino };
+
+        return res.status(200).send(to_return);
+    })
+});
+
+//TODO controllare errori
 app.get('/ditte-trasporti', (req, res) => {
     db.getDitteTrasporti((err, results) => {
         if (err) return res.status(500).send('Server error!');
 
         const ditte = JSON.parse(JSON.stringify(results.rows));
         const to_return = { 'results': ditte };
+
+        return res.status(200).send(to_return);
+    })
+});
+
+//TODO controllare errori
+app.get('/ditte-trasporti/:id', (req, res) => {
+    db.getDittaTrasporti(req.params.id, (err, results) => {
+        if (err) return res.status(500).send('Server error!');
+
+        const ditta = JSON.parse(JSON.stringify(results.rows));
+        const to_return = { 'results': ditta };
+
+        return res.status(200).send(to_return);
+    })
+});
+
+//TODO controllare errori
+app.get('/negozi', (req, res) => {
+    db.getNegozi((err, results) => {
+        if (err) return res.status(500).send('Server error!');
+
+        const negozi = JSON.parse(JSON.stringify(results.rows));
+        const to_return = { 'results': negozi };
+
+        return res.status(200).send(to_return);
+    })
+});
+
+//TODO controllare errori
+app.get('/negozi/:id', (req, res) => {
+    db.getNegozio(req.params.id, (err, results) => {
+        if (err) return res.status(500).send('Server error!');
+
+        const negozio = JSON.parse(JSON.stringify(results.rows));
+        const to_return = { 'results': negozio };
 
         return res.status(200).send(to_return);
     })
