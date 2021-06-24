@@ -21,7 +21,7 @@ export class MenuPage implements OnInit {
       url: '/cliente/promo'
     },
     {
-      title: 'Oridni',
+      title: 'Ordini',
       icon: 'pricetags-outline',
       url: '/cliente/ordini'
     }
