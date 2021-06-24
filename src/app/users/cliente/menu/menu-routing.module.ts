@@ -25,6 +25,11 @@ const routes: Routes = [
     component: MenuPage,
     loadChildren: () => import('../ordini/ordini.module').then(m => m.OrdiniPageModule)
   },
+  {
+    path: 'impostazioni',
+    component: MenuPage,
+    loadChildren: () => import('../../utenti/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule)
+  }
 ];
 
 @NgModule({

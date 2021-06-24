@@ -723,6 +723,23 @@ const modificaAttivita = (request, response) => {
   });
 }
 
+const modificaUtente = (request, response) => {
+  const id = parseInt(request.params.id);
+
+  cercaUtenteById(id, (err, results) => {
+    if (err) return response.status(500).send('Server Error!');
+
+    const attivita = JSON.parse(JSON.stringify(results.rows));
+    if (attivita.length == 0) return response.status(404).send('Utente non trovato!');
+
+    pool.query('UPDATE public.utenti SET nome = $1, cognome = $2, email = $3, telefono = $4, indirizzo = $5 WHERE id = $6',
+      [request.body.nome, request.body.cognome, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {
+        if (error) throw error
+        return response.status(200).send({ 'esito': "1" });
+      })
+  });
+}
+
 const modificaPassword = (request, response, decoded_token) => {
   const id = parseInt(request.params.id);
   var tipo;
@@ -894,6 +911,7 @@ module.exports = {
   eliminaProdotto,
   modificaOrdine,
   modificaAttivita,
+  modificaUtente,
   modificaPassword,
   modificaProdotto,
   verificaDipendenteLogin,

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
@@ -15,7 +15,7 @@ export class ImpostazioniPage implements OnInit {
   public segment: string = "profilo";
   dati: FormGroup;
   passwords: FormGroup;
-  attivita = { 'id': null, 'ragione_sociale': null, 'email': null, 'telefono': null, 'indirizzo': null };
+  user = { 'id': null, 'nome': null, 'cognome': null, 'email': null, 'telefono': null, 'indirizzo': null };
 
   constructor(
     private fb: FormBuilder,
@@ -42,10 +42,11 @@ export class ImpostazioniPage implements OnInit {
 
   riempiForm() {
     this.dati = this.fb.group({
-      ragione_sociale: [this.attivita.ragione_sociale, [Validators.required]],
-      email: [this.attivita.email, [Validators.required, Validators.email]],
-      telefono: [this.attivita.telefono, [Validators.required]],
-      indirizzo: [this.attivita.indirizzo, [Validators.required]],
+      nome: [this.user.nome, [Validators.required]],
+      cognome: [this.user.cognome, [Validators.required]],
+      email: [this.user.email, [Validators.required, Validators.email]],
+      telefono: [this.user.telefono, [Validators.required]],
+      indirizzo: [this.user.indirizzo, [Validators.required]],
     });
   }
 
@@ -55,10 +56,10 @@ export class ImpostazioniPage implements OnInit {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
 
-    this.http.get('/info/attivita', { headers }).subscribe(
+    this.http.get('/info/utente', { headers }).subscribe(
       async (res) => {
         const tmp = await res['results'];
-        this.attivita = tmp[0];
+        this.user = tmp[0];
         this.riempiForm();
         await loading.dismiss();
       },
@@ -74,14 +75,15 @@ export class ImpostazioniPage implements OnInit {
 
     const token_value = (await this.authService.getToken()).value;
     const to_send = {
-      'ragione_sociale': this.dati.value.ragione_sociale,
+      'nome': this.dati.value.nome,
+      'cognome': this.dati.value.cognome,
       'email': this.dati.value.email,
       'telefono': this.dati.value.telefono,
       'indirizzo': this.dati.value.indirizzo,
       'token_value': token_value
     }
 
-    this.http.put('/attivita/' + this.attivita.id, to_send).pipe(
+    this.http.put('/utente/' + this.user.id, to_send).pipe(
       map((data: any) => data.esito),
       switchMap(esito => { return esito; })).subscribe(
         async (res) => {
@@ -113,7 +115,7 @@ export class ImpostazioniPage implements OnInit {
       'token_value': token_value
     }
 
-    this.http.put('/modifica/password/' + this.attivita.id, to_send).pipe(
+    this.http.put('/modifica/password/' + this.user.id, to_send).pipe(
       map((data: any) => data.esito),
       switchMap(esito => { return esito; })).subscribe(
         async (res) => {

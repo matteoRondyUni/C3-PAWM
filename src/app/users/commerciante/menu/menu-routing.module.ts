@@ -25,6 +25,11 @@ const routes: Routes = [
     component: MenuPage,
     loadChildren: () => import('../../negozio/inventario/inventario.module').then(m => m.InventarioPageModule)
   },
+  {
+    path: 'impostazioni',
+    component: MenuPage,
+    loadChildren: () => import('../../utenti/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule)
+  }
 ];
 
 @NgModule({

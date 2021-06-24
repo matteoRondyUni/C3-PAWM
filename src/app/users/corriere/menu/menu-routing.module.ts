@@ -19,6 +19,11 @@ const routes: Routes = [
     path: 'merci',
     component: MenuPage,
     loadChildren: () => import('../merci/merci.module').then(m => m.MerciPageModule)
+  },
+  {
+    path: 'impostazioni',
+    component: MenuPage,
+    loadChildren: () => import('../../utenti/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule)
   }
 ];
 

@@ -24,6 +24,11 @@ export class MenuPage implements OnInit {
       title: 'Ordini',
       icon: 'pricetags-outline',
       url: '/cliente/ordini'
+    },
+    {
+      title: 'Impostazioni',
+      icon: 'settings-outline',
+      url: '/cliente/impostazioni'
     }
   ]
 

@@ -1,0 +1,102 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Impostazioni</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+
+  <ion-toolbar>
+
+    <ion-segment (ionChange)="segmentChanged($event)" value="profilo">
+      <ion-segment-button value="profilo">
+        <ion-label>Profilo</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="preferenze">
+        <ion-label>Preferenze</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="segment === 'profilo'">
+    <form (ngSubmit)="aggiornaProfilo()" [formGroup]="dati">
+      <ion-card>
+        <br>
+        <br>
+
+        <ion-card-header>
+          <img src="../../../../assets/user.png" class="center">
+        </ion-card-header>
+
+        <ion-card-content>
+          <h3 class="center-text" style="color:rgb(216, 68, 97);">DATI PROFILO</h3>
+
+          <ion-item lines="full">
+            <ion-label position="floating">Nome</ion-label>
+            <ion-input type="name" name="nome" formControlName="nome" required></ion-input>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label position="floating">Cognome</ion-label>
+            <ion-input type="family-name" name="cognome" formControlName="cognome" required></ion-input>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label position="floating">Indirizzo email</ion-label>
+            <ion-input type="email" name="email" formControlName="email" required></ion-input>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label position="floating">Numero di telefono</ion-label>
+            <ion-input type="tel" name="telefono" formControlName="telefono" required></ion-input>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label position="floating">Indirizzo</ion-label>
+            <ion-input type="street-address" name="indirizzo" formControlName="indirizzo" required></ion-input>
+          </ion-item>
+
+          <br>
+          <ion-buttons>
+            <ion-button type="submit" color="primary" expand="block" class="center-button">SALVA MODIFICHE</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    </form>
+
+    <form (ngSubmit)="aggiornaPassword()" [formGroup]="passwords">
+      <ion-card>
+        <ion-card-content>
+          <br>
+          <h3 class="center-text" style="color:rgb(216, 68, 97);">AGGIORNA PASSWORD</h3>
+
+          <ion-item lines="full">
+            <ion-label position="floating">Vecchia password</ion-label>
+            <ion-input type="password" name="old_password" formControlName="old_password" required></ion-input>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label position="floating">Nuova password</ion-label>
+            <ion-input type="password" name="new_password" formControlName="new_password" required></ion-input>
+          </ion-item>
+
+          <br>
+          <ion-buttons>
+            <ion-button type="submit" color="primary" expand="block" class="center-button">SALVA MODIFICHE</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+
+      </ion-card>
+    </form>
+  </div>
+
+  <div *ngIf="segment === 'preferenze'">
+    <br><br>
+    <h3 class="center-text" style="color:rgb(216, 68, 97); font-size:15px;">NON ANCORA IMPLEMENTATO</h3>
+  </div>
+</ion-content>

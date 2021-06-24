@@ -492,6 +492,12 @@ app.put('/attivita/:id', (req, res) => {
     else return res.status(401).send('JWT non valido!');
 });
 
+app.put('/utente/:id', (req, res) => {
+    const token = req.body.token_value;
+    if (verificaUtente(token)) return db.modificaUtente(req, res);
+    else return res.status(401).send('JWT non valido!');
+});
+
 app.put('/modifica/password/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaJWT(token)) return db.modificaPassword(req, res, jwt.decode(token));

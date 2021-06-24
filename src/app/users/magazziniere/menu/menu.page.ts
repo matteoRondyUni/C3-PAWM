@@ -18,6 +18,11 @@ export class MenuPage implements OnInit {
       title: 'Ordini',
       icon: 'cart-outline',
       url: '/magazziniere/ordini'
+    },
+    {
+      title: 'Impostazioni',
+      icon: 'settings-outline',
+      url: '/magazziniere/impostazioni'
     }
   ];
 
