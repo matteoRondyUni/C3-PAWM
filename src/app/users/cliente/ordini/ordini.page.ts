@@ -19,7 +19,7 @@ export class OrdiniPage implements OnInit {
     private http: HttpClient,
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService) {
-    this.loadOrdini();
+    this.loadOrdini(null);
   }
 
   ngOnInit() {
@@ -29,7 +29,24 @@ export class OrdiniPage implements OnInit {
     this.segment = ev.detail.value;
   }
 
-  async loadOrdini() {
+  /**
+   * Inizia il Reload degli Ordini.
+   * @param event 
+   */
+  reloadOrdini(event) {
+    this.loadOrdini(event)
+  }
+
+  /**
+   * Termina il Reload degli Ordini.
+   * @param event 
+   */
+  completaReload(event) {
+    if (event != null)
+      event.target.complete();
+  }
+
+  async loadOrdini(event) {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
 
@@ -41,18 +58,17 @@ export class OrdiniPage implements OnInit {
     this.http.get('/ordini', { headers }).subscribe(
       async (res) => {
         this.ordini = res['results'];
-        this.loadProdotti(this.ordini, token_value);
-        this.loadInfoMagazzino();
-        this.loadInfoDitta();
-        this.loadInfoNegozio();
+        this.loadProdotti(this.ordini, token_value, event);
+        this.loadInfoOrdine();
         console.log(this.ordini);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
+        this.completaReload(event);
       });
   }
 
-  loadProdotti(ordini, token_value) {
+  loadProdotti(ordini, token_value, event) {
     ordini.forEach(ordine => {
       const headers = { 'token': token_value };
       this.http.get('/merci/' + ordine.id, { headers }).subscribe(
@@ -61,9 +77,11 @@ export class OrdiniPage implements OnInit {
           ordine[prodotti];
           ordine.prodotti = prodotti;
           this.dividiListaOridini();
+          this.completaReload(event);
         },
         async (res) => {
           this.errorManager.stampaErrore(res, 'Errore');
+          this.completaReload(event);
         });
     });
   }
@@ -105,6 +123,18 @@ export class OrdiniPage implements OnInit {
     });
   }
 
+  /**
+   * Carica le Informazioni dell'Ordine.
+   */
+  loadInfoOrdine() {
+    this.loadInfoMagazzino();
+    this.loadInfoDitta();
+    this.loadInfoNegozio();
+  }
+
+  /**
+   * Carica le informazioni del Magazzino collegato all'Ordine.
+   */
   loadInfoMagazzino() {
     this.ordini.forEach(ordine => {
       this.http.get('/magazzini/' + ordine.id_magazzino).subscribe(
@@ -118,6 +148,9 @@ export class OrdiniPage implements OnInit {
     })
   }
 
+  /**
+   * Carica le informazioni della Ditta di Trasporti collegata all'Ordine.
+   */
   loadInfoDitta() {
     this.ordini.forEach(ordine => {
       this.http.get('/ditte-trasporti/' + ordine.id_ditta).subscribe(
@@ -131,6 +164,9 @@ export class OrdiniPage implements OnInit {
     })
   }
 
+  /**
+   * Carica le informazioni del Negozio collegato all'Ordine.
+   */
   loadInfoNegozio() {
     this.ordini.forEach(ordine => {
       this.http.get('/negozi/' + ordine.id_negozio).subscribe(
