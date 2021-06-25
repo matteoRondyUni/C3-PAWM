@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager.service';
 import { CreaProdottoPage } from '../modal/crea-prodotto/crea-prodotto.page';
 import { DettagliProdottoPage } from '../modal/dettagli-prodotto/dettagli-prodotto.page';
 
@@ -18,23 +19,34 @@ export class InventarioPage implements OnInit {
     private http: HttpClient,
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
+    private reloadManager: ReloadManagerService,
     private modalController: ModalController) {
-    this.loadInventario();
+    this.loadInventario(null);
   }
 
   ngOnInit() {
   }
 
-  async loadInventario() {
+  /**
+   * Inizia il Reload.
+   * @param event 
+   */
+  startReload(event) {
+    this.loadInventario(event);
+  }
+
+  async loadInventario(event) {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
 
     this.http.get('/inventario', { headers }).subscribe(
       async (res) => {
         this.inventario = res['results'];
+        this.reloadManager.completaReload(event);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
+        this.reloadManager.completaReload(event);
       });
   }
 
@@ -61,9 +73,7 @@ export class InventarioPage implements OnInit {
     modal.onDidDismiss().then((data) => {
       const creato = data['data'];
 
-      if (creato) {
-        this.loadInventario();
-      }
+      if (creato) this.loadInventario(null);
     });
 
     return await modal.present();
@@ -84,9 +94,7 @@ export class InventarioPage implements OnInit {
     modal.onDidDismiss().then((data) => {
       const eliminato = data['data'];
 
-      if (eliminato) {
-        this.loadInventario();
-      }
+      if (eliminato) this.loadInventario(null);
     });
 
     return await modal.present();

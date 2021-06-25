@@ -25,6 +25,10 @@
 </ion-header>
 
 <ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="startReload($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <div *ngIf="segment === 'cerca'">
     <ion-card>
       <br>
@@ -35,7 +39,7 @@
       </ion-card-header>
 
       <ion-card-content>
-          <ion-searchbar showcancelbutton="" (search)="cercaOrdine($event)" placeholder="Inserisci il codice">
+        <ion-searchbar showcancelbutton="" (search)="cercaOrdine($event)" placeholder="Inserisci il codice">
         </ion-searchbar>
 
         <br *ngIf="nessun_risultato === true">

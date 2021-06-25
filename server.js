@@ -331,7 +331,7 @@ app.get('/merci/:idOrdine', (req, res) => {
     const token = req.headers.token;
 
     if (verificaJWT(token)) {
-        db.getMerciOrdine(req, (err, results) => {
+        db.getMerciOrdine(req.params.idOrdine, req, (err, results) => {
             if (err) return res.status(500).send('Server error!');
 
             const prodotti = JSON.parse(JSON.stringify(results.rows));

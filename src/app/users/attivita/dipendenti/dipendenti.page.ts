@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager.service';
 import { ModalController } from '@ionic/angular';
 
 import { CreaDipendentePage } from '../modal/crea-dipendente/crea-dipendente.page';
@@ -19,11 +20,20 @@ export class DipendentiPage implements OnInit {
     private http: HttpClient,
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
-    private modalController: ModalController) {
-    this.loadDipendenti();
+    private modalController: ModalController,
+    private reloadManager: ReloadManagerService) {
+    this.loadDipendenti(null);
   }
 
   ngOnInit() {
+  }
+
+  /**
+   * Inizia il Reload.
+   * @param event 
+   */
+  startReload(event) {
+    this.loadDipendenti(event)
   }
 
   //TODO eliminare
@@ -31,16 +41,18 @@ export class DipendentiPage implements OnInit {
     document.getElementById("mySidenav").style.width = "250px";
   }
 
-  async loadDipendenti() {
+  async loadDipendenti(event) {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
 
     this.http.get('/dipendenti', { headers }).subscribe(
       async (res) => {
         this.dipendenti = res['results'];
+        this.reloadManager.completaReload(event);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
+        this.reloadManager.completaReload(event);
       });
   }
 
@@ -68,7 +80,7 @@ export class DipendentiPage implements OnInit {
       const creato = data['data'];
 
       if (creato) {
-        this.loadDipendenti();
+        this.loadDipendenti(null);
       }
     });
 
@@ -93,7 +105,7 @@ export class DipendentiPage implements OnInit {
       const eliminato = data['data'];
 
       if (eliminato) {
-        this.loadDipendenti();
+        this.loadDipendenti(null);
       }
     });
 

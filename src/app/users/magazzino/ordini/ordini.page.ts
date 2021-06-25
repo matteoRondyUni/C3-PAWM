@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AlertController, LoadingController } from '@ionic/angular';
+import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager.service';
 
 @Component({
   selector: 'app-ordini',
@@ -23,10 +25,11 @@ export class OrdiniPage implements OnInit {
     private http: HttpClient,
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
+    private reloadManager: ReloadManagerService,
     private alertController: AlertController,
     private loadingController: LoadingController,
   ) {
-    this.loadOrdini()
+    this.loadOrdini(null)
   }
 
   ngOnInit() {
@@ -34,6 +37,14 @@ export class OrdiniPage implements OnInit {
 
   segmentChanged(ev: any) {
     this.segment = ev.detail.value;
+  }
+
+  /**
+   * Inizia il Reload.
+   * @param event 
+   */
+  startReload(event) {
+    this.loadOrdini(event);
   }
 
   cercaOrdine(event) {
@@ -50,34 +61,39 @@ export class OrdiniPage implements OnInit {
     if (!trovato) this.nessun_risultato = true;
   }
 
-  async loadOrdini() {
+  async loadOrdini(event) {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
 
     this.http.get('/ordini', { headers }).subscribe(
       async (res) => {
         this.ordini = res['results'];
-        this.loadMerci(this.ordini, token_value);
+        this.loadMerci(this.ordini, token_value, event);
         this.filtraOrdini();
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
+        this.reloadManager.completaReload(event);
       });
   }
 
-  loadMerci(ordini, token_value) {
-    ordini.forEach(ordine => {
+  async loadMerci(ordini, token_value, event) {
+    await ordini.forEach(ordine => {
       const headers = { 'token': token_value };
       this.http.get('/merci/' + ordine.id, { headers }).subscribe(
         async (res) => {
           var merci = res['results'];
           ordine[merci];
           ordine.merci = merci;
+
+          if (this.reloadManager.controlMerciOrdine(this.ordini))
+            this.reloadManager.completaReload(event);
         },
         async (res) => {
           this.errorManager.stampaErrore(res, 'Errore');
+          this.reloadManager.completaReload(event);
         });
-    });
+    })
   }
 
   filtraOrdini() {
@@ -108,7 +124,7 @@ export class OrdiniPage implements OnInit {
             message: text,
             buttons: ['OK'],
           });
-          this.loadOrdini();
+          this.loadOrdini(null);
           await alert.present();
         },
         async (res) => {

@@ -22,6 +22,9 @@
 
 <ion-content>
   <div *ngIf="segment === 'ritirate'">
+    <ion-refresher slot="fixed" (ionRefresh)="startReload($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
     <ion-virtual-scroll [items]="merciDaRitirare">
 

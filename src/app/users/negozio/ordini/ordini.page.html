@@ -22,6 +22,10 @@
 </ion-header>
 
 <ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="startReload($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <form (ngSubmit)="creaOrdine()" [formGroup]="ordine" *ngIf="segment === 'crea'">
     <ion-card>
       <br>
@@ -95,6 +99,7 @@
   </form>
 
   <div *ngIf="segment === 'cronologia'">
+
     <ion-virtual-scroll [items]="ordini">
 
       <ion-card *virtualItem="let ordine">
@@ -107,6 +112,8 @@
           <ion-label>
             <h2 text-capitalize style="font-size:22px">Ordine #{{ordine.id}}</h2>
             <h2>Data ordine: {{ordine.data_ordine.substring(0, 10)}}</h2>
+            <h2>Magazzino: {{ordine.magazzino_nome}}</h2>
+            <h2>Ditta di Trasporto: {{ordine.ditta_nome}}</h2>
             <h2>Stato: {{ordine.stato}}</h2>
             <h2>Tipo: {{ordine.tipo}}</h2>
           </ion-label>

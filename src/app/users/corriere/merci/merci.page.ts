@@ -4,6 +4,7 @@ import { AlertController, LoadingController } from '@ionic/angular';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager.service';
 
 @Component({
   selector: 'app-merci',
@@ -21,8 +22,9 @@ export class MerciPage implements OnInit {
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
     private loadingController: LoadingController,
-    private alertController: AlertController) {
-    this.loadMerci();
+    private alertController: AlertController,
+    private reloadManager: ReloadManagerService) {
+    this.loadMerci(null);
   }
 
   ngOnInit() {
@@ -32,7 +34,15 @@ export class MerciPage implements OnInit {
     this.segment = ev.detail.value;
   }
 
-  async loadMerci() {
+  /**
+   * Inizia il Reload.
+   * @param event 
+   */
+  startReload(event) {
+    this.loadMerci(event)
+  }
+
+  async loadMerci(event) {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
 
@@ -44,9 +54,11 @@ export class MerciPage implements OnInit {
       async (res) => {
         this.merci = res['results'];
         this.dividiLista();
+        this.reloadManager.completaReload(event);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
+        this.reloadManager.completaReload(event);
       });
   }
 
@@ -118,7 +130,7 @@ export class MerciPage implements OnInit {
             message: text,
             buttons: ['OK'],
           });
-          this.loadMerci();
+          this.loadMerci(null);
           await alert.present();
         },
         async (res) => {

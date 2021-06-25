@@ -20,7 +20,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="reloadOrdini($event)">
+  <ion-refresher slot="fixed" (ionRefresh)="startReload($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
@@ -49,16 +49,16 @@
         </ion-item>
 
         <ion-item>
-          <ion-virtual-scroll [items]="ordine.prodotti">
-            <ion-item *virtualItem="let prodotto">
+          <ion-virtual-scroll [items]="ordine.merci">
+            <ion-item *virtualItem="let merce">
               <ion-avatar slot="start">
                 <img src="../../../../../assets/shopping-bag.png">
               </ion-avatar>
 
               <ion-label>
-                <h3 text-capitalize style="font-size:18px">{{prodotto.nome}}</h3>
-                <h3>Quantità: {{prodotto.quantita}}</h3>
-                <h3>Stato: {{prodotto.stato}}</h3>
+                <h3 text-capitalize style="font-size:18px">{{merce.nome}}</h3>
+                <h3>Quantità: {{merce.quantita}}</h3>
+                <h3>Stato: {{merce.stato}}</h3>
               </ion-label>
             </ion-item>
 
@@ -94,17 +94,17 @@
         </ion-item>
 
         <ion-item>
-          <ion-virtual-scroll [items]="ordine.prodotti">
-            <ion-item *virtualItem="let prodotto">
+          <ion-virtual-scroll [items]="ordine.merci">
+            <ion-item *virtualItem="let merce">
               <ion-avatar slot="start">
                 <img src="../../../../../assets/shopping-bag.png">
               </ion-avatar>
 
               <ion-label>
-                <h3 text-capitalize style="font-size:18px">{{prodotto.nome}}</h3>
-                <h3>Quantità: {{prodotto.quantita}}</h3>
-                <h3>Prezzo acquisto: {{prodotto.prezzo_acquisto}}</h3>
-                <h3>Stato: {{prodotto.stato}}</h3>
+                <h3 text-capitalize style="font-size:18px">{{merce.nome}}</h3>
+                <h3>Quantità: {{merce.quantita}}</h3>
+                <h3>Prezzo acquisto: {{merce.prezzo_acquisto}}</h3>
+                <h3>Stato: {{merce.stato}}</h3>
               </ion-label>
             </ion-item>
 
@@ -140,17 +140,17 @@
         </ion-item>
 
         <ion-item>
-          <ion-virtual-scroll [items]="ordine.prodotti">
-            <ion-item *virtualItem="let prodotto">
+          <ion-virtual-scroll [items]="ordine.merci">
+            <ion-item *virtualItem="let merce">
               <ion-avatar slot="start">
                 <img src="../../../../../assets/shopping-bag.png">
               </ion-avatar>
 
               <ion-label>
-                <h3 text-capitalize style="font-size:18px">{{prodotto.nome}}</h3>
-                <h3>Quantità: {{prodotto.quantita}}</h3>
-                <h3>Prezzo acquisto: {{prodotto.prezzo_acquisto}}</h3>
-                <h3>Stato: {{prodotto.stato}}</h3>
+                <h3 text-capitalize style="font-size:18px">{{merce.nome}}</h3>
+                <h3>Quantità: {{merce.quantita}}</h3>
+                <h3>Prezzo acquisto: {{merce.prezzo_acquisto}}</h3>
+                <h3>Stato: {{merce.stato}}</h3>
               </ion-label>
             </ion-item>
 

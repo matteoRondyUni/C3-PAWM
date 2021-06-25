@@ -442,7 +442,7 @@ const getOrdiniNegozio = (token, cb) => {
   if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
 
-  return pool.query('select id, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine from public.ordini where id_negozio=$1 ORDER BY id DESC',
+  return pool.query('select id, id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine from public.ordini where id_negozio=$1 ORDER BY id DESC',
     [idNegozio], (error, results) => {
       cb(error, results)
     });
@@ -516,7 +516,7 @@ const modificaOrdine = (request, response, decoded_token) => {
 }
 
 //TODO fare commento
-const getMerciOrdine = (req, cb) => {
+const getMerciOrdine = (idOrdine, req, cb) => {
   const decoded_token = jwt.decode(req.headers.token);
   var query;
   var controlId;
@@ -557,8 +557,8 @@ const getMerciOrdine = (req, cb) => {
       controlId = decoded_token.id;
       break;
   }
-
-  const idOrdine = parseInt(req.params.idOrdine);
+  // TODO da controllare
+  // const idOrdine = parseInt(req.params.idOrdine);
   return pool.query(query, [idOrdine, controlId], (error, results) => {
     cb(error, results)
   });

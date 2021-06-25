@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager.service';
 import { AggiungiCorrierePage } from '../modal/aggiungi-corriere/aggiungi-corriere.page';
 import { DettagliMercePage } from '../modal/dettagli-merce/dettagli-merce.page';
 
@@ -21,8 +22,9 @@ export class SpedizioniPage implements OnInit {
     private http: HttpClient,
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
+    private reloadManager: ReloadManagerService,
     private modalController: ModalController) {
-    this.loadOrdini();
+    this.loadOrdini(null);
   }
 
   ngOnInit() {
@@ -32,7 +34,15 @@ export class SpedizioniPage implements OnInit {
     this.segment = ev.detail.value;
   }
 
-  async loadOrdini() {
+  /**
+   * Inizia il Reload.
+   * @param event 
+   */
+  startReload(event) {
+    this.loadOrdini(event)
+  }
+
+  async loadOrdini(event) {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
 
@@ -43,25 +53,30 @@ export class SpedizioniPage implements OnInit {
     this.http.get('/ordini', { headers }).subscribe(
       async (res) => {
         this.ordini = res['results'];
-        this.loadProdotti(this.ordini, token_value);
+        this.loadMerci(this.ordini, token_value, event);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
+        this.reloadManager.completaReload(event);
       });
   }
 
-  loadProdotti(ordini, token_value) {
-    ordini.forEach(ordine => {
+  async loadMerci(ordini, token_value, event) {
+    await ordini.forEach(ordine => {
       const headers = { 'token': token_value };
       this.http.get('/merci/' + ordine.id, { headers }).subscribe(
         async (res) => {
-          var prodotti = res['results'];
-          ordine[prodotti];
-          ordine.prodotti = prodotti;
+          var merci = res['results'];
+          ordine[merci];
+          ordine.merci = merci;
           this.dividiListaOridini();
+
+          if (this.reloadManager.controlMerciOrdine(this.ordini))
+            this.reloadManager.completaReload(event);
         },
         async (res) => {
           this.errorManager.stampaErrore(res, 'Errore');
+          this.reloadManager.completaReload(event);
         });
     });
   }
@@ -70,9 +85,9 @@ export class SpedizioniPage implements OnInit {
     this.ordini.forEach(ordine => {
       var daConsegnare = false;
 
-      if (ordine.prodotti != undefined && ordine.prodotti != null)
-        for (let i = 0; i < ordine.prodotti.length; i++)
-          if (ordine.prodotti[i].id_corriere == null) daConsegnare = true;
+      if (ordine.merci != undefined && ordine.merci != null)
+        for (let i = 0; i < ordine.merci.length; i++)
+          if (ordine.merci[i].id_corriere == null) daConsegnare = true;
 
       if (daConsegnare) {
         if (!this.ordiniDaConsegnare.includes(ordine))
@@ -102,7 +117,7 @@ export class SpedizioniPage implements OnInit {
       const corriereAggiunto = data['data'];
 
       if (corriereAggiunto) {
-        this.loadOrdini();
+        this.loadOrdini(null);
       }
     });
 

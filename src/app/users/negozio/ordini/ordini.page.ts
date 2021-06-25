@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { AuthenticationService } from '../../../services/authentication.service';
 import { ErrorManagerService } from '../../../services/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager.service';
+import { InfoOrdineLoaderService } from 'src/app/services/info-ordine-loader.service';
 import { map, switchMap } from 'rxjs/operators';
 import { PickDittaPage } from '../modal/pick-ditta/pick-ditta.page';
 import { PickMagazzinoPage } from '../modal/pick-magazzino/pick-magazzino.page';
@@ -28,11 +30,13 @@ export class OrdiniPage implements OnInit {
     private http: HttpClient,
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
+    private reloadManager: ReloadManagerService,
+    private infoOrdineLoader: InfoOrdineLoaderService,
     private alertController: AlertController,
     private modalController: ModalController,
-    private loadingController: LoadingController,
+    private loadingController: LoadingController
   ) {
-    this.loadOrdini()
+    this.loadOrdini(null);
   }
 
   ngOnInit() {
@@ -44,6 +48,14 @@ export class OrdiniPage implements OnInit {
 
   segmentChanged(ev: any) {
     this.segment = ev.detail.value;
+  }
+
+  /**
+   * Inizia il Reload.
+   * @param event 
+   */
+  startReload(event) {
+    this.loadOrdini(event);
   }
 
   async pickMagazzini() {
@@ -130,7 +142,7 @@ export class OrdiniPage implements OnInit {
             buttons: ['OK'],
           });
           await alert.present();
-          this.loadOrdini();
+          this.loadOrdini(null);
         },
         async (res) => {
           await loading.dismiss();
@@ -138,31 +150,39 @@ export class OrdiniPage implements OnInit {
         });
   }
 
-  async loadOrdini() {
+  async loadOrdini(event) {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
+
+    this.ordini = [];
 
     this.http.get('/ordini', { headers }).subscribe(
       async (res) => {
         this.ordini = res['results'];
-        this.loadMerci(this.ordini, token_value);
+        this.loadMerci(token_value, event);
+        this.infoOrdineLoader.loadInfoOrdine(this.ordini);
+        console.log(this.ordini);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
+        this.reloadManager.completaReload(event);
       });
   }
 
-  loadMerci(ordini, token_value) {
-    ordini.forEach(ordine => {
+  loadMerci(token_value, event) {
+    this.ordini.forEach(ordine => {
       const headers = { 'token': token_value };
       this.http.get('/merci/' + ordine.id, { headers }).subscribe(
         async (res) => {
           var merci = res['results'];
-          ordine[merci];
-          ordine.merci = merci;
+          ordine.merci = [...merci];
+
+          if (this.reloadManager.controlMerciOrdine(this.ordini))
+            this.reloadManager.completaReload(event);
         },
         async (res) => {
           this.errorManager.stampaErrore(res, 'Errore');
+          this.reloadManager.completaReload(event);
         });
     });
   }
