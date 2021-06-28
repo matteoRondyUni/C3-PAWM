@@ -21,12 +21,13 @@
 </ion-header>
 
 <ion-content>
-  <div *ngIf="segment === 'ritirate'">
-    <ion-refresher slot="fixed" (ionRefresh)="startReload($event)">
-      <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
+  <ion-refresher slot="fixed" (ionRefresh)="startReload($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
+  <div *ngIf="segment === 'ritirate'">
     <ion-virtual-scroll [items]="merciDaRitirare">
+
 
       <ion-card *virtualItem="let merce" (click)="presentAlertConfirm(merce)">
         <ion-item class="item-background-color">
@@ -38,6 +39,7 @@
           <ion-label>
             <h2 text-capitalize style="font-size:22px">Merce #{{merce.id}}</h2>
             <h2>Quantità: {{merce.quantita}}</h2>
+            <h2>Indirizzo: {{merce.indirizzo}}</h2>
             <h2>Stato: {{merce.stato}}</h2>
           </ion-label>
 
@@ -49,7 +51,6 @@
   </div>
 
   <div *ngIf="segment === 'transito'">
-
     <ion-virtual-scroll [items]="merciInTransito">
 
       <ion-card *virtualItem="let merce" (click)="presentAlertConfirm(merce)">
@@ -62,6 +63,7 @@
           <ion-label>
             <h2 text-capitalize style="font-size:22px">Merce #{{merce.id}}</h2>
             <h2>Quantità: {{merce.quantita}}</h2>
+            <h2>Indirizzo: {{merce.indirizzo}}</h2>
             <h2>Stato: {{merce.stato}}</h2>
           </ion-label>
 

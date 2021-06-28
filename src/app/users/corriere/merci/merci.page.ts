@@ -53,7 +53,9 @@ export class MerciPage implements OnInit {
     this.http.get('/corriere/consegna/merci', { headers }).subscribe(
       async (res) => {
         this.merci = res['results'];
+        console.log(this.merci);
         this.dividiLista();
+        this.caricaIndirizzoMerce();
         this.reloadManager.completaReload(event);
       },
       async (res) => {
@@ -137,6 +139,32 @@ export class MerciPage implements OnInit {
           await loading.dismiss();
           this.errorManager.stampaErrore(res, 'Modifica Fallita');
         });
+  }
+
+  async caricaIndirizzoMerce() {
+    const token_value = (await this.authService.getToken()).value;
+    const headers = { 'token': token_value };
+    this.merci.forEach(merce => {
+      if (merce.id_magazzino == null) {
+        this.http.get('/corriere/merce/' + merce.id + '/indirizzo/cliente', { headers }).subscribe(
+          async (res) => {
+            var info = res['results'];
+            merce.indirizzo = info[0].indirizzo;
+          },
+          async (res) => {
+            this.errorManager.stampaErrore(res, 'Errore');
+          });
+      } else {
+        this.http.get('/magazzini/' + merce.id_magazzino).subscribe(
+          async (res) => {
+            var info = res['results'];
+            merce.indirizzo = info[0].indirizzo;
+          },
+          async (res) => {
+            this.errorManager.stampaErrore(res, 'Errore');
+          });
+      }
+    })
   }
 
 }

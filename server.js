@@ -362,6 +362,24 @@ app.get('/corriere/consegna/merci', (req, res) => {
     }
 });
 
+//TODO commentare
+app.get('/corriere/merce/:idMerce/indirizzo/cliente', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaCorriere(token)) {
+        db.getIndirizzoCliente(req, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const info = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': info };
+
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
 //TODO controllare errori
 app.get('/magazzini', (req, res) => {
     db.getMagazzini((err, results) => {

@@ -568,10 +568,25 @@ const getMerciOrdine = (idOrdine, req, cb) => {
 const getMerciCorriere = (req, cb) => {
   const decoded_token = jwt.decode(req.headers.token);
 
-  return pool.query('select id, quantita, stato from public.merci_ordine where id_corriere=$1 and stato<>$2', [decoded_token.id, "CONSEGNATO"], (error, results) => {
-    cb(error, results)
-  });
+  return pool.query('select public.merci_ordine.id, id_cliente, id_magazzino, quantita, public.merci_ordine.stato' +
+    ' from public.merci_ordine inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
+    ' where id_corriere=$1 and public.merci_ordine.stato<>$2', [decoded_token.id, "CONSEGNATO"], (error, results) => {
+      cb(error, results)
+    });
+}
 
+//TODO commentare
+const getIndirizzoCliente = (req, cb) => {
+  var idMerce = req.params.idMerce;
+  const decoded_token = jwt.decode(req.headers.token);
+
+  return pool.query('select public.utenti.indirizzo from (public.merci_ordine' +
+    ' inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id)' +
+    ' inner join public.utenti on public.ordini.id_cliente = public.utenti.id' +
+    ' where public.merci_ordine.id = $1 and public.ordini.id_magazzino IS null and public.merci_ordine.id_corriere = $2',
+    [idMerce, decoded_token.id], (error, results) => {
+      cb(error, results)
+    });
 }
 
 /**
@@ -931,5 +946,6 @@ module.exports = {
   aggiungiCorriere,
   cambiaStatoMerce,
   getUserInfo,
-  getAttivitaInfo
+  getAttivitaInfo,
+  getIndirizzoCliente
 }
