@@ -334,8 +334,8 @@ app.get('/merci/:idOrdine', (req, res) => {
         db.getMerciOrdine(req.params.idOrdine, req, (err, results) => {
             if (err) return res.status(500).send('Server error!');
 
-            const prodotti = JSON.parse(JSON.stringify(results.rows));
-            const to_return = { 'results': prodotti };
+            const merci = JSON.parse(JSON.stringify(results.rows));
+            const to_return = { 'results': merci };
 
             return res.status(200).send(to_return);
         });

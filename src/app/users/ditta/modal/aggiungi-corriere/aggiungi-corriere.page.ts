@@ -86,10 +86,10 @@ export class AggiungiCorrierePage implements OnInit {
       map((data: any) => data.esito),
       switchMap(esito => { return esito; })).subscribe(
         async (res) => {
-          const text = 'I dati del prodotto sono stati aggiornati';
+          const text = 'I dati della Merce sono stati aggiornati';
           await loading.dismiss();
           const alert = await this.alertController.create({
-            header: 'Prodotto modificato',
+            header: 'Merce modificata',
             message: text,
             buttons: ['OK'],
           });

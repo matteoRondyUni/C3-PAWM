@@ -98,17 +98,17 @@ export class SpedizioniPage implements OnInit {
     })
   }
 
-  async aggiungiCorriere(prodotto) {
+  async aggiungiCorriere(merce) {
     const modal = await this.modalController.create({
       component: AggiungiCorrierePage,
       componentProps: {
-        id: prodotto.id,
-        id_ordine: prodotto.id_ordine,
-        id_corriere: prodotto.id_corriere,
-        nome: prodotto.nome,
-        prezzo_acquisto: prodotto.prezzo_acquisto,
-        quantita: prodotto.quantita,
-        stato: prodotto.stato,
+        id: merce.id,
+        id_ordine: merce.id_ordine,
+        id_corriere: merce.id_corriere,
+        nome: merce.nome,
+        prezzo_acquisto: merce.prezzo_acquisto,
+        quantita: merce.quantita,
+        stato: merce.stato,
       },
       cssClass: 'fullheight'
     });
@@ -124,17 +124,17 @@ export class SpedizioniPage implements OnInit {
     return await modal.present();
   }
 
-  async apriDettagli(prodotto) {
+  async apriDettagli(merce) {
     const modal = await this.modalController.create({
       component: DettagliMercePage,
       componentProps: {
-        id: prodotto.id,
-        id_ordine: prodotto.id_ordine,
-        id_corriere: prodotto.id_corriere,
-        nome: prodotto.nome,
-        prezzo_acquisto: prodotto.prezzo_acquisto,
-        quantita: prodotto.quantita,
-        stato: prodotto.stato,
+        id: merce.id,
+        id_ordine: merce.id_ordine,
+        id_corriere: merce.id_corriere,
+        nome: merce.nome,
+        prezzo_acquisto: merce.prezzo_acquisto,
+        quantita: merce.quantita,
+        stato: merce.stato,
       },
       cssClass: 'fullheight'
     });
