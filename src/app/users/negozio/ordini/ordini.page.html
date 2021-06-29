@@ -51,7 +51,11 @@
         <ion-button color="primary" expand="block" (click)="pickMagazzini()"
           [class.button-disabled]="consegnaADomicilio">Scegli Magazzino</ion-button>
 
-        <ion-item lines="full">
+        <ion-item lines="full"  *ngIf='magazzino.id != null'>
+          <ion-avatar slot="start">
+            <img src="../../../../assets/warehouse.png">
+          </ion-avatar>
+
           <ion-label>
             <h2>{{magazzino.ragione_sociale}}</h2>
             <h3>{{magazzino.indirizzo}}</h3>
@@ -60,10 +64,13 @@
 
         <br>
 
-        <ion-button color="primary" expand="block" (click)="pickDitta()" [class.button-disabled]="consegnaADomicilio">
-          Scegli Ditta Trasporti</ion-button>
+        <ion-button color="primary" expand="block" (click)="pickDitta()">Scegli Ditta Trasporti</ion-button>
 
-        <ion-item lines="full">
+        <ion-item lines="full"  *ngIf='ditta.id != null'>
+          <ion-avatar slot="start">
+            <img src="../../../../assets/delivery-truck.png">
+          </ion-avatar>
+
           <ion-label>
             <h2>{{ditta.ragione_sociale}}</h2>
             <h3>{{ditta.indirizzo}}</h3>
@@ -71,14 +78,13 @@
         </ion-item>
 
         <br>
-        <br>
 
         <ion-button color="primary" expand="block" (click)="scegliProdotto()">Aggiungi Merce</ion-button>
 
         <ion-virtual-scroll [items]="prodotti" approximateItemHeight="70px">
           <ion-item *virtualItem="let prodotto">
             <ion-avatar slot="start">
-              <img src="../../../../../assets/box.png">
+              <img src="../../../../../assets/shopping-bag.png">
             </ion-avatar>
 
             <ion-label>
