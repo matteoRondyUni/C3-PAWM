@@ -25,14 +25,16 @@ export class InfoOrdineLoaderService {
    */
   loadInfoMagazzino(ordini) {
     ordini.forEach(ordine => {
-      this.http.get('/magazzini/' + ordine.id_magazzino).subscribe(
-        async (res) => {
-          var info = res['results'];
-          ordine.magazzino_nome = info[0].ragione_sociale;
-        },
-        async (res) => {
-          this.errorManager.stampaErrore(res, 'Errore');
-        });
+      if (ordine.id_magazzino != null) {
+        this.http.get('/magazzini/' + ordine.id_magazzino).subscribe(
+          async (res) => {
+            var info = res['results'];
+            ordine.magazzino_nome = info[0].ragione_sociale;
+          },
+          async (res) => {
+            this.errorManager.stampaErrore(res, 'Errore');
+          });
+      }
     })
   }
 
