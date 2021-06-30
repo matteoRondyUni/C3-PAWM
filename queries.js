@@ -327,39 +327,56 @@ const vendiProdotto = (prodotto, id_ordine, response) => {
 const creaOrdine = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   const codiceRitiro = generateCodiceRitiro();
-  var id_negozio, id_cliente;
+  var id_negozio, id_cliente, erroreDisponibilità = false;
 
   if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
 
-  findUserByEmail(request.body.email_cliente, (err, results) => {
-    if (err) return response.status(500).send('Server error!');
+  getInventario(request.body.token_value, (err, results) => {
+    if (err) return res.status(500).send('Server error!');
 
-    const cliente = JSON.parse(JSON.stringify(results.rows));
+    const inventario = JSON.parse(JSON.stringify(results.rows));
 
-    if (cliente.length == 1) {
-      id_cliente = cliente[0].id;
+    inventario.forEach(prodottoInventario => {
+      request.body.prodotti.forEach(prodotto => {
+        if (prodottoInventario.id == prodotto.id && prodottoInventario.disponibilita < prodotto.quantita) {
+          prodotto.disponibilita = prodottoInventario.disponibilita;
+          erroreDisponibilità = true;
+        }
+      })
+    });
 
-      pool.query('INSERT INTO public.ordini (id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-        [id_negozio, request.body.id_magazzino, id_cliente, request.body.id_ditta, request.body.tipo, "PAGATO", codiceRitiro],
-        (error, results) => {
-          if (error) throw error
+    findUserByEmail(request.body.email_cliente, (err, results) => {
+      if (erroreDisponibilità) return response.status(500).send("La Quantità supera la Disponibilità!")
+      if (err) return response.status(500).send('Server error!');
 
-          findOrdineByCodice(codiceRitiro, (err, results) => {
-            if (err) return response.status(500).send('Server error!');
+      const cliente = JSON.parse(JSON.stringify(results.rows));
 
-            const ordine = JSON.parse(JSON.stringify(results.rows));
+      if (cliente.length == 1) {
+        id_cliente = cliente[0].id;
 
-            if (ordine.length == 1) {
-              request.body.prodotti.forEach(prodotto => { vendiProdotto(prodotto, ordine[0].id, response); });
-              return response.status(200).send({ 'esito': "1" });
-            }
-            else return response.status(500).send("Server error!");
+        pool.query('INSERT INTO public.ordini (id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+          [id_negozio, request.body.id_magazzino, id_cliente, request.body.id_ditta, request.body.tipo, "PAGATO", codiceRitiro],
+          (error, results) => {
+            if (error) throw error
+
+            findOrdineByCodice(codiceRitiro, (err, results) => {
+              if (err) return response.status(500).send('Server error!');
+
+              const ordine = JSON.parse(JSON.stringify(results.rows));
+
+              if (ordine.length == 1) {
+                request.body.prodotti.forEach(prodotto => { vendiProdotto(prodotto, ordine[0].id, response); });
+                return response.status(200).send({ 'esito': "1" });
+              }
+              else return response.status(500).send("Server error!");
+            });
           });
-        });
-    }
-    else return response.status(500).send("Server error!");
-  });
+      }
+      else return response.status(500).send("Server error!");
+    });
+
+  })
 }
 
 /**
@@ -913,39 +930,39 @@ const getAttivitaInfo = (idAttivita, cb) => {
 }
 
 module.exports = {
-  creaCliente,
-  creaDipendente,
-  creaAttivita,
-  updateUser,
-  eliminaDipendente,
-  findUserByEmail,
-  findAttivitaByEmail,
-  creaOrdine,
-  getDipendenti,
-  creaProdotto,
-  eliminaProdotto,
-  modificaOrdine,
-  modificaAttivita,
-  modificaUtente,
-  modificaPassword,
-  modificaProdotto,
-  verificaDipendenteLogin,
-  getInventario,
-  getOrdiniNegozio,
-  getOrdiniMagazzino,
-  getOrdiniDittaTrasporto,
-  getOrdiniCliente,
-  getMerciOrdine,
-  getMerciCorriere,
-  getMagazzini,
-  getMagazzino,
-  getDitteTrasporti,
-  getDittaTrasporti,
-  getNegozi,
-  getNegozio,
   aggiungiCorriere,
   cambiaStatoMerce,
-  getUserInfo,
+  creaAttivita,
+  creaCliente,
+  creaDipendente,
+  creaOrdine,
+  creaProdotto,
+  eliminaDipendente,
+  eliminaProdotto,
+  findAttivitaByEmail,
+  findUserByEmail,
   getAttivitaInfo,
-  getIndirizzoCliente
+  getDipendenti,
+  getDittaTrasporti,
+  getDitteTrasporti,
+  getIndirizzoCliente,
+  getInventario,
+  getMagazzini,
+  getMagazzino,
+  getMerciCorriere,
+  getMerciOrdine,
+  getNegozi,
+  getNegozio,
+  getOrdiniCliente,
+  getOrdiniDittaTrasporto,
+  getOrdiniMagazzino,
+  getOrdiniNegozio,
+  getUserInfo,
+  modificaAttivita,
+  modificaOrdine,
+  modificaPassword,
+  modificaProdotto,
+  modificaUtente,
+  updateUser,
+  verificaDipendenteLogin
 }
