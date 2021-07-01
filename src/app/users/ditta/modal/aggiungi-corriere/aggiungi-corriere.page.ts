@@ -82,7 +82,7 @@ export class AggiungiCorrierePage implements OnInit {
       'token_value': token_value
     }
 
-    this.http.put('/ditta-trasporto/ordine/merce/' + this.id, to_send).pipe(
+    this.http.put('/ditta-trasporti/ordine/merce/' + this.id, to_send).pipe(
       map((data: any) => data.esito),
       switchMap(esito => { return esito; })).subscribe(
         async (res) => {

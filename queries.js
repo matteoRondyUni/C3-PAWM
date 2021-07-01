@@ -524,17 +524,17 @@ const getOrdiniNegozio = (token, cb) => {
 }
 
 /**
- * Ritorna la lista degli Ordini di una Ditta di Trasporto.
+ * Ritorna la lista degli Ordini di una Ditta di Trasporti.
  * @param {*} token JWT della Ditta
  * @param {*} cb Callback
  * @returns il risultato della query
  */
-const getOrdiniDittaTrasporto = (token, cb) => {
+const getOrdiniDittaTrasporti = (token, cb) => {
   const decoded_token = jwt.decode(token);
-  var idDittaTrasporto = decoded_token.id;
+  var idDittaTrasporti = decoded_token.id;
 
   return pool.query('select id, id_negozio, id_magazzino, id_cliente, tipo, stato, data_ordine from public.ordini where id_ditta=$1 ORDER BY data_ordine DESC',
-    [idDittaTrasporto], (error, results) => {
+    [idDittaTrasporti], (error, results) => {
       cb(error, results)
     });
 }
@@ -690,7 +690,7 @@ const getMagazzino = (idMagazzino, cb) => {
 }
 
 /**
- * Ritorna la lista delle Ditte di Trasporto.
+ * Ritorna la lista delle Ditte di Trasporti.
  * @param {*} cb Callback
  * @returns il risultato della query
  */
@@ -892,7 +892,7 @@ const modificaPassword = (request, response, decoded_token) => {
  * Aggiunge il Corriere ad una Merce di un Ordine.
  * @param {*} request 
  * @param {*} response
- * @param {*} decoded_token JWT decodificato della Ditta di Trasporto 
+ * @param {*} decoded_token JWT decodificato della Ditta di Trasporti 
  * @returns il risultato della query
  */
 const aggiungiCorriere = (request, response, decoded_token) => {
@@ -1004,7 +1004,7 @@ module.exports = {
   getInventarioCount,
   getOrdiniNegozio,
   getOrdiniMagazzino,
-  getOrdiniDittaTrasporto,
+  getOrdiniDittaTrasporti,
   getOrdiniCliente,
   getMerciOrdine,
   getMerciCorriere,
@@ -1015,7 +1015,7 @@ module.exports = {
   getNegozi,
   getNegozio,
   getOrdiniCliente,
-  getOrdiniDittaTrasporto,
+  getOrdiniDittaTrasporti,
   getOrdiniMagazzino,
   getOrdiniNegozio,
   getUserInfo,

@@ -68,9 +68,9 @@ function verificaMagazzino(token) {
 }
 
 /**
- * Controlla che il JWT corrisponda ad una ditta di trasporto
+ * Controlla che il JWT corrisponda ad una ditta di trasporti
  */
-function verificaDittaTrasporto(token) {
+function verificaDittaTrasporti(token) {
     if (verificaJWT(token)) {
         tipo = (jwt.decode(token)).tipo;
         return (tipo == "DITTA_TRASPORTI");
@@ -305,8 +305,8 @@ app.get('/ordini', (req, res) => {
 
             return res.status(200).send(to_return);
         });
-    } else if (verificaDittaTrasporto(token)) {
-        db.getOrdiniDittaTrasporto(token, (err, results) => {
+    } else if (verificaDittaTrasporti(token)) {
+        db.getOrdiniDittaTrasporti(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
 
             const ordini = JSON.parse(JSON.stringify(results.rows));
@@ -541,9 +541,9 @@ app.put('/prodotto/:id', (req, res) => {
     else return res.status(401).send('JWT non valido!');
 });
 
-app.put('/ditta-trasporto/ordine/merce/:id', (req, res) => {
+app.put('/ditta-trasporti/ordine/merce/:id', (req, res) => {
     const token = req.body.token_value;
-    if (verificaDittaTrasporto(token)) {
+    if (verificaDittaTrasporti(token)) {
         db.aggiungiCorriere(req, res, jwt.decode(token));
     } else {
         return res.status(401).send('JWT non valido!');
