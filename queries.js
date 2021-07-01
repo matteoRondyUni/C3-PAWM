@@ -339,9 +339,10 @@ const creaOrdine = (request, response) => {
 
     inventario.forEach(prodottoInventario => {
       request.body.prodotti.forEach(prodotto => {
-        if (prodottoInventario.id == prodotto.id && prodottoInventario.disponibilita < prodotto.quantita) {
+        if (prodottoInventario.id == prodotto.id) {
           prodotto.disponibilita = prodottoInventario.disponibilita;
-          erroreDisponibilità = true;
+          if (prodotto.disponibilita < prodotto.quantita)
+            erroreDisponibilità = true;
         }
       })
     });
