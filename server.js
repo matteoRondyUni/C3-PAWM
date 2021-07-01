@@ -22,6 +22,15 @@ function verificaJWT(token) {
     }
 }
 
+//TODO
+function formatDataOrdine(ordini) {
+    ordini.forEach(ordine => {
+        var tmp = new Date(ordine.data_ordine);
+        var data = tmp.getDate() + '/' + (tmp.getMonth() + 1) + '/' + tmp.getFullYear();
+        ordine.data_ordine = data;
+    })
+}
+
 /**
  * Controlla che il JWT corrisponda ad una attività
  */
@@ -281,6 +290,7 @@ app.get('/ordini', (req, res) => {
             if (err) return res.status(500).send('Server error!');
 
             const ordini = JSON.parse(JSON.stringify(results.rows));
+            formatDataOrdine(ordini);
             const to_return = { 'results': ordini };
 
             return res.status(200).send(to_return);
@@ -290,6 +300,7 @@ app.get('/ordini', (req, res) => {
             if (err) return res.status(500).send('Server error!');
 
             const ordini = JSON.parse(JSON.stringify(results.rows));
+            formatDataOrdine(ordini);
             const to_return = { 'results': ordini };
 
             return res.status(200).send(to_return);
@@ -299,6 +310,7 @@ app.get('/ordini', (req, res) => {
             if (err) return res.status(500).send('Server error!');
 
             const ordini = JSON.parse(JSON.stringify(results.rows));
+            formatDataOrdine(ordini);
             const to_return = { 'results': ordini };
 
             return res.status(200).send(to_return);
@@ -308,6 +320,7 @@ app.get('/ordini', (req, res) => {
             if (err) return res.status(500).send('Server error!');
 
             const ordini = JSON.parse(JSON.stringify(results.rows));
+            formatDataOrdine(ordini);
             const to_return = { 'results': ordini };
 
             return res.status(200).send(to_return);
