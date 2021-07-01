@@ -446,6 +446,63 @@ const getInventario = (token, cb) => {
     });
 }
 
+const getOrdiniStats = (token, cb) => {
+  const decoded_token = jwt.decode(token);
+  var idNegozio;
+
+  if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
+  if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
+
+  db.getOrdiniNegozio(token, (err, results) => {
+    if (err) return res.status(500).send('Server error!');
+
+    const ordini = JSON.parse(JSON.stringify(results.rows));
+    // const to_return = { 'results': ordini };
+    const total;
+     ordini.forEach(ordine =>{
+       total += ordine.
+     })
+
+    return res.status(200).send(to_return);
+  });
+
+
+}
+
+const getInventarioCount = (token, cb) => {
+  const decoded_token = jwt.decode(token);
+  var idNegozio;
+
+  if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
+  if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
+
+  return pool.query('SELECT COUNT(*) FROM public.prodotti WHERE id_negozio = $1;',
+    [idNegozio], (error, results) => {
+      cb(error, results)
+    });
+}
+
+const getDipendentiCount = (token, cb) => {
+  const decoded_token = jwt.decode(token);
+  var idAttivita = decoded_token.id;
+  var query;
+
+  switch (decoded_token.tipo) {
+    case 'NEGOZIO':
+      query = 'SELECT COUNT(*) FROM public.commercianti WHERE id_negozio = $1;';
+      break;
+    case 'DITTA_TRASPORTI':
+      query = 'SELECT COUNT(*) FROM public.corrieri WHERE id_ditta = $1;';
+      break;
+    case 'MAGAZZINO':
+      query = 'SELECT COUNT(*) FROM public.magazzinieri WHERE id_magazzino = $1;';
+      break;
+  }
+
+  return pool.query(query, [idAttivita], (error, results) => { cb(error, results) });
+}
+
+
 /**
  * Ritorna la lista degli Ordini di un Negozio.
  * @param {*} token JWT del Negozio o del Commerciante
@@ -682,7 +739,6 @@ const getNegozio = (idNegozio, cb) => {
 }
 
 //TODO fare commento
-//TODO rinomina quantita
 const creaProdotto = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   var id_negozio;
@@ -691,7 +747,7 @@ const creaProdotto = (request, response) => {
   if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
 
   pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
-    [id_negozio, request.body.nome, request.body.quantita, request.body.prezzo], (error, results) => {
+    [id_negozio, request.body.nome, request.body.disponibilita, request.body.prezzo], (error, results) => {
       if (error) throw error
       return response.status(200).send({ 'esito': "1" });
     })
@@ -720,7 +776,6 @@ const eliminaProdotto = (request, response, decoded_token) => {
   });
 }
 
-//TODO rinomina quantita
 const modificaProdotto = (request, response, decoded_token) => {
   const id = parseInt(request.params.id);
 
@@ -731,7 +786,7 @@ const modificaProdotto = (request, response, decoded_token) => {
     if (prodotto.length == 0) return response.status(404).send('Prodotto non trovato!');
 
     pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
-      [request.body.nome, request.body.quantita, request.body.prezzo, id], (error, results) => {
+      [request.body.nome, request.body.disponibilita, request.body.prezzo, id], (error, results) => {
         if (error) throw error
         return response.status(200).send({ 'esito': "1" });
       })
@@ -842,8 +897,6 @@ const modificaPassword = (request, response, decoded_token) => {
 const aggiungiCorriere = (request, response, decoded_token) => {
   const id_merce_ordine = parseInt(request.params.id);
   const id_ordine = request.body.id_ordine;
-  console.log('id_ordine:', id_ordine);
-
 
   cercaOrdineById(id_ordine, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
@@ -852,7 +905,6 @@ const aggiungiCorriere = (request, response, decoded_token) => {
     if (ordine.length == 0) return response.status(404).send('Ordine non trovato!');
 
     cercaDipendenteById(request.body.id_corriere, decoded_token, (err, results) => {
-      console.log('err:', err);
       if (err) return response.status(500).send('Server Error!');
 
       const corriere = JSON.parse(JSON.stringify(results.rows));
@@ -943,10 +995,18 @@ module.exports = {
   findUserByEmail,
   getAttivitaInfo,
   getDipendenti,
+  getDipendentiCount,
   getDittaTrasporti,
   getDitteTrasporti,
   getIndirizzoCliente,
   getInventario,
+  getInventarioCount,
+  getOrdiniNegozio,
+  getOrdiniMagazzino,
+  getOrdiniDittaTrasporto,
+  getOrdiniCliente,
+  getMerciOrdine,
+  getMerciCorriere,
   getMagazzini,
   getMagazzino,
   getMerciCorriere,
