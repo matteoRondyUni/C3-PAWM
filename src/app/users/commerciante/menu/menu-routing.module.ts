@@ -18,7 +18,7 @@ const routes: Routes = [
   {
     path: 'ordini',
     component: MenuPage,
-    loadChildren: () => import('../ordini/ordini.module').then(m => m.OrdiniPageModule)
+    loadChildren: () => import('../../negozio/ordini/ordini.module').then(m => m.OrdiniPageModule)
   },
   {
     path: 'inventario',
