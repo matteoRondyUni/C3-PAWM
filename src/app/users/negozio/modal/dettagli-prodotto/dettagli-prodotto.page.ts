@@ -37,7 +37,7 @@ export class DettagliProdottoPage implements OnInit {
     this.prezzo = this.navParams.get('prezzo');
     this.dati = this.fb.group({
       nome: [this.nome, [Validators.required]],
-      quantita: [this.disponibilita, [Validators.required]],
+      disponibilita: [this.disponibilita, [Validators.required]],
       prezzo: [this.prezzo, [Validators.required]]
     });
   }

@@ -84,6 +84,7 @@ CREATE TABLE public.ordini
     stato character varying(30) NOT NULL,
     codice_ritiro character varying(30) NOT NULL,
 	data_ordine DATE NOT NULL DEFAULT CURRENT_DATE,
+	totale NUMERIC NOT NULL,
     PRIMARY KEY ("id")
 );
 

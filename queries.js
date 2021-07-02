@@ -327,7 +327,7 @@ const vendiProdotto = (prodotto, id_ordine, response) => {
 const creaOrdine = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   const codiceRitiro = generateCodiceRitiro();
-  var id_negozio, id_cliente, erroreDisponibilità = false;
+  var totale = 0, id_negozio, id_cliente, erroreDisponibilità = false;
 
   if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
@@ -341,6 +341,8 @@ const creaOrdine = (request, response) => {
       request.body.prodotti.forEach(prodotto => {
         if (prodottoInventario.id == prodotto.id) {
           prodotto.disponibilita = prodottoInventario.disponibilita;
+          prodotto.prezzo = prodottoInventario.prezzo;
+          totale += (prodotto.prezzo * prodotto.quantita);
           if (prodotto.disponibilita < prodotto.quantita)
             erroreDisponibilità = true;
         }
@@ -356,8 +358,8 @@ const creaOrdine = (request, response) => {
       if (cliente.length == 1) {
         id_cliente = cliente[0].id;
 
-        pool.query('INSERT INTO public.ordini (id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-          [id_negozio, request.body.id_magazzino, id_cliente, request.body.id_ditta, request.body.tipo, "PAGATO", codiceRitiro],
+        pool.query('INSERT INTO public.ordini (id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, totale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+          [id_negozio, request.body.id_magazzino, id_cliente, request.body.id_ditta, request.body.tipo, "PAGATO", codiceRitiro, totale],
           (error, results) => {
             if (error) throw error
 
@@ -447,27 +449,29 @@ const getInventario = (token, cb) => {
     });
 }
 
-const getOrdiniStats = (token, cb) => {
+const getOrdiniStats = (token, response, cb) => {
   const decoded_token = jwt.decode(token);
   var idNegozio;
 
   if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
 
-  db.getOrdiniNegozio(token, (err, results) => {
-    if (err) return res.status(500).send('Server error!');
+  getOrdiniNegozio(token, (err, results) => {
+    if (err) return response.status(500).send('Server error!');
 
     const ordini = JSON.parse(JSON.stringify(results.rows));
-    // const to_return = { 'results': ordini };
-    const total;
-     ordini.forEach(ordine =>{
-       total += ordine.
-     })
+    var vendite_ultimo_mese = 0, vendite_totali = 0;
 
-    return res.status(200).send(to_return);
+    ordini.forEach(ordine => {
+      var tmp = new Date(ordine.data_ordine);
+      vendite_totali += Number(ordine.totale);
+
+      if (tmp.getMonth() == new Date().getMonth()) vendite_ultimo_mese += Number(ordine.totale);
+    });
+
+    const to_return = { 'vendite_totali': vendite_totali, 'vendite_ultimo_mese': vendite_ultimo_mese };
+    cb(to_return);
   });
-
-
 }
 
 const getInventarioCount = (token, cb) => {
@@ -517,7 +521,7 @@ const getOrdiniNegozio = (token, cb) => {
   if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
 
-  return pool.query('select id, id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine from public.ordini where id_negozio=$1 ORDER BY id DESC',
+  return pool.query('select id, id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine, totale from public.ordini where id_negozio=$1 ORDER BY id DESC',
     [idNegozio], (error, results) => {
       cb(error, results)
     });
@@ -998,6 +1002,7 @@ module.exports = {
   getDipendenti,
   getDipendentiCount,
   getDittaTrasporti,
+  getDitteTrasporti,
   getIndirizzoCliente,
   getInventario,
   getInventarioCount,
@@ -1011,6 +1016,7 @@ module.exports = {
   getOrdiniDittaTrasporti,
   getOrdiniMagazzino,
   getOrdiniNegozio,
+  getOrdiniStats,
   getUserInfo,
   modificaAttivita,
   modificaOrdine,

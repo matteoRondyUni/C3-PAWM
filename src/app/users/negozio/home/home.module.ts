@@ -8,12 +8,19 @@ import { HomePageRoutingModule } from './home-routing.module';
 
 import { HomePage } from './home.page';
 
+import { InventarioStatsModule } from '../../../components/home/inventario-stats/inventario-stats.component.module';
+import { DipendentiStatsModule } from '../../../components/home/dipendenti-stats/dipendenti-stats.component.module';
+import { VenditeStatsModule } from '../../../components/home/vendite-stats/vendite-stats.component.module';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    InventarioStatsModule,
+    DipendentiStatsModule,
+    VenditeStatsModule
   ],
   declarations: [HomePage]
 })

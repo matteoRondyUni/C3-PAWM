@@ -27,7 +27,7 @@ export class CreaProdottoPage implements OnInit {
   ngOnInit() {
     this.dati = this.fb.group({
       nome: ['', [Validators.required]],
-      quantita: ['', [Validators.required]],
+      disponibilita: ['', [Validators.required]],
       prezzo: ['', [Validators.required]]
     });
   }
@@ -44,7 +44,7 @@ export class CreaProdottoPage implements OnInit {
 
     const to_send = {
       'nome': this.dati.value.nome,
-      'quantita': this.dati.value.quantita,
+      'disponibilita': this.dati.value.disponibilita,
       'prezzo': this.dati.value.prezzo,
       'token_value': token_value
     }

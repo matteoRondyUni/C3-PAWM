@@ -27,7 +27,7 @@ export class MenuPage implements OnInit {
     {
       title: 'Impostazioni',
       icon: 'settings-outline',
-      url: '/magazzino/impostazioni'
+      url: '/trasporti/impostazioni'
     }
   ]
 

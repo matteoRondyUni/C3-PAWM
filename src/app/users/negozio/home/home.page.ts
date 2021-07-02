@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -7,12 +8,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomePage implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
-  openNav() {
-    document.getElementById("mySidenav").style.width = "250px";
+  apriOrdini(){
+    this.router.navigateByUrl('/negozio/ordini', { replaceUrl: true });
+  }
+
+  apriInventario(){
+    this.router.navigateByUrl('/negozio/inventario', { replaceUrl: true });
+  }
+
+  apriDipendenti(){
+    this.router.navigateByUrl('/negozio/dipendenti', { replaceUrl: true });
   }
 }

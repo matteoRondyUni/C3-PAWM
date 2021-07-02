@@ -282,6 +282,53 @@ app.get('/inventario', (req, res) => {
     }
 });
 
+app.get('/inventario/count', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaNegozio(token)) {
+        db.getInventarioCount(token, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const count = JSON.parse(JSON.stringify(results.rows));
+            const to_return = count[0];
+
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
+app.get('/dipendenti/count', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaAttivita(token)) {
+        db.getDipendentiCount(token, (err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const count = JSON.parse(JSON.stringify(results.rows));
+            const to_return = count[0];
+
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
+app.get('/ordini/stats', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaNegozio(token)) {
+        db.getOrdiniStats(token, res, (tmp) => {
+            const stats = JSON.parse(JSON.stringify(tmp));
+            const to_return = { 'results': stats };
+
+            return res.status(200).send(to_return);
+        });
+    } else return res.status(401).send('JWT non valido!');
+});
+
 app.get('/ordini', (req, res) => {
     const token = req.headers.token;
 

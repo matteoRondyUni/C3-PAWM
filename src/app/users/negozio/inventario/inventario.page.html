@@ -20,25 +20,25 @@
       Aggiungi
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-button>
+
+    <ion-virtual-scroll [items]="inventario" approximateItemHeight="70px" [headerFn]="separateLetter">
+
+      <ion-item-divider *virtualHeader="let header" color="gray">
+        <ion-label>{{header}}</ion-label>
+      </ion-item-divider>
+
+      <ion-item *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
+        <ion-avatar slot="start">
+          <img src="../../../../../assets/box.png">
+        </ion-avatar>
+
+        <ion-label>
+          <h2 text-capitalize>{{prodotto.nome}}</h2>
+        </ion-label>
+
+        <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+      </ion-item>
+    </ion-virtual-scroll>
   </ion-card>
-
-  <ion-virtual-scroll [items]="inventario" approximateItemHeight="70px" [headerFn]="separateLetter">
-
-    <ion-item-divider *virtualHeader="let header" color="gray">
-      <ion-label>{{header}}</ion-label>
-    </ion-item-divider>
-
-    <ion-item *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
-      <ion-avatar slot="start">
-        <img src="../../../../../assets/box.png">
-      </ion-avatar>
-
-      <ion-label>
-        <h2 text-capitalize>{{prodotto.nome}}</h2>
-      </ion-label>
-
-      <ion-icon name="information-circle-outline" slot="end"></ion-icon>
-    </ion-item>
-  </ion-virtual-scroll>
 
 </ion-content>

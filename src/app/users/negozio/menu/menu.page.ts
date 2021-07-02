@@ -33,7 +33,7 @@ export class MenuPage implements OnInit {
     {
       title: 'Impostazioni',
       icon: 'settings-outline',
-      url: '/magazzino/impostazioni'
+      url: '/negozio/impostazioni'
     }
   ]
 
@@ -42,13 +42,8 @@ export class MenuPage implements OnInit {
   constructor(private authService: AuthenticationService, private router: Router) {
     this.router.events.subscribe((event: RouterEvent) => {
       if (event.url != undefined) {
-        if (event.url == '/negozio') {
-          this.selectedPath = '/negozio/home';
-        } else if (event.url == '/negozio/ordini/cronologia') {
-          this.selectedPath = '/negozio/ordini';
-        } else {
-          this.selectedPath = event.url;
-        }
+        if (event.url == '/negozio') this.selectedPath = '/negozio/home';
+        else this.selectedPath = event.url;
       }
     });
   }
