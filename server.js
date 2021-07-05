@@ -316,6 +316,40 @@ app.get('/dipendenti/count', (req, res) => {
     }
 });
 
+app.get('/magazzini/count', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaJWT(token)) {
+        db.getMagazziniCount((err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const count = JSON.parse(JSON.stringify(results.rows));
+            const to_return = count[0];
+
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
+app.get('/ditte/count', (req, res) => {
+    const token = req.headers.token;
+
+    if (verificaJWT(token)) {
+        db.getDitteTrasportiCount((err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const count = JSON.parse(JSON.stringify(results.rows));
+            const to_return = count[0];
+
+            return res.status(200).send(to_return);
+        });
+    } else {
+        return res.status(401).send('JWT non valido!');
+    }
+});
+
 app.get('/ordini/stats', (req, res) => {
     const token = req.headers.token;
 

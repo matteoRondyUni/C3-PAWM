@@ -507,6 +507,19 @@ const getDipendentiCount = (token, cb) => {
   return pool.query(query, [idAttivita], (error, results) => { cb(error, results) });
 }
 
+const getMagazziniCount = (cb) => {
+  return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['MAGAZZINO'],
+    (error, results) => {
+      cb(error, results)
+    });
+}
+
+const getDitteTrasportiCount = (cb) => {
+  return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['DITTA_TRASPORTI'],
+    (error, results) => {
+      cb(error, results)
+    });
+}
 
 /**
  * Ritorna la lista degli Ordini di un Negozio.
@@ -1003,10 +1016,12 @@ module.exports = {
   getDipendentiCount,
   getDittaTrasporti,
   getDitteTrasporti,
+  getDitteTrasportiCount,
   getIndirizzoCliente,
   getInventario,
   getInventarioCount,
   getMagazzini,
+  getMagazziniCount,
   getMagazzino,
   getMerciCorriere,
   getMerciOrdine,
