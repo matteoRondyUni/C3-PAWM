@@ -10,6 +10,8 @@ const crypto = require("crypto");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const ERRORE_DATI_QUERY = "Errore nei dati!";
+
 /**
  * Genera il Codice di Ritiro per l'Ordine.
  * @returns il Codice di Ririto
@@ -18,23 +20,70 @@ function generateCodiceRitiro() {
   const toReturn = crypto.randomBytes(4).toString('hex');
   return toReturn;
 }
-
-//TODO Vecchio
-const getUsers = (request, response) => {
-  pool.query('SELECT * FROM public.utenti ORDER BY id ASC', (error, results) => {
-    if (error) throw error
-    response.status(200).json(results.rows)
-  })
+/**
+ * Controlla che la password sia compresa tra 8 e 16 caratteri.
+ * @param {String} password password da controllare
+ */
+function controllaPassword(password) {
+  if (password == null || password.length < 8 || password.length > 16)
+    throw "La password deve essere compresa tra 8 e 16 caratteri.";
 }
 
-//TODO Vecchio
-const getUserById = (request, response) => {
-  const id = parseInt(request.params.id)
+/**
+ * Controlla che il numero telefonico sia un formato corretto.
+ * @param {String} telefono Numero telefonico da controllare
+ */
+function controllaTelefono(telefono) {
+  if (typeof telefono != "string" || isNaN(telefono)) throw "Il numero di telefono non è corretto.";
+}
 
-  pool.query('SELECT * FROM public.utenti WHERE id = $1', [id], (error, results) => {
-    if (error) throw error
-    response.status(200).json(results.rows)
-  })
+/**
+ * Controlla che il parametro passato sia un intero.
+ * @param {*} toControl Dato da controllare
+ * @param {String} errorText Errore da stampare
+ */
+function controllaInt(toControl, errorText) {
+  if (toControl == null || isNaN(parseInt(toControl))) throw errorText;
+}
+
+/**
+ * Controlla che il parametro passato sia un Float.
+ * @param {*} toControl Dato da controllare
+ * @param {String} errorText Errore da stampare
+ */
+function controllaFloat(toControl, errorText) {
+  if (toControl == null || isNaN(parseFloat(toControl))) throw errorText;
+}
+
+/** 
+ * Controlla che il parametro passato sia diverso da null.
+ * @param {*} toControl Dato da controllare
+ * @param {String} errorText Errore da stampare
+ */
+function controllaNotNull(toControl, errorText) {
+  if (toControl == null) throw errorText;
+}
+
+//TODO da commentare
+function controllaProdottiDaVendere(inventario, prodottiDaVendere) {
+  inventario.forEach(prodottoInventario => {
+    prodottiDaVendere.forEach(prodotto => {
+      if (prodottoInventario.id == prodotto.id) {
+        prodotto.disponibilita = prodottoInventario.disponibilita;
+        prodotto.prezzo = prodottoInventario.prezzo;
+        totale += (prodotto.prezzo * prodotto.quantita);
+        if (prodotto.disponibilita < prodotto.quantita)
+          return true;
+      }
+    })
+  });
+  return false;
+}
+
+//TODO da commentare
+function controllaRisultatoQuery(results, errorText) {
+  const toControl = JSON.parse(JSON.stringify(results.rows));
+  return (toControl.length == 0);
 }
 
 /**
@@ -43,14 +92,16 @@ const getUserById = (request, response) => {
  * @param {*} response 
  */
 const creaCliente = (request, response) => {
+  controllaPassword(request.body.password);
+  controllaTelefono(request.body.telefono);
+
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
 
-  pool.query('INSERT INTO public.utenti ( nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+  pool.query('INSERT INTO public.utenti (nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     [request.body.nome, request.body.cognome, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo, "CLIENTE"], (error, results) => {
-      if (error) {
-        throw error
-      }
+      if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+      return response.status(200).send({ 'esito': "1" });
     })
 }
 
@@ -60,6 +111,9 @@ const creaCliente = (request, response) => {
  * @param {*} response 
  */
 const creaDipendente = (request, response) => {
+  controllaPassword(request.body.password);
+  controllaTelefono(request.body.telefono);
+
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
   const decoded_token = jwt.decode(request.body.token_value);
@@ -82,22 +136,22 @@ const creaDipendente = (request, response) => {
 
   pool.query('INSERT INTO public.utenti ( nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     [request.body.nome, request.body.cognome, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo, tipo], (error, results) => {
-      if (error) throw error
+      if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+
+      findUserByEmail(request.body.email, (err, results) => {
+        if (err) return response.status(500).send('Server error!');
+
+        const dipendente = JSON.parse(JSON.stringify(results.rows));
+
+        if (dipendente.length == 1) {
+          pool.query(query, [dipendente[0].id, decoded_token.id], (error, results) => {
+            if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+            return response.status(200).send({ 'esito': "1" });
+          })
+        }
+        else return response.status(500).send("Server error!");
+      });
     })
-
-  findUserByEmail(request.body.email, (err, results) => {
-    if (err) return response.status(500).send('Server error!');
-
-    const dipendente = JSON.parse(JSON.stringify(results.rows));
-
-    if (dipendente.length == 1) {
-      pool.query(query, [dipendente[0].id, decoded_token.id], (error, results) => {
-        if (error) throw error
-      })
-      return response.status(200).send({ 'esito': "1" });
-    }
-    else return response.status(500).send("Server error!");
-  });
 }
 
 /**
@@ -106,14 +160,16 @@ const creaDipendente = (request, response) => {
  * @param {*} response 
  */
 const creaAttivita = (request, response) => {
+  controllaPassword(request.body.password);
+  controllaTelefono(request.body.telefono);
+
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
 
   pool.query('INSERT INTO public.attivita ( ragione_sociale, tipo, email, password, salt, telefono, indirizzo ) VALUES ($1, $2, $3, $4, $5, $6, $7)',
     [request.body.ragione_sociale, request.body.tipo, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo], (error, results) => {
-      if (error) {
-        throw error
-      }
+      if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+      return response.status(200).send({ 'esito': "1" });
     })
 }
 
@@ -259,16 +315,15 @@ const cercaMerceById = (id, decoded_token, cb) => {
  * @param {*} decoded_token JWT decodificato dell'Attività
  */
 const eliminaDipendente = (request, response, decoded_token) => {
+  controllaInt(request.params.id, "Il Codice del Dipendente deve essere un numero!");
   const id = parseInt(request.params.id);
 
   cercaDipendenteById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    const dipendente = JSON.parse(JSON.stringify(results.rows));
-    if (dipendente.length == 0) return response.status(404).send('Dipendente non trovato!');
+    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Dipendente non trovato!');
 
     pool.query('DELETE FROM public.utenti WHERE id = $1', [id], (error, results) => {
-      if (error) throw error
       return response.status(200).send({ 'esito': "1" });
     })
   });
@@ -281,6 +336,7 @@ const eliminaDipendente = (request, response, decoded_token) => {
  * @returns il risultato della query
  */
 const findUserByEmail = (email, cb) => {
+  controllaNotNull(email, "L'email non deve essere null!");
   return pool.query('SELECT * FROM public.utenti WHERE email = $1', [email], (error, results) => {
     cb(error, results)
   });
@@ -293,6 +349,7 @@ const findUserByEmail = (email, cb) => {
  * @returns il risultato della query
  */
 const findAttivitaByEmail = (email, cb) => {
+  controllaNotNull(email, "L'email non deve essere null!");
   return pool.query('SELECT * FROM public.attivita WHERE email = $1', [email], (error, results) => {
     cb(error, results)
   });
@@ -314,11 +371,11 @@ const findOrdineByCodice = (codice, cb) => {
 const vendiProdotto = (prodotto, id_ordine, response) => {
   pool.query('INSERT INTO public.merci_ordine (id_prodotto, id_ordine, quantita, prezzo_acquisto, stato) VALUES ($1, $2, $3, $4, $5)',
     [prodotto.id, id_ordine, prodotto.quantita, prodotto.prezzo, "PAGATO"], (error, results) => {
-      if (error) throw error
+      if (error) return response.status(400).send(ERRORE_DATI_QUERY);
 
       pool.query('UPDATE public.prodotti SET disponibilita = $1 WHERE id = $2',
         [(prodotto.disponibilita - prodotto.quantita), prodotto.id], (error, results) => {
-          if (error) throw error
+          if (error) return response.status(400).send(ERRORE_DATI_QUERY);
         });
     });
 }
@@ -327,7 +384,7 @@ const vendiProdotto = (prodotto, id_ordine, response) => {
 const creaOrdine = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   const codiceRitiro = generateCodiceRitiro();
-  var totale = 0, id_negozio, id_cliente, erroreDisponibilità = false;
+  var totale = 0, id_negozio, id_cliente, erroreDisponibilita = false;
 
   if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
@@ -337,20 +394,10 @@ const creaOrdine = (request, response) => {
 
     const inventario = JSON.parse(JSON.stringify(results.rows));
 
-    inventario.forEach(prodottoInventario => {
-      request.body.prodotti.forEach(prodotto => {
-        if (prodottoInventario.id == prodotto.id) {
-          prodotto.disponibilita = prodottoInventario.disponibilita;
-          prodotto.prezzo = prodottoInventario.prezzo;
-          totale += (prodotto.prezzo * prodotto.quantita);
-          if (prodotto.disponibilita < prodotto.quantita)
-            erroreDisponibilità = true;
-        }
-      })
-    });
+    erroreDisponibilita = controllaProdottiDaVendere(inventario, request.body.prodotti);
 
     findUserByEmail(request.body.email_cliente, (err, results) => {
-      if (erroreDisponibilità) return response.status(500).send("La Quantità supera la Disponibilità!")
+      if (erroreDisponibilita) return response.status(500).send("La Quantità supera la Disponibilità!")
       if (err) return response.status(500).send('Server error!');
 
       const cliente = JSON.parse(JSON.stringify(results.rows));
@@ -361,7 +408,7 @@ const creaOrdine = (request, response) => {
         pool.query('INSERT INTO public.ordini (id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, totale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
           [id_negozio, request.body.id_magazzino, id_cliente, request.body.id_ditta, request.body.tipo, "PAGATO", codiceRitiro, totale],
           (error, results) => {
-            if (error) throw error
+            if (error) return response.status(400).send(ERRORE_DATI_QUERY);
 
             findOrdineByCodice(codiceRitiro, (err, results) => {
               if (err) return response.status(500).send('Server error!');
@@ -450,12 +497,6 @@ const getInventario = (token, cb) => {
 }
 
 const getOrdiniStats = (token, response, cb) => {
-  const decoded_token = jwt.decode(token);
-  var idNegozio;
-
-  if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
-  if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
-
   getOrdiniNegozio(token, (err, results) => {
     if (err) return response.status(500).send('Server error!');
 
@@ -591,13 +632,13 @@ const getOrdiniCliente = (token, cb) => {
 }
 
 const modificaOrdine = (request, response, decoded_token) => {
+  controllaInt(request.params.id, "Il Codice dell'Ordine deve essere un numero!");
   const id = parseInt(request.params.id);
 
   cercaOrdineById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    const ordine = JSON.parse(JSON.stringify(results.rows));
-    if (ordine.length == 0) return response.status(404).send('Ordine non trovato!');
+    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Ordine non trovato!');
 
     pool.query('UPDATE public.ordini SET stato = $1 WHERE id = $2',
       ['RITIRATO', id], (error, results) => {
@@ -608,10 +649,11 @@ const modificaOrdine = (request, response, decoded_token) => {
 }
 
 //TODO fare commento
-const getMerciOrdine = (idOrdine, req, cb) => {
+const getMerciOrdine = (req, cb) => {
+  controllaInt(request.params.idOrdine, "Il Codice dell'Ordine deve essere un numero!");
+  const idOrdine = parseInt(request.params.idOrdine);
   const decoded_token = jwt.decode(req.headers.token);
-  var query;
-  var controlId;
+  var query, controlId;
 
   switch (decoded_token.tipo) {
     case 'NEGOZIO':
@@ -649,8 +691,7 @@ const getMerciOrdine = (idOrdine, req, cb) => {
       controlId = decoded_token.id;
       break;
   }
-  // TODO da controllare
-  // const idOrdine = parseInt(req.params.idOrdine);
+
   return pool.query(query, [idOrdine, controlId], (error, results) => {
     cb(error, results)
   });
@@ -669,7 +710,8 @@ const getMerciCorriere = (req, cb) => {
 
 //TODO commentare
 const getIndirizzoCliente = (req, cb) => {
-  var idMerce = req.params.idMerce;
+  controllaInt(req.params.idMerce, "Il Codice della Merce deve essere un numero!");
+  const idMerce = req.params.idMerce;
   const decoded_token = jwt.decode(req.headers.token);
 
   return pool.query('select public.utenti.indirizzo from (public.merci_ordine' +
@@ -761,12 +803,15 @@ const creaProdotto = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   var id_negozio;
 
+  controllaInt(request.body.disponibilita, "La Disponibilità deve essere un numero!");
+  controllaFloat(request.body.prezzo, "Il Prezzo deve essere un numero!");
+
   if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio
   if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
 
   pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
     [id_negozio, request.body.nome, request.body.disponibilita, request.body.prezzo], (error, results) => {
-      if (error) throw error
+      if (error) return response.status(400).send(ERRORE_DATI_QUERY);
       return response.status(200).send({ 'esito': "1" });
     })
 }
@@ -779,73 +824,83 @@ const creaProdotto = (request, response) => {
  * @returns il risultato della query
  */
 const eliminaProdotto = (request, response, decoded_token) => {
+  controllaInt(request.params.id, "Il Codice del Prodotto deve essere un numero!");
   const id = parseInt(request.params.id);
 
   cercaProdottoById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    const prodotto = JSON.parse(JSON.stringify(results.rows));
-    if (prodotto.length == 0) return response.status(404).send('Prodotto non trovato!');
+    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Prodotto non trovato!');
 
     pool.query('DELETE FROM public.prodotti WHERE id = $1', [id], (error, results) => {
-      if (error) throw error
       return response.status(200).send({ 'esito': "1" });
     })
   });
 }
 
 const modificaProdotto = (request, response, decoded_token) => {
+  controllaInt(request.params.id, "Il Codice del Prodotto deve essere un numero!");
+  controllaInt(request.body.disponibilita, "La Disponibilità deve essere un numero!");
+  controllaFloat(request.body.prezzo, "Il Prezzo deve essere un numero!");
+
   const id = parseInt(request.params.id);
 
   cercaProdottoById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    const prodotto = JSON.parse(JSON.stringify(results.rows));
-    if (prodotto.length == 0) return response.status(404).send('Prodotto non trovato!');
+    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Prodotto non trovato!');
 
     pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
       [request.body.nome, request.body.disponibilita, request.body.prezzo, id], (error, results) => {
-        if (error) throw error
+        if (error) return response.status(400).send(ERRORE_DATI_QUERY);
         return response.status(200).send({ 'esito': "1" });
       })
   });
 }
 
 const modificaAttivita = (request, response) => {
+  controllaInt(request.params.id, "Il Codice dell'Attività deve essere un numero!");
+  controllaTelefono(request.body.telefono);
+
   const id = parseInt(request.params.id);
 
   cercaAttivitaById(id, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    const attivita = JSON.parse(JSON.stringify(results.rows));
-    if (attivita.length == 0) return response.status(404).send('Attivita non trovata!');
+    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Attivita non trovata!');
 
     pool.query('UPDATE public.attivita SET ragione_sociale = $1, email = $2, telefono = $3, indirizzo = $4 WHERE id = $5',
       [request.body.ragione_sociale, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {
-        if (error) throw error
+        if (error) return response.status(400).send(ERRORE_DATI_QUERY);
         return response.status(200).send({ 'esito': "1" });
       })
   });
 }
 
 const modificaUtente = (request, response) => {
+  controllaInt(request.params.id, "Il Codice dell'Utente deve essere un numero!");
+  controllaTelefono(request.body.telefono);
+
   const id = parseInt(request.params.id);
 
   cercaUtenteById(id, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    const attivita = JSON.parse(JSON.stringify(results.rows));
-    if (attivita.length == 0) return response.status(404).send('Utente non trovato!');
+    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Utente non trovato!');
 
     pool.query('UPDATE public.utenti SET nome = $1, cognome = $2, email = $3, telefono = $4, indirizzo = $5 WHERE id = $6',
       [request.body.nome, request.body.cognome, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {
-        if (error) throw error
+        if (error) return response.status(400).send(ERRORE_DATI_QUERY);
         return response.status(200).send({ 'esito': "1" });
       })
   });
 }
 
 const modificaPassword = (request, response, decoded_token) => {
+  controllaInt(request.params.id, "L'ID deve essere un numero!");
+  controllaPassword(request.body.old_password);
+  controllaPassword(request.body.new_password);
+
   const id = parseInt(request.params.id);
   var tipo;
   switch (decoded_token.tipo) {
@@ -861,7 +916,7 @@ const modificaPassword = (request, response, decoded_token) => {
     default:
       return response.status(400).send('Bad request!');
   }
-
+  //TODO Refactor
   if (tipo === 'ATTIVITA') {
     cercaAttivitaById(id, (err, results) => {
       if (err) return response.status(500).send('Server Error!');
@@ -877,7 +932,7 @@ const modificaPassword = (request, response, decoded_token) => {
 
         pool.query('UPDATE public.attivita SET password = $1 WHERE id = $2',
           [new_hash, id], (error, results) => {
-            if (error) throw error
+            if (error) return response.status(400).send(ERRORE_DATI_QUERY);
             return response.status(200).send({ 'esito': "1" });
           });
       } else return response.status(401).send('La vecchia password non è corretta');
@@ -897,7 +952,7 @@ const modificaPassword = (request, response, decoded_token) => {
 
         pool.query('UPDATE public.utenti SET password = $1 WHERE id = $2',
           [new_hash, id], (error, results) => {
-            if (error) throw error
+            if (error) return response.status(400).send(ERRORE_DATI_QUERY);
             return response.status(200).send({ 'esito': "1" });
           });
       } else return response.status(401).send('La vecchia password non è corretta');
@@ -913,24 +968,24 @@ const modificaPassword = (request, response, decoded_token) => {
  * @returns il risultato della query
  */
 const aggiungiCorriere = (request, response, decoded_token) => {
+  controllaInt(request.params.id, "L'ID della Merce deve essere un numero!");
+  controllaInt(request.params.id_ordine, "L'ID dell'Ordine deve essere un numero!");
+
   const id_merce_ordine = parseInt(request.params.id);
   const id_ordine = request.body.id_ordine;
 
   cercaOrdineById(id_ordine, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    const ordine = JSON.parse(JSON.stringify(results.rows));
-    if (ordine.length == 0) return response.status(404).send('Ordine non trovato!');
+    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Ordine non trovato!');
 
     cercaDipendenteById(request.body.id_corriere, decoded_token, (err, results) => {
       if (err) return response.status(500).send('Server Error!');
 
-      const corriere = JSON.parse(JSON.stringify(results.rows));
-      if (corriere.length == 0) return response.status(404).send('Corriere non trovato!');
+      if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Corriere non trovato!');
 
       pool.query('UPDATE public.merci_ordine SET id_corriere = $1 WHERE id = $2',
         [request.body.id_corriere, id_merce_ordine], (error, results) => {
-          if (error) throw error
           return response.status(200).send({ 'esito': "1" });
         })
     });
@@ -944,6 +999,7 @@ const aggiungiCorriere = (request, response, decoded_token) => {
  * @param {*} decoded_token 
  */
 const cambiaStatoMerce = (request, response, decoded_token) => {
+  controllaInt(request.params.id, "L'ID della Merce deve essere un numero!");
   const idMerce = parseInt(request.params.id);
 
   cercaMerceById(idMerce, decoded_token, (err, results) => {
@@ -967,7 +1023,6 @@ const cambiaStatoMerce = (request, response, decoded_token) => {
 
     pool.query('UPDATE public.merci_ordine SET stato = $1 WHERE id = $2',
       [nuovoStato, idMerce], (error, results) => {
-        if (error) throw error
         return response.status(200).send({ 'esito': "1" });
       })
   })
