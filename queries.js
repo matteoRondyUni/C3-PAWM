@@ -65,7 +65,7 @@ function controllaNotNull(toControl, errorText) {
 }
 
 //TODO da commentare
-function controllaProdottiDaVendere(inventario, prodottiDaVendere) {
+function controllaProdottiDaVendere(inventario, prodottiDaVendere, totale) {
   inventario.forEach(prodottoInventario => {
     prodottiDaVendere.forEach(prodotto => {
       if (prodottoInventario.id == prodotto.id) {
@@ -393,8 +393,9 @@ const creaOrdine = (request, response) => {
     if (err) return res.status(500).send('Server error!');
 
     const inventario = JSON.parse(JSON.stringify(results.rows));
+    var totale;
 
-    erroreDisponibilita = controllaProdottiDaVendere(inventario, request.body.prodotti);
+    var erroreDisponibilita = controllaProdottiDaVendere(inventario, request.body.prodotti, totale);
 
     findUserByEmail(request.body.email_cliente, (err, results) => {
       if (erroreDisponibilita) return response.status(500).send("La Quantità supera la Disponibilità!")
