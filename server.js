@@ -207,6 +207,19 @@ app.get('/magazzini/count', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+app.get('/negozi/count', (req, res) => {
+    if (verificaJWT(req.headers.token)) {
+        db.getNegoziCount((err, results) => {
+            if (err) return res.status(500).send('Server error!');
+
+            const count = JSON.parse(JSON.stringify(results.rows));
+            const to_return = count[0];
+
+            return res.status(200).send(to_return);
+        });
+    } else return res.status(401).send('JWT non valido!');
+});
+
 app.get('/ditte/count', (req, res) => {
     if (verificaJWT(req.headers.token)) {
         db.getDitteTrasportiCount((err, results) => {

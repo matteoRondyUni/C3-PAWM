@@ -556,6 +556,13 @@ const getMagazziniCount = (cb) => {
     });
 }
 
+const getNegoziCount = (cb) => {
+  return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['NEGOZIO'],
+    (error, results) => {
+      cb(error, results)
+    });
+}
+
 const getDitteTrasportiCount = (cb) => {
   return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['DITTA_TRASPORTI'],
     (error, results) => {
@@ -1082,6 +1089,7 @@ module.exports = {
   getMerciCorriere,
   getMerciOrdine,
   getNegozi,
+  getNegoziCount,
   getNegozio,
   getOrdiniCliente,
   getOrdiniDittaTrasporti,
