@@ -1,0 +1,46 @@
+ion-content {
+    --background: url('../../../../../assets/SfondoC3Home.jpg') no-repeat center center / cover;
+} 
+
+.background-image {
+    width: 100vw;
+    height: 20vh;
+  
+    -webkit-filter: blur(10px);
+    -moz-filter: blur(10px);
+    -o-filter: blur(10px);
+    -ms-filter: blur(10px);
+    filter: blur(2.5px);
+  }
+  
+
+.card-background-page{
+    .card{
+        position: absolute;
+        text-align: center;
+    }
+    .card-title{
+        position: absolute;
+        text-align: center;
+        top: 36%;
+        font-size: 2.0em;
+        width: 100%;
+        font-weight: bold;
+        color: #fff;
+    }
+    .card-subtitle{
+        font-size: 1.0em;
+        position: absolute;
+        top: 52%;
+        width: 100%;
+        color: #fff;
+    }
+}
+
+.transparent-card {
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.transparent-card ion-item {
+	--ion-item-background: rgba(0, 0, 0, 0.2);
+}

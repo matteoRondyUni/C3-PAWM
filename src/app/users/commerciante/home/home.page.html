@@ -1,10 +1,49 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Home</ion-title>
+
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
+
   </ion-toolbar>
+
+  <ion-toolbar class="transparent-toolbar">
+
+    <ion-item>
+      <ion-avatar slot="end" (click)="apriImpostazioni()">
+        <img src="../../../../../assets/user.png">
+      </ion-avatar>
+      <h3>Bentornato, {{this.commerciante.nome}}!</h3>
+      <br>
+    </ion-item>
+
+  </ion-toolbar>
+
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+  <div cards>
+    <div class="grid-full">
+      <app-vendite-stats (click)="apriOrdini()"></app-vendite-stats>
+
+      <ion-row>
+        <ion-col>
+          <app-inventario-stats (click)="apriInventario()"></app-inventario-stats>
+        </ion-col>
+
+        <ion-col>
+          <app-negozi-stats (click)="apriNegozi()"></app-negozi-stats>
+        </ion-col>
+
+        <ion-col>
+          <app-magazzini-stats (click)="apriMagazzini()"></app-magazzini-stats>
+        </ion-col>
+
+        <ion-col>
+          <app-ditte-trasporti-stats (click)="apriDitte()"></app-ditte-trasporti-stats>
+        </ion-col>
+      </ion-row>
+    </div>
+  </div>
+</ion-content>

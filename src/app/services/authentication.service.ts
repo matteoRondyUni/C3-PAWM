@@ -41,10 +41,10 @@ export class AuthenticationService {
       map((data: any) => data.accessToken),
       switchMap(token => {
         console.log("token login", token);
-        const tipoUtente: any = jwt_decode(token);
-        console.log("tmp: ", tipoUtente.tipo);
+        const decoded_token: any = jwt_decode(token);
+        console.log("tmp: ", decoded_token.tipo);
         Storage.set({ key: TOKEN_KEY, value: token });
-        switch (tipoUtente.tipo) {
+        switch (decoded_token.tipo) {
           case "CLIENTE": return "1";
           case "COMMERCIANTE": return "2";
           case "CORRIERE": return "3";

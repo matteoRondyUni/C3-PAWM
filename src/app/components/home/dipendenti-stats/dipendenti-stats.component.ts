@@ -9,7 +9,8 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./dipendenti-stats.component.scss'],
 })
 export class DipendentiStatsComponent implements OnInit {
-  n_dipendenti: any;
+  private n_dipendenti: any;
+  private nome;
 
   constructor(
     private http: HttpClient,
@@ -28,6 +29,8 @@ export class DipendentiStatsComponent implements OnInit {
     this.http.get('/dipendenti/count', { headers }).subscribe(
       async (res) => {
         this.n_dipendenti = res['count'];
+        if (this.n_dipendenti == 1) this.nome = 'dipendente';
+        else this.nome = 'dipendenti';
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');

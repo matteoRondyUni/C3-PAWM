@@ -9,7 +9,8 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./inventario-stats.component.scss'],
 })
 export class InventarioStatsComponent implements OnInit {
-  n_prodotti: any;
+  private n_prodotti: any;
+  private nome;
 
   constructor(
     private http: HttpClient,
@@ -28,6 +29,8 @@ export class InventarioStatsComponent implements OnInit {
     this.http.get('/inventario/count', { headers }).subscribe(
       async (res) => {
         this.n_prodotti = res['count'];
+        if (this.n_prodotti == 1) this.nome = 'prodotto';
+        else this.nome = 'prodotti';
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
