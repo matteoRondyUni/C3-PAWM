@@ -55,6 +55,15 @@ function controllaFloat(toControl, errorText) {
   if (toControl == null || isNaN(parseFloat(toControl))) throw errorText;
 }
 
+/**
+ * Controlla che il parametro passato sia diverso da null o dalla stringa vuota.
+ * @param {String} toControl Dato da controllare
+ * @param {String} errorText Errore da stampare
+ */
+function controllaString(toControl, errorText) {
+  if (toControl == null || toControl == "") throw errorText;
+}
+
 /** 
  * Controlla che il parametro passato sia diverso da null.
  * @param {*} toControl Dato da controllare
@@ -411,6 +420,9 @@ const creaOrdine = (request, response) => {
   const codiceRitiro = generateCodiceRitiro();
   var id_cliente, id_negozio = getIdNegozio(decoded_token);
 
+  if (request.body.prodotti.length == 0 || request.body.prodotti == null) return response.status(400).send("L'Ordine deve avere almeno una merce!");
+  controllaString(request.body.tipo, "La Tipologia dell'Ordine non può essere vuota!");
+
   getInventario(request.body.token_value, (err, results) => {
     if (err) return res.status(500).send('Server error!');
 
@@ -421,7 +433,7 @@ const creaOrdine = (request, response) => {
 
     findUserByEmail(request.body.email_cliente, (err, results) => {
       if (err) return response.status(500).send('Server error!');
-      if (erroreDisponibilita) return response.status(400).send("La Quantità supera la Disponibilità!")
+      if (erroreDisponibilita) return response.status(400).send("La Quantità supera la Disponibilità!");
       if (controllaRisultatoQuery(results)) return response.status(404).send("L'email inserita non è associata a nessun Cliente!");
 
       const cliente = JSON.parse(JSON.stringify(results.rows));
