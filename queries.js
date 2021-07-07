@@ -81,7 +81,7 @@ function controllaProdottiDaVendere(inventario, prodottiDaVendere, totale) {
 }
 
 //TODO da commentare
-function controllaRisultatoQuery(results, errorText) {
+function controllaRisultatoQuery(results) {
   const toControl = JSON.parse(JSON.stringify(results.rows));
   return (toControl.length == 0);
 }
@@ -321,7 +321,7 @@ const eliminaDipendente = (request, response, decoded_token) => {
   cercaDipendenteById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Dipendente non trovato!');
+    if (controllaRisultatoQuery(results)) return response.status(404).send('Dipendente non trovato!');
 
     pool.query('DELETE FROM public.utenti WHERE id = $1', [id], (error, results) => {
       return response.status(200).send({ 'esito': "1" });
@@ -639,7 +639,7 @@ const modificaOrdine = (request, response, decoded_token) => {
   cercaOrdineById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Ordine non trovato!');
+    if (controllaRisultatoQuery(results)) return response.status(404).send('Ordine non trovato!');
 
     pool.query('UPDATE public.ordini SET stato = $1 WHERE id = $2',
       ['RITIRATO', id], (error, results) => {
@@ -831,7 +831,7 @@ const eliminaProdotto = (request, response, decoded_token) => {
   cercaProdottoById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Prodotto non trovato!');
+    if (controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
     pool.query('DELETE FROM public.prodotti WHERE id = $1', [id], (error, results) => {
       return response.status(200).send({ 'esito': "1" });
@@ -849,7 +849,7 @@ const modificaProdotto = (request, response, decoded_token) => {
   cercaProdottoById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Prodotto non trovato!');
+    if (controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
     pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
       [request.body.nome, request.body.disponibilita, request.body.prezzo, id], (error, results) => {
@@ -868,7 +868,7 @@ const modificaAttivita = (request, response) => {
   cercaAttivitaById(id, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Attivita non trovata!');
+    if (controllaRisultatoQuery(results)) return response.status(404).send('Attivita non trovata!');
 
     pool.query('UPDATE public.attivita SET ragione_sociale = $1, email = $2, telefono = $3, indirizzo = $4 WHERE id = $5',
       [request.body.ragione_sociale, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {
@@ -887,7 +887,7 @@ const modificaUtente = (request, response) => {
   cercaUtenteById(id, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Utente non trovato!');
+    if (controllaRisultatoQuery(results)) return response.status(404).send('Utente non trovato!');
 
     pool.query('UPDATE public.utenti SET nome = $1, cognome = $2, email = $3, telefono = $4, indirizzo = $5 WHERE id = $6',
       [request.body.nome, request.body.cognome, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {
@@ -978,12 +978,12 @@ const aggiungiCorriere = (request, response, decoded_token) => {
   cercaOrdineById(id_ordine, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
 
-    if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Ordine non trovato!');
+    if (controllaRisultatoQuery(results)) return response.status(404).send('Ordine non trovato!');
 
     cercaDipendenteById(request.body.id_corriere, decoded_token, (err, results) => {
       if (err) return response.status(500).send('Server Error!');
 
-      if (controllaRisultatoQuery(results.rows)) return response.status(404).send('Corriere non trovato!');
+      if (controllaRisultatoQuery(results)) return response.status(404).send('Corriere non trovato!');
 
       pool.query('UPDATE public.merci_ordine SET id_corriere = $1 WHERE id = $2',
         [request.body.id_corriere, id_merce_ordine], (error, results) => {

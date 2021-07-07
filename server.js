@@ -115,163 +115,34 @@ function verificaUtente(token) {
     }
 }
 
-/**
- * REST - Elimina dipendente
- */
-app.delete('/dipendenti/:id', (req, res) => {
-    const token = req.headers.token;
-    if (verificaAttivita(token)) {
-        try {
-            db.eliminaDipendente(req, res, jwt.decode(token));
-        } catch (error) {
-            return res.status(400).send(error);
-        }
-    } else return res.status(401).send('JWT non valido!');
-});
+//TODO da commentare
+function controllaRisultatoQuery(results, errorText) {
+    const toControl = JSON.parse(JSON.stringify(results.rows));
+    return (toControl.length == 0);
+}
+
+//TODO da commentare
+function returnDataJSON(response, results) {
+    const data = JSON.parse(JSON.stringify(results.rows));
+    const to_return = { 'results': data };
+
+    return response.status(200).send(to_return);
+}
+
+//TODO commentare
+function returnOrdiniJSON(response, results) {
+    const ordini = JSON.parse(JSON.stringify(results.rows));
+    formatDataOrdine(ordini);
+    const to_return = { 'results': ordini };
+
+    return response.status(200).send(to_return);
+}
+
+function returnPippo()
 
 /**
- * REST - Login Utente
+ * REST - GET
  */
-app.post('/login/utente', (req, res) => {
-    const password = req.body.password;
-
-    try {
-        db.findUserByEmail(req.body.email, (err, results) => {
-            if (err) return res.status(500).send('Server Error!');
-            const user = JSON.parse(JSON.stringify(results.rows));
-            if (user.length == 0) return res.status(404).send('Utente non trovato!');
-
-            const toControl = bcrypt.hashSync(password + "secret", user[0].salt);
-            const result = (user[0].password == toControl);
-            if (!result) return res.status(401).send('Password non valida!');
-
-            const expiresIn = 24 * 60 * 60;
-
-            switch (user[0].tipo) {
-                case "CLIENTE":
-                    const accessToken = jwt.sign({ id: user[0].id, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
-                    return res.status(200).send({ "accessToken": accessToken });
-                case "COMMERCIANTE":
-                    db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
-                        const commerciante = JSON.parse(JSON.stringify(results.rows));
-                        const accessToken = jwt.sign({ id: commerciante[0].id, idNegozio: commerciante[0].id_negozio, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
-                        return res.status(200).send({ "accessToken": accessToken });
-                    });
-                    break;
-                case "CORRIERE":
-                    db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
-                        const corriere = JSON.parse(JSON.stringify(results.rows));
-                        const accessToken = jwt.sign({ id: corriere[0].id, idDitta: corriere[0].id_ditta, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
-                        return res.status(200).send({ "accessToken": accessToken });
-                    });
-                    break;
-                case "MAGAZZINIERE":
-                    db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
-                        const magazziniere = JSON.parse(JSON.stringify(results.rows));
-                        const accessToken = jwt.sign({ id: magazziniere[0].id, idMagazzino: magazziniere[0].id_magazzino, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
-                        return res.status(200).send({ "accessToken": accessToken });
-                    });
-                    break;
-            }
-        })
-    } catch (error) {
-        return res.status(400).send(error);
-    }
-});
-
-/**
- * REST - Login Attività
- */
-app.post('/login/attivita', (req, res) => {
-    const password = req.body.password;
-    try {
-        db.findAttivitaByEmail(req.body.email, (err, results) => {
-            if (err) return res.status(500).send('Server Error!');
-            const attivita = JSON.parse(JSON.stringify(results.rows));
-            if (attivita.length == 0) return res.status(404).send('Attività non trovata!');
-
-            const toControl = bcrypt.hashSync(password + "secret", attivita[0].salt);
-            const result = (attivita[0].password == toControl);
-            if (!result) return res.status(401).send('Password non valida!');
-
-            const expiresIn = 24 * 60 * 60;
-            const accessToken = jwt.sign({ id: attivita[0].id, tipo: attivita[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
-            return res.status(200).send({ "accessToken": accessToken });
-        })
-    } catch (error) {
-        return res.status(400).send(error);
-    }
-});
-
-/**
- * REST - Registrazione Cliente
- */
-app.post('/register/cliente', (req, res) => {
-    try {
-        db.findUserByEmail(req.body.email, (err, results) => {
-            try {
-                if (err) return res.status(500).send('Server error!');
-                const users = JSON.parse(JSON.stringify(results.rows));
-
-                if (users.length == 0)
-                    db.creaCliente(req, res);
-                else return res.status(400).send("L'email \'" + users[0].email + "\' è già stata usata!");
-            } catch (error) {
-                return res.status(400).send(error);
-            }
-        });
-    } catch (error) {
-        return res.status(400).send(error);
-    }
-});
-
-/**
- * REST - Registrazione Dipendente
- */
-app.post('/register/dipendente', (req, res) => {
-    if (verificaAttivita(req.headers.token)) {
-        try {
-            db.findUserByEmail(req.body.email, (err, results) => {
-                try {
-                    if (err) return res.status(500).send('Server error!');
-
-                    const dipendenti = JSON.parse(JSON.stringify(results.rows));
-
-                    if (dipendenti.length == 0)
-                        db.creaDipendente(req, res);
-                    else return res.status(400).send("L'email \'" + dipendenti[0].email + "\' è già stata usata!");
-                } catch (error) {
-                    return res.status(400).send(error);
-                }
-            });
-        } catch (error) {
-            return res.status(400).send(error);
-        }
-    } else return res.status(401).send('JWT non valido!');
-});
-
-/**
- * REST - Registrazione Attivita'
- */
-app.post('/register/attivita', (req, res) => {
-    try {
-        db.findAttivitaByEmail(req.body.email, (err, results) => {
-            try {
-                if (err) return res.status(500).send('Server error!');
-
-                const attivita = JSON.parse(JSON.stringify(results.rows));
-
-                if (attivita.length == 0)
-                    db.creaAttivita(req, res);
-                else return res.status(400).send("L'email \'" + attivita[0].email + "\' è già stata usata!");
-            } catch (error) {
-                return res.status(400).send(error);
-            }
-        });
-    } catch (error) {
-        return res.status(400).send(error);
-    }
-});
 
 app.get('/dipendenti', (req, res) => {
     const token = req.headers.token;
@@ -279,11 +150,7 @@ app.get('/dipendenti', (req, res) => {
     if (verificaAttivita(token)) {
         db.getDipendenti(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
-
-            const dipendenti = JSON.parse(JSON.stringify(results.rows));
-            const to_return = { 'results': dipendenti };
-
-            return res.status(200).send(to_return);
+            returnDataJSON(res, results);
         });
     } else return res.status(401).send('JWT non valido!');
 });
@@ -294,11 +161,7 @@ app.get('/inventario', (req, res) => {
     if (verificaNegozio(token)) {
         db.getInventario(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
-
-            const inventario = JSON.parse(JSON.stringify(results.rows));
-            const to_return = { 'results': inventario };
-
-            return res.status(200).send(to_return);
+            returnDataJSON(res, results);
         });
     } else return res.status(401).send('JWT non valido!');
 });
@@ -378,58 +241,27 @@ app.get('/ordini', (req, res) => {
     if (verificaNegozio(token)) {
         db.getOrdiniNegozio(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
-
-            const ordini = JSON.parse(JSON.stringify(results.rows));
-            formatDataOrdine(ordini);
-            const to_return = { 'results': ordini };
-
-            return res.status(200).send(to_return);
+            returnOrdiniJSON(res, results);
         });
     } else if (verificaMagazzino(token)) {
         db.getOrdiniMagazzino(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
-
-            const ordini = JSON.parse(JSON.stringify(results.rows));
-            formatDataOrdine(ordini);
-            const to_return = { 'results': ordini };
-
-            return res.status(200).send(to_return);
+            returnOrdiniJSON(res, results);
         });
     } else if (verificaDittaTrasporti(token)) {
         db.getOrdiniDittaTrasporti(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
-
-            const ordini = JSON.parse(JSON.stringify(results.rows));
-            formatDataOrdine(ordini);
-            const to_return = { 'results': ordini };
-
-            return res.status(200).send(to_return);
+            returnOrdiniJSON(res, results);
         });
     } else if (verificaCliente(token)) {
         db.getOrdiniCliente(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
-
-            const ordini = JSON.parse(JSON.stringify(results.rows));
-            formatDataOrdine(ordini);
-            const to_return = { 'results': ordini };
-
-            return res.status(200).send(to_return);
+            returnOrdiniJSON(res, results);
         });
     } else {
         return res.status(401).send('JWT non valido!');
     }
 })
-
-app.put('/ordine/:id', (req, res) => {
-    const token = req.body.token_value;
-    if (verificaMagazzino(token)) {
-        try {
-            db.modificaOrdine(req, res, jwt.decode(token));
-        } catch (error) {
-            return res.status(400).send(error);
-        }
-    } else return res.status(401).send('JWT non valido!');
-});
 
 //TODO controllare che l'id dell'Ordine passato sia collegato all'id del token
 app.get('/merci/:idOrdine', (req, res) => {
@@ -437,11 +269,8 @@ app.get('/merci/:idOrdine', (req, res) => {
         try {
             db.getMerciOrdine(req, (err, results) => {
                 if (err) return res.status(500).send('Server error!');
-
-                const merci = JSON.parse(JSON.stringify(results.rows));
-                const to_return = { 'results': merci };
-
-                return res.status(200).send(to_return);
+                if (controllaRisultatoQuery(results)) return res.status(400).send("L'Ordine non ha merci collegate!");
+                returnDataJSON(res, results);
             });
         } catch (error) {
             return res.status(400).send(error);
@@ -454,11 +283,7 @@ app.get('/corriere/consegna/merci', (req, res) => {
     if (verificaCorriere(req.headers.token)) {
         db.getMerciCorriere(req, (err, results) => {
             if (err) return res.status(500).send('Server error!');
-
-            const merci = JSON.parse(JSON.stringify(results.rows));
-            const to_return = { 'results': merci };
-
-            return res.status(200).send(to_return);
+            returnDataJSON(res, results);
         });
     } else return res.status(401).send('JWT non valido!');
 });
@@ -469,11 +294,7 @@ app.get('/corriere/merce/:idMerce/indirizzo/cliente', (req, res) => {
         try {
             db.getIndirizzoCliente(req, (err, results) => {
                 if (err) return res.status(500).send('Server error!');
-
-                const info = JSON.parse(JSON.stringify(results.rows));
-                const to_return = { 'results': info };
-
-                return res.status(200).send(to_return);
+                returnDataJSON(res, results);
             });
         } catch (error) {
             return res.status(400).send(error);
@@ -485,11 +306,7 @@ app.get('/corriere/merce/:idMerce/indirizzo/cliente', (req, res) => {
 app.get('/magazzini', (req, res) => {
     db.getMagazzini((err, results) => {
         if (err) return res.status(500).send('Server error!');
-
-        const magazzini = JSON.parse(JSON.stringify(results.rows));
-        const to_return = { 'results': magazzini };
-
-        return res.status(200).send(to_return);
+        returnDataJSON(res, results);
     })
 });
 
@@ -497,11 +314,8 @@ app.get('/magazzini', (req, res) => {
 app.get('/magazzini/:id', (req, res) => {
     db.getMagazzino(req.params.id, (err, results) => {
         if (err) return res.status(500).send('Server error!');
-
-        const magazzino = JSON.parse(JSON.stringify(results.rows));
-        const to_return = { 'results': magazzino };
-
-        return res.status(200).send(to_return);
+        if (controllaRisultatoQuery(results)) return res.status(404).send('Magazzino non trovato!');
+        returnDataJSON(res, results);
     })
 });
 
@@ -509,11 +323,7 @@ app.get('/magazzini/:id', (req, res) => {
 app.get('/ditte-trasporti', (req, res) => {
     db.getDitteTrasporti((err, results) => {
         if (err) return res.status(500).send('Server error!');
-
-        const ditte = JSON.parse(JSON.stringify(results.rows));
-        const to_return = { 'results': ditte };
-
-        return res.status(200).send(to_return);
+        returnDataJSON(res, results);
     })
 });
 
@@ -521,11 +331,8 @@ app.get('/ditte-trasporti', (req, res) => {
 app.get('/ditte-trasporti/:id', (req, res) => {
     db.getDittaTrasporti(req.params.id, (err, results) => {
         if (err) return res.status(500).send('Server error!');
-
-        const ditta = JSON.parse(JSON.stringify(results.rows));
-        const to_return = { 'results': ditta };
-
-        return res.status(200).send(to_return);
+        if (controllaRisultatoQuery(results)) return res.status(404).send('Ditta di Trasporti non trovata!');
+        returnDataJSON(res, results);
     })
 });
 
@@ -533,11 +340,7 @@ app.get('/ditte-trasporti/:id', (req, res) => {
 app.get('/negozi', (req, res) => {
     db.getNegozi((err, results) => {
         if (err) return res.status(500).send('Server error!');
-
-        const negozi = JSON.parse(JSON.stringify(results.rows));
-        const to_return = { 'results': negozi };
-
-        return res.status(200).send(to_return);
+        returnDataJSON(res, results);
     })
 });
 
@@ -545,11 +348,8 @@ app.get('/negozi', (req, res) => {
 app.get('/negozi/:id', (req, res) => {
     db.getNegozio(req.params.id, (err, results) => {
         if (err) return res.status(500).send('Server error!');
-
-        const negozio = JSON.parse(JSON.stringify(results.rows));
-        const to_return = { 'results': negozio };
-
-        return res.status(200).send(to_return);
+        if (controllaRisultatoQuery(results)) return res.status(404).send('Negozio non trovato!');
+        returnDataJSON(res, results);
     })
 });
 
@@ -559,11 +359,7 @@ app.get('/info/utente', (req, res) => {
     if (verificaUtente(token)) {
         db.getUserInfo(jwt.decode(token).id, (err, results) => {
             if (err) return res.status(500).send('Server error!');
-
-            const info = JSON.parse(JSON.stringify(results.rows));
-            const to_return = { 'results': info };
-
-            return res.status(200).send(to_return);
+            returnDataJSON(res, results);
         })
     } else return res.status(401).send('JWT non valido!');
 });
@@ -575,15 +371,164 @@ app.get('/info/attivita', (req, res) => {
         db.getAttivitaInfo(jwt.decode(token).id, (err, results) => {
             //TODO fare refactor con /info/utente
             if (err) return res.status(500).send('Server error!');
-
-            const info = JSON.parse(JSON.stringify(results.rows));
-            const to_return = { 'results': info };
-
-            return res.status(200).send(to_return);
+            returnDataJSON(res, results);
         })
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - POST
+ */
+
+/**
+ * REST - Login Utente
+ */
+app.post('/login/utente', (req, res) => {
+    const password = req.body.password;
+
+    try {
+        db.findUserByEmail(req.body.email, (err, results) => {
+            if (err) return res.status(500).send('Server Error!');
+            if (controllaRisultatoQuery(results)) return res.status(404).send('Utente non trovato!');
+
+            const user = JSON.parse(JSON.stringify(results.rows));
+
+            const toControl = bcrypt.hashSync(password + "secret", user[0].salt);
+            const result = (user[0].password == toControl);
+            if (!result) return res.status(401).send('Password non valida!');
+
+            const expiresIn = 24 * 60 * 60;
+
+            switch (user[0].tipo) {
+                case "CLIENTE":
+                    const accessToken = jwt.sign({ id: user[0].id, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+                    return res.status(200).send({ "accessToken": accessToken });
+                case "COMMERCIANTE":
+                    db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
+                        const commerciante = JSON.parse(JSON.stringify(results.rows));
+                        const accessToken = jwt.sign({ id: commerciante[0].id, idNegozio: commerciante[0].id_negozio, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+                        return res.status(200).send({ "accessToken": accessToken });
+                    });
+                    break;
+                case "CORRIERE":
+                    db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
+                        const corriere = JSON.parse(JSON.stringify(results.rows));
+                        const accessToken = jwt.sign({ id: corriere[0].id, idDitta: corriere[0].id_ditta, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+                        return res.status(200).send({ "accessToken": accessToken });
+                    });
+                    break;
+                case "MAGAZZINIERE":
+                    db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
+                        const magazziniere = JSON.parse(JSON.stringify(results.rows));
+                        const accessToken = jwt.sign({ id: magazziniere[0].id, idMagazzino: magazziniere[0].id_magazzino, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+                        return res.status(200).send({ "accessToken": accessToken });
+                    });
+                    break;
+            }
+        })
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+});
+
+/**
+ * REST - Login Attività
+ */
+app.post('/login/attivita', (req, res) => {
+    const password = req.body.password;
+    try {
+        db.findAttivitaByEmail(req.body.email, (err, results) => {
+            if (err) return res.status(500).send('Server Error!');
+            if (controllaRisultatoQuery(results)) return res.status(404).send('Attività non trovata!');
+
+            const attivita = JSON.parse(JSON.stringify(results.rows));
+
+            const toControl = bcrypt.hashSync(password + "secret", attivita[0].salt);
+            const result = (attivita[0].password == toControl);
+            if (!result) return res.status(401).send('Password non valida!');
+
+            const expiresIn = 24 * 60 * 60;
+            const accessToken = jwt.sign({ id: attivita[0].id, tipo: attivita[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
+            return res.status(200).send({ "accessToken": accessToken });
+        })
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+});
+
+/**
+ * REST - Registrazione Cliente
+ */
+app.post('/register/cliente', (req, res) => {
+    try {
+        db.findUserByEmail(req.body.email, (err, results) => {
+            try {
+                if (err) return res.status(500).send('Server error!');
+                const users = JSON.parse(JSON.stringify(results.rows));
+
+                if (users.length == 0)
+                    db.creaCliente(req, res);
+                else return res.status(400).send("L'email \'" + users[0].email + "\' è già stata usata!");
+            } catch (error) {
+                return res.status(400).send(error);
+            }
+        });
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+});
+
+/**
+ * REST - Registrazione Dipendente
+ */
+app.post('/register/dipendente', (req, res) => {
+    if (verificaAttivita(req.body.token_value)) {
+        try {
+            db.findUserByEmail(req.body.email, (err, results) => {
+                try {
+                    if (err) return res.status(500).send('Server error!');
+
+                    const dipendenti = JSON.parse(JSON.stringify(results.rows));
+
+                    if (dipendenti.length == 0)
+                        db.creaDipendente(req, res);
+                    else return res.status(400).send("L'email \'" + dipendenti[0].email + "\' è già stata usata!");
+                } catch (error) {
+                    return res.status(400).send(error);
+                }
+            });
+        } catch (error) {
+            return res.status(400).send(error);
+        }
+    } else return res.status(401).send('JWT non valido!');
+});
+
+/**
+ * REST - Registrazione Attivita'
+ */
+app.post('/register/attivita', (req, res) => {
+    try {
+        db.findAttivitaByEmail(req.body.email, (err, results) => {
+            try {
+                if (err) return res.status(500).send('Server error!');
+
+                const attivita = JSON.parse(JSON.stringify(results.rows));
+
+                if (attivita.length == 0)
+                    db.creaAttivita(req, res);
+                else return res.status(400).send("L'email \'" + attivita[0].email + "\' è già stata usata!");
+            } catch (error) {
+                return res.status(400).send(error);
+            }
+        });
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+});
+
+/**
+ * REST - Creazione Prodotto
+ */
 app.post('/prodotto', (req, res) => {
     if (verificaNegozio(req.body.token_value)) {
         try {
@@ -594,11 +539,28 @@ app.post('/prodotto', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
-app.delete('/prodotto/:id', (req, res) => {
-    const token = req.headers.token;
-    if (verificaNegozio(token)) {
+/**
+ * REST - Creazione Ordine
+ */
+app.post('/ordine', (req, res) => {
+    if (verificaNegozio(req.body.token_value)) {
         try {
-            db.eliminaProdotto(req, res, jwt.decode(token));
+            db.creaOrdine(req, res);
+        } catch (error) {
+            return res.status(400).send(error);
+        }
+    } else return res.status(401).send('JWT non valido!');
+})
+
+/**
+ * REST - PUT
+ */
+
+app.put('/ordine/:id', (req, res) => {
+    const token = req.body.token_value;
+    if (verificaMagazzino(token)) {
+        try {
+            db.modificaOrdine(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -671,15 +633,37 @@ app.put('/merci/:id', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 })
 
-app.post('/ordine', (req, res) => {
-    if (verificaNegozio(req.body.token_value)) {
+/**
+ * REST - DELETE
+ */
+
+/**
+ * REST - Elimina dipendente
+ */
+app.delete('/dipendenti/:id', (req, res) => {
+    const token = req.headers.token;
+    if (verificaAttivita(token)) {
         try {
-            db.creaOrdine(req, res);
+            db.eliminaDipendente(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }
     } else return res.status(401).send('JWT non valido!');
-})
+});
+
+/**
+ * REST - Elimina prodotto
+ */
+app.delete('/prodotto/:id', (req, res) => {
+    const token = req.headers.token;
+    if (verificaNegozio(token)) {
+        try {
+            db.eliminaProdotto(req, res, jwt.decode(token));
+        } catch (error) {
+            return res.status(400).send(error);
+        }
+    } else return res.status(401).send('JWT non valido!');
+});
 
 app.get('/*', function (req, res) {
     res.sendFile('index.html', { root: __dirname + '/www' });
