@@ -138,8 +138,6 @@ function returnOrdiniJSON(response, results) {
     return response.status(200).send(to_return);
 }
 
-function returnPippo()
-
 /**
  * REST - GET
  */
