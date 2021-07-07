@@ -65,13 +65,11 @@ function controllaNotNull(toControl, errorText) {
 }
 
 //TODO da commentare
-function controllaProdottiDaVendere(inventario, prodottiDaVendere, totale) {
+function controllaProdottiDaVendere(inventario, prodottiDaVendere) {
   inventario.forEach(prodottoInventario => {
     prodottiDaVendere.forEach(prodotto => {
       if (prodottoInventario.id == prodotto.id) {
         prodotto.disponibilita = prodottoInventario.disponibilita;
-        prodotto.prezzo = prodottoInventario.prezzo;
-        totale += (prodotto.prezzo * prodotto.quantita);
         if (prodotto.disponibilita < prodotto.quantita)
           return true;
       }
@@ -80,10 +78,40 @@ function controllaProdottiDaVendere(inventario, prodottiDaVendere, totale) {
   return false;
 }
 
+//TODO commentare
+function calcolaTotaleOrdine(inventario, prodottiDaVendere) {
+  var totale = 0;
+  inventario.forEach(prodottoInventario => {
+    prodottiDaVendere.forEach(prodotto => {
+      if (prodottoInventario.id == prodotto.id) {
+        prodotto.prezzo = prodottoInventario.prezzo;
+        totale += (prodotto.prezzo * prodotto.quantita);
+      }
+    })
+  });
+  return totale;
+}
+
 //TODO da commentare
 function controllaRisultatoQuery(results) {
   const toControl = JSON.parse(JSON.stringify(results.rows));
   return (toControl.length == 0);
+}
+
+//TODO da commentare
+function getIdNegozio(decoded_token) {
+  var id_negozio;
+  if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio;
+  if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
+  return id_negozio;
+}
+
+//TODO da commentare
+function getIdMagazzino(decoded_token) {
+  var idMagazzino;
+  if (decoded_token.tipo == "MAGAZZINIERE") idMagazzino = decoded_token.idMagazzino
+  if (decoded_token.tipo == "MAGAZZINO") idMagazzino = decoded_token.id;
+  return idMagazzino;
 }
 
 /**
@@ -247,10 +275,7 @@ const cercaUtenteById = (id, cb) => {
  * @returns il risultato della query
  */
 const cercaProdottoById = (id, decoded_token, cb) => {
-  var id_negozio;
-
-  if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio;
-  if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
+  var id_negozio = getIdNegozio(decoded_token);
 
   return pool.query('SELECT * FROM public.prodotti WHERE id = $1 AND id_negozio = $2', [id, id_negozio], (error, results) => {
     cb(error, results)
@@ -320,7 +345,6 @@ const eliminaDipendente = (request, response, decoded_token) => {
 
   cercaDipendenteById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
-
     if (controllaRisultatoQuery(results)) return response.status(404).send('Dipendente non trovato!');
 
     pool.query('DELETE FROM public.utenti WHERE id = $1', [id], (error, results) => {
@@ -362,6 +386,7 @@ const findAttivitaByEmail = (email, cb) => {
  * @returns il risultato della query
  */
 const findOrdineByCodice = (codice, cb) => {
+  controllaNotNull(codice, "Il Codice di Ritiro non deve essere null!");
   return pool.query('SELECT * FROM public.ordini WHERE codice_ritiro = $1', [codice], (error, results) => {
     cb(error, results)
   });
@@ -384,22 +409,20 @@ const vendiProdotto = (prodotto, id_ordine, response) => {
 const creaOrdine = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   const codiceRitiro = generateCodiceRitiro();
-  var totale = 0, id_negozio, id_cliente, erroreDisponibilita = false;
-
-  if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio
-  if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
+  var id_cliente, id_negozio = getIdNegozio(decoded_token);
 
   getInventario(request.body.token_value, (err, results) => {
     if (err) return res.status(500).send('Server error!');
 
     const inventario = JSON.parse(JSON.stringify(results.rows));
-    var totale;
 
-    var erroreDisponibilita = controllaProdottiDaVendere(inventario, request.body.prodotti, totale);
+    var erroreDisponibilita = controllaProdottiDaVendere(inventario, request.body.prodotti);
+    var totale = calcolaTotaleOrdine(inventario, request.body.prodotti);
 
     findUserByEmail(request.body.email_cliente, (err, results) => {
-      if (erroreDisponibilita) return response.status(500).send("La Quantità supera la Disponibilità!")
       if (err) return response.status(500).send('Server error!');
+      if (erroreDisponibilita) return response.status(400).send("La Quantità supera la Disponibilità!")
+      if (controllaRisultatoQuery(results)) return response.status(404).send("L'email inserita non è associata a nessun Cliente!");
 
       const cliente = JSON.parse(JSON.stringify(results.rows));
 
@@ -486,10 +509,7 @@ const verificaDipendenteLogin = (id, tipo, cb) => {
  */
 const getInventario = (token, cb) => {
   const decoded_token = jwt.decode(token);
-  var idNegozio;
-
-  if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
-  if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
+  var idNegozio = getIdNegozio(decoded_token);
 
   return pool.query('select id, nome, disponibilita, prezzo from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
     [idNegozio], (error, results) => {
@@ -518,10 +538,7 @@ const getOrdiniStats = (token, response, cb) => {
 
 const getInventarioCount = (token, cb) => {
   const decoded_token = jwt.decode(token);
-  var idNegozio;
-
-  if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
-  if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
+  var idNegozio = getIdNegozio(decoded_token);
 
   return pool.query('SELECT COUNT(*) FROM public.prodotti WHERE id_negozio = $1;',
     [idNegozio], (error, results) => {
@@ -578,10 +595,7 @@ const getDitteTrasportiCount = (cb) => {
  */
 const getOrdiniNegozio = (token, cb) => {
   const decoded_token = jwt.decode(token);
-  var idNegozio;
-
-  if (decoded_token.tipo == "COMMERCIANTE") idNegozio = decoded_token.idNegozio
-  if (decoded_token.tipo == "NEGOZIO") idNegozio = decoded_token.id;
+  var idNegozio = getIdNegozio(decoded_token);
 
   return pool.query('select id, id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine, totale from public.ordini where id_negozio=$1 ORDER BY id DESC',
     [idNegozio], (error, results) => {
@@ -613,10 +627,7 @@ const getOrdiniDittaTrasporti = (token, cb) => {
  */
 const getOrdiniMagazzino = (token, cb) => {
   const decoded_token = jwt.decode(token);
-  var idMagazzino;
-
-  if (decoded_token.tipo == "MAGAZZINIERE") idMagazzino = decoded_token.idMagazzino
-  if (decoded_token.tipo == "MAGAZZINO") idMagazzino = decoded_token.id;
+  var idMagazzino = getIdMagazzino(decoded_token);
 
   return pool.query('select id, id_negozio, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine from public.ordini where id_magazzino=$1 ORDER BY id DESC',
     [idMagazzino], (error, results) => {
@@ -645,7 +656,6 @@ const modificaOrdine = (request, response, decoded_token) => {
 
   cercaOrdineById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
-
     if (controllaRisultatoQuery(results)) return response.status(404).send('Ordine non trovato!');
 
     pool.query('UPDATE public.ordini SET stato = $1 WHERE id = $2',
@@ -658,8 +668,8 @@ const modificaOrdine = (request, response, decoded_token) => {
 
 //TODO fare commento
 const getMerciOrdine = (req, cb) => {
-  controllaInt(request.params.idOrdine, "Il Codice dell'Ordine deve essere un numero!");
-  const idOrdine = parseInt(request.params.idOrdine);
+  controllaInt(req.params.idOrdine, "Il Codice dell'Ordine deve essere un numero!");
+  const idOrdine = parseInt(req.params.idOrdine);
   const decoded_token = jwt.decode(req.headers.token);
   var query, controlId;
 
@@ -809,13 +819,10 @@ const getNegozio = (idNegozio, cb) => {
 //TODO fare commento
 const creaProdotto = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
-  var id_negozio;
+  var id_negozio = getIdNegozio(decoded_token);
 
   controllaInt(request.body.disponibilita, "La Disponibilità deve essere un numero!");
   controllaFloat(request.body.prezzo, "Il Prezzo deve essere un numero!");
-
-  if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio
-  if (decoded_token.tipo == "NEGOZIO") id_negozio = decoded_token.id;
 
   pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
     [id_negozio, request.body.nome, request.body.disponibilita, request.body.prezzo], (error, results) => {
@@ -837,7 +844,6 @@ const eliminaProdotto = (request, response, decoded_token) => {
 
   cercaProdottoById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
-
     if (controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
     pool.query('DELETE FROM public.prodotti WHERE id = $1', [id], (error, results) => {
@@ -855,7 +861,6 @@ const modificaProdotto = (request, response, decoded_token) => {
 
   cercaProdottoById(id, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
-
     if (controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
     pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
@@ -874,7 +879,6 @@ const modificaAttivita = (request, response) => {
 
   cercaAttivitaById(id, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
-
     if (controllaRisultatoQuery(results)) return response.status(404).send('Attivita non trovata!');
 
     pool.query('UPDATE public.attivita SET ragione_sociale = $1, email = $2, telefono = $3, indirizzo = $4 WHERE id = $5',
@@ -893,7 +897,6 @@ const modificaUtente = (request, response) => {
 
   cercaUtenteById(id, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
-
     if (controllaRisultatoQuery(results)) return response.status(404).send('Utente non trovato!');
 
     pool.query('UPDATE public.utenti SET nome = $1, cognome = $2, email = $3, telefono = $4, indirizzo = $5 WHERE id = $6',
@@ -984,12 +987,10 @@ const aggiungiCorriere = (request, response, decoded_token) => {
 
   cercaOrdineById(id_ordine, decoded_token, (err, results) => {
     if (err) return response.status(500).send('Server Error!');
-
     if (controllaRisultatoQuery(results)) return response.status(404).send('Ordine non trovato!');
 
     cercaDipendenteById(request.body.id_corriere, decoded_token, (err, results) => {
       if (err) return response.status(500).send('Server Error!');
-
       if (controllaRisultatoQuery(results)) return response.status(404).send('Corriere non trovato!');
 
       pool.query('UPDATE public.merci_ordine SET id_corriere = $1 WHERE id = $2',
