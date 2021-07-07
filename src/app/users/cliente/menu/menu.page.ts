@@ -16,11 +16,6 @@ export class MenuPage implements OnInit {
       url: '/cliente/home'
     },
     {
-      title: 'Promozioni',
-      icon: 'pricetags-outline',
-      url: '/cliente/promo'
-    },
-    {
       title: 'Ordini',
       icon: 'pricetags-outline',
       url: '/cliente/ordini'
