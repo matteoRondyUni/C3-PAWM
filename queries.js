@@ -11,6 +11,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const ERRORE_DATI_QUERY = "Errore nei dati!";
+const ATTIVITA = "ATTIVITA";
+const UTENTE = "UTENTE";
 
 /**
  * Genera il Codice di Ritiro per l'Ordine.
@@ -127,10 +129,10 @@ function getIdMagazzino(decoded_token) {
 //TODO da commentare
 function cambiaPassword(request, response, results, id, tipo) {
   var query, errorText;
-  if (tipo == 'ATTIVITA') {
+  if (tipo == ATTIVITA) {
     query = 'UPDATE public.attivita SET password = $1 WHERE id = $2';
     errorText = 'Attivita non trovata!';
-  } else if (tipo == 'UTENTE') {
+  } else if (tipo == UTENTE) {
     query = 'UPDATE public.utenti SET password = $1 WHERE id = $2';
     errorText = 'Utente non trovato!';
   }
@@ -151,14 +153,36 @@ function cambiaPassword(request, response, results, id, tipo) {
   } else return response.status(401).send('La vecchia password non è corretta');
 }
 
+function controllaDatiRegister(request, tipo) {
+  if (tipo == ATTIVITA)
+    controllaString(request.body.nome, "Il campo Ragione Sociale non può essere vuoto!");
+  else if (tipo == UTENTE) {
+    controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
+    controllaString(request.body.cognome, "Il campo Cognome non può essere vuoto!");
+  }
+  controllaString(request.body.email, "Il campo Email non può essere vuoto!");
+  controllaPassword(request.body.password);
+  controllaTelefono(request.body.telefono);
+  controllaString(request.body.indirizzo, "Il campo Indirizzo non può essere vuoto!");
+}
+
+function controllaDatiCreazioneOrdine(request) {
+  controllaString(request.body.tipo, "La Tipologia dell'Ordine non può essere vuota!");
+  controllaString(request.body.email_cliente, "Il campo Email non può essere vuoto!");
+  if (request.body.tipo == "MAGAZZINO")
+    controllaInt(request.body.id_magazzino, "Deve essere selezionato un Magazzino!");
+  controllaInt(request.body.id_ditta, "Deve essere selezionata una Ditta di Trasporti!");
+  if (request.body.prodotti.length == 0 || request.body.prodotti == null)
+    throw "L'Ordine deve avere almeno una merce!";
+}
+
 /**
  * Crea un nuovo Cliente.
  * @param {*} request 
  * @param {*} response 
  */
 const creaCliente = (request, response) => {
-  controllaPassword(request.body.password);
-  controllaTelefono(request.body.telefono);
+  controllaDatiRegister(request, UTENTE);
 
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
@@ -176,8 +200,7 @@ const creaCliente = (request, response) => {
  * @param {*} response 
  */
 const creaDipendente = (request, response) => {
-  controllaPassword(request.body.password);
-  controllaTelefono(request.body.telefono);
+  controllaDatiRegister(request, UTENTE);
 
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
@@ -225,8 +248,7 @@ const creaDipendente = (request, response) => {
  * @param {*} response 
  */
 const creaAttivita = (request, response) => {
-  controllaPassword(request.body.password);
-  controllaTelefono(request.body.telefono);
+  controllaDatiRegister(request, ATTIVITA);
 
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
@@ -236,23 +258,6 @@ const creaAttivita = (request, response) => {
       if (error) return response.status(400).send(ERRORE_DATI_QUERY);
       return response.status(200).send({ 'esito': "1" });
     })
-}
-
-//VECCHIO
-const updateUser = (request, response) => {
-  const id = parseInt(request.params.id)
-  const { nome, cognome } = request.body
-
-  pool.query(
-    'UPDATE public.utenti SET nome = $1, cognome = $2 WHERE id = $3',
-    [nome, cognome, id],
-    (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).send(`User modified with ID: ${id}`)
-    }
-  )
 }
 
 /**
@@ -361,7 +366,7 @@ const cercaOrdineById = (id_ordine, decoded_token, cb) => {
  * //TODO commentare
  * @param {*} id 
  * @param {*} decoded_token JWT decodificato del Corriere
- * @param {*} cb 
+ * @param {*} cb Callback
  */
 const cercaMerceById = (id, decoded_token, cb) => {
   pool.query('SELECT * FROM public.merci_ordine WHERE id = $1 AND id_corriere = $2', [id, decoded_token.id], (error, results) => {
@@ -446,9 +451,7 @@ const creaOrdine = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   const codiceRitiro = generateCodiceRitiro();
   var id_cliente, id_negozio = getIdNegozio(decoded_token);
-
-  if (request.body.prodotti.length == 0 || request.body.prodotti == null) return response.status(400).send("L'Ordine deve avere almeno una merce!");
-  controllaString(request.body.tipo, "La Tipologia dell'Ordine non può essere vuota!");
+  controllaDatiCreazioneOrdine(request);
 
   getInventario(request.body.token_value, (err, results) => {
     if (err) return res.status(500).send('Server error!');
@@ -957,22 +960,22 @@ const modificaPassword = (request, response, decoded_token) => {
     case 'DITTA_TRASPORTI':
     case 'MAGAZZINO':
     case 'NEGOZIO':
-      tipo = 'ATTIVITA'; break;
+      tipo = ATTIVITA; break;
     case 'CLIENTE':
     case 'COMMERCIANTE':
     case 'CORRIERE':
     case 'MAGAZZINIERE':
-      tipo = 'UTENTE'; break;
+      tipo = UTENTE; break;
     default:
       return response.status(400).send('Bad request!');
   }
 
-  if (tipo === 'ATTIVITA') {
+  if (tipo === ATTIVITA) {
     cercaAttivitaById(id, (err, results) => {
       if (err) return response.status(500).send('Server Error!');
       cambiaPassword(request, response, results, id, tipo);
     });
-  } else if (tipo == 'UTENTE') {
+  } else if (tipo == UTENTE) {
     cercaUtenteById(id, (err, results) => {
       if (err) return response.status(500).send('Server Error!');
       cambiaPassword(request, response, results, id, tipo);
@@ -989,7 +992,7 @@ const modificaPassword = (request, response, decoded_token) => {
  */
 const aggiungiCorriere = (request, response, decoded_token) => {
   controllaInt(request.params.id, "L'ID della Merce deve essere un numero!");
-  controllaInt(request.params.id_ordine, "L'ID dell'Ordine deve essere un numero!");
+  controllaInt(request.body.id_ordine, "L'ID dell'Ordine deve essere un numero!");
 
   const id_merce_ordine = parseInt(request.params.id);
   const id_ordine = request.body.id_ordine;
@@ -1047,9 +1050,9 @@ const cambiaStatoMerce = (request, response, decoded_token) => {
 }
 
 /**
- * //TODO commentare
- * @param {*} cb 
+ * 
  * @param {*} idUtente 
+ * @param {*} cb Callback
  * @returns 
  */
 const getUserInfo = (idUtente, cb) => {
@@ -1060,9 +1063,9 @@ const getUserInfo = (idUtente, cb) => {
 }
 
 /**
- * //TODO commentare
- * @param {*} cb 
+ * 
  * @param {*} idAttivita 
+ * @param {*} cb Callback
  * @returns 
  */
 const getAttivitaInfo = (idAttivita, cb) => {
@@ -1112,6 +1115,5 @@ module.exports = {
   modificaPassword,
   modificaProdotto,
   modificaUtente,
-  updateUser,
   verificaDipendenteLogin
 }
