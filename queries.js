@@ -20,6 +20,7 @@ function generateCodiceRitiro() {
   const toReturn = crypto.randomBytes(4).toString('hex');
   return toReturn;
 }
+
 /**
  * Controlla che la password sia compresa tra 8 e 16 caratteri.
  * @param {String} password password da controllare
@@ -121,6 +122,33 @@ function getIdMagazzino(decoded_token) {
   if (decoded_token.tipo == "MAGAZZINIERE") idMagazzino = decoded_token.idMagazzino
   if (decoded_token.tipo == "MAGAZZINO") idMagazzino = decoded_token.id;
   return idMagazzino;
+}
+
+//TODO da commentare
+function cambiaPassword(request, response, results, id, tipo) {
+  var query, errorText;
+  if (tipo == 'ATTIVITA') {
+    query = 'UPDATE public.attivita SET password = $1 WHERE id = $2';
+    errorText = 'Attivita non trovata!';
+  } else if (tipo == 'UTENTE') {
+    query = 'UPDATE public.utenti SET password = $1 WHERE id = $2';
+    errorText = 'Utente non trovato!';
+  }
+
+  const risultati = JSON.parse(JSON.stringify(results.rows));
+  if (risultati.length == 0) return response.status(404).send(errorText);
+
+  const data = risultati[0];
+  const hash = bcrypt.hashSync(request.body.old_password + "secret", data.salt);
+
+  if (hash == data.password) {
+    const new_hash = bcrypt.hashSync(request.body.new_password + "secret", data.salt);
+
+    pool.query(query, [new_hash, id], (error, results) => {
+      if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+      return response.status(200).send({ 'esito': "1" });
+    });
+  } else return response.status(401).send('La vecchia password non è corretta');
 }
 
 /**
@@ -299,8 +327,7 @@ const cercaProdottoById = (id, decoded_token, cb) => {
  * @returns il risultato della query
  */
 const cercaOrdineById = (id_ordine, decoded_token, cb) => {
-  var query;
-  var id_owner;
+  var query, id_owner;
 
   switch (decoded_token.tipo) {
     case 'NEGOZIO':
@@ -939,46 +966,16 @@ const modificaPassword = (request, response, decoded_token) => {
     default:
       return response.status(400).send('Bad request!');
   }
-  //TODO Refactor
+
   if (tipo === 'ATTIVITA') {
     cercaAttivitaById(id, (err, results) => {
       if (err) return response.status(500).send('Server Error!');
-
-      const risultati = JSON.parse(JSON.stringify(results.rows));
-      if (risultati.length == 0) return response.status(404).send('Attivita non trovata!');
-
-      const attivita = risultati[0];
-      const hash = bcrypt.hashSync(request.body.old_password + "secret", attivita.salt);
-
-      if (hash == attivita.password) {
-        const new_hash = bcrypt.hashSync(request.body.new_password + "secret", attivita.salt);
-
-        pool.query('UPDATE public.attivita SET password = $1 WHERE id = $2',
-          [new_hash, id], (error, results) => {
-            if (error) return response.status(400).send(ERRORE_DATI_QUERY);
-            return response.status(200).send({ 'esito': "1" });
-          });
-      } else return response.status(401).send('La vecchia password non è corretta');
+      cambiaPassword(request, response, results, id, tipo);
     });
   } else if (tipo == 'UTENTE') {
     cercaUtenteById(id, (err, results) => {
       if (err) return response.status(500).send('Server Error!');
-
-      const risultati = JSON.parse(JSON.stringify(results.rows));
-      if (risultati.length == 0) return response.status(404).send('Utente non trovato!');
-
-      const utente = risultati[0];
-      const hash = bcrypt.hashSync(request.body.old_password + "secret", utente.salt);
-
-      if (hash == utente.password) {
-        const new_hash = bcrypt.hashSync(request.body.new_password + "secret", utente.salt);
-
-        pool.query('UPDATE public.utenti SET password = $1 WHERE id = $2',
-          [new_hash, id], (error, results) => {
-            if (error) return response.status(400).send(ERRORE_DATI_QUERY);
-            return response.status(200).send({ 'esito': "1" });
-          });
-      } else return response.status(401).send('La vecchia password non è corretta');
+      cambiaPassword(request, response, results, id, tipo);
     });
   }
 }
