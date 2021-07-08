@@ -79,7 +79,7 @@ CREATE TABLE public.ordini
 	"id_negozio" serial NOT NULL,
     "id_magazzino" integer,
     "id_cliente" serial NOT NULL,
-	"id_ditta" integer,
+	"id_ditta" serial NOT NULL,
 	tipo character varying(15) NOT NULL,
     stato character varying(30) NOT NULL,
     codice_ritiro character varying(30) NOT NULL,
@@ -145,6 +145,13 @@ ALTER TABLE public.ordini
 	
 ALTER TABLE public.ordini
     ADD FOREIGN KEY ("id_negozio")
+    REFERENCES public.attivita ("id")
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+    NOT VALid;
+
+ALTER TABLE public.ordini
+    ADD FOREIGN KEY ("id_ditta")
     REFERENCES public.attivita ("id")
 	ON DELETE CASCADE
 	ON UPDATE CASCADE
