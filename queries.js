@@ -631,28 +631,40 @@ const getInventario = (token, cb) => {
 }
 
 /**
- * Ritorna le statistiche delle vendite del Negozio.
- * @param {*} token JWT del Negozio o del Commerciante
+ * Calcola le statistiche degli ordini di un certo Negozio o Cliente.
+ * @param {*} ordini
+ */
+function calcolaVendite(ordini) {
+  var vendite_ultimo_mese = 0, vendite_totali = 0;
+
+  ordini.forEach(ordine => {
+    var tmp = new Date(ordine.data_ordine);
+    vendite_totali += Number(ordine.totale);
+
+    if (tmp.getMonth() == new Date().getMonth()) vendite_ultimo_mese += Number(ordine.totale);
+  });
+  return { 'vendite_totali': vendite_totali, 'vendite_ultimo_mese': vendite_ultimo_mese };
+}
+
+/**
+ * Ritorna le statistiche delle vendite di un Negozio o di un Cliente.
+ * @param {*} token JWT del Negozio, Commerciante o del Cliente
  * @param {*} response 
  * @param {*} cb Callback
  */
 const getOrdiniStats = (token, response, cb) => {
-  getOrdiniNegozio(token, (err, results) => {
-    if (err) return response.status(500).send('Server error!');
-
-    const ordini = JSON.parse(JSON.stringify(results.rows));
-    var vendite_ultimo_mese = 0, vendite_totali = 0;
-
-    ordini.forEach(ordine => {
-      var tmp = new Date(ordine.data_ordine);
-      vendite_totali += Number(ordine.totale);
-
-      if (tmp.getMonth() == new Date().getMonth()) vendite_ultimo_mese += Number(ordine.totale);
+  const decoded_token = jwt.decode(token);
+  if (decoded_token.tipo == 'COMMERCIANTE' || decoded_token.tipo == 'NEGOZIO')
+    getOrdiniNegozio(token, (err, results) => {
+      if (err) return response.status(500).send('Server error!');
+      cb(calcolaVendite(JSON.parse(JSON.stringify(results.rows))));
     });
-
-    const to_return = { 'vendite_totali': vendite_totali, 'vendite_ultimo_mese': vendite_ultimo_mese };
-    cb(to_return);
-  });
+  else if (decoded_token.tipo == 'CLIENTE') {
+    getOrdiniCliente(token, (err, results) => {
+      if (err) return response.status(500).send('Server error!');
+      cb(calcolaVendite(JSON.parse(JSON.stringify(results.rows))));
+    });
+  }
 }
 
 /**
@@ -790,7 +802,7 @@ const getOrdiniMagazzino = (token, cb) => {
 const getOrdiniCliente = (token, cb) => {
   const decoded_token = jwt.decode(token);
 
-  return pool.query('select id, id_negozio, id_magazzino, id_ditta, stato, codice_ritiro, data_ordine from public.ordini where id_cliente=$1 ORDER BY id DESC',
+  return pool.query('select id, id_negozio, id_magazzino, id_ditta, stato, codice_ritiro, data_ordine, totale from public.ordini where id_cliente=$1 ORDER BY id DESC',
     [decoded_token.id], (error, results) => {
       cb(error, results)
     });

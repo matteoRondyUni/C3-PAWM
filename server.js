@@ -266,16 +266,15 @@ app.get('/ditte/count', (req, res) => {
 });
 
 /**
- * REST - Ritorna le statistiche delle vendite del Negozio
+ * REST - Ritorna le statistiche delle vendite di un Negozio o di un Cliente
  */
 app.get('/ordini/stats', (req, res) => {
     const token = req.headers.token;
 
-    if (verificaNegozio(token)) {
+    if (verificaNegozio(token) || verificaCliente(token)) {
         db.getOrdiniStats(token, res, (tmp) => {
             const stats = JSON.parse(JSON.stringify(tmp));
             const to_return = { 'results': stats };
-
             return res.status(200).send(to_return);
         });
     } else return res.status(401).send('JWT non valido!');
