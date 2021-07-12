@@ -11,7 +11,10 @@ app.use(express.static(__dirname + '/www'));
 
 app.use(express.json());
 
-//TODO
+/**
+ * Controlla la correttezza del JWT.
+ * @param {JSON} token JWT da controllare
+ */
 function verificaJWT(token) {
     try {
         if (token == null || token == '' || token == undefined) return false;
@@ -22,7 +25,87 @@ function verificaJWT(token) {
     }
 }
 
-//TODO
+/**
+ * Controlla che il JWT corrisponda ad una Attività.
+ * @param {JSON} token JWT da controllare
+ */
+function verificaAttivita(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "NEGOZIO" || tipo == "DITTA_TRASPORTI" || tipo == "MAGAZZINO");
+    } else return false;
+}
+
+/**
+ * Controlla che il JWT corrisponda ad un Negozio o ad un Commerciante.
+ * @param {JSON} token JWT da controllare
+ */
+function verificaNegozio(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "NEGOZIO" || tipo == "COMMERCIANTE");
+    } else return false;
+}
+
+/**
+ * Controlla che il JWT corrisponda ad un Magazzino o ad un Magazziniere.
+ * @param {JSON} token JWT da controllare
+ */
+function verificaMagazzino(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "MAGAZZINO" || tipo == "MAGAZZINIERE");
+    } else return false;
+}
+
+/**
+ * Controlla che il JWT corrisponda ad una Ditta di trasporti.
+ * @param {JSON} token JWT da controllare
+ */
+function verificaDittaTrasporti(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "DITTA_TRASPORTI");
+    } else return false;
+}
+
+/**
+ * Controlla che il JWT corrisponda ad un Corriere.
+ * @param {JSON} token JWT da controllare
+ */
+function verificaCorriere(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "CORRIERE");
+    } else return false;
+}
+
+/**
+ * Controlla che il JWT corrisponda ad un Cliente.
+ * @param {JSON} token JWT da controllare
+ */
+function verificaCliente(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "CLIENTE");
+    } else return false;
+}
+
+/**
+ * Controlla che il JWT corrisponda ad un Utente.
+ * @param {JSON} token JWT da controllare
+ */
+function verificaUtente(token) {
+    if (verificaJWT(token)) {
+        tipo = (jwt.decode(token)).tipo;
+        return (tipo == "CLIENTE" || tipo == "CORRIERE" || tipo == "MAGAZZINIERE" || tipo == "COMMERCIANTE");
+    } else return false;
+}
+
+/**
+ * Imposta il formato della Data degli Ordini.
+ * @param {*} ordini
+ */
 function formatDataOrdine(ordini) {
     ordini.forEach(ordine => {
         var tmp = new Date(ordine.data_ordine);
@@ -32,116 +115,47 @@ function formatDataOrdine(ordini) {
 }
 
 /**
- * Controlla che il JWT corrisponda ad una attività
+ * Controlla che la Query abbia ritornato almeno un riga.
+ * @param {*} results Risultato della query da controllare
+ * @returns true se la query non ha ritornato nulla, false altrimenti
  */
-function verificaAttivita(token) {
-    if (verificaJWT(token)) {
-        tipo = (jwt.decode(token)).tipo;
-        return (tipo == "NEGOZIO" || tipo == "DITTA_TRASPORTI" || tipo == "MAGAZZINO");
-    } else {
-        return false;
-    }
-}
-
-/**
- * Controlla che il JWT corrisponda ad un negozio o ad un commerciante
- */
-function verificaNegozio(token) {
-    if (verificaJWT(token)) {
-        tipo = (jwt.decode(token)).tipo;
-        return (tipo == "NEGOZIO" || tipo == "COMMERCIANTE");
-    } else {
-        return false;
-    }
-}
-
-/**
- * Controlla che il JWT corrisponda ad un magazzino o ad un magazziniere
- */
-function verificaMagazzino(token) {
-    if (verificaJWT(token)) {
-        tipo = (jwt.decode(token)).tipo;
-        return (tipo == "MAGAZZINO" || tipo == "MAGAZZINIERE");
-    } else {
-        return false;
-    }
-}
-
-/**
- * Controlla che il JWT corrisponda ad una ditta di trasporti
- */
-function verificaDittaTrasporti(token) {
-    if (verificaJWT(token)) {
-        tipo = (jwt.decode(token)).tipo;
-        return (tipo == "DITTA_TRASPORTI");
-    } else {
-        return false;
-    }
-}
-
-/**
- * Controlla che il JWT corrisponda ad un corriere
- */
-function verificaCorriere(token) {
-    if (verificaJWT(token)) {
-        tipo = (jwt.decode(token)).tipo;
-        return (tipo == "CORRIERE");
-    } else {
-        return false;
-    }
-}
-
-/**
- * Controlla che il JWT corrisponda ad un cliente
- */
-function verificaCliente(token) {
-    if (verificaJWT(token)) {
-        tipo = (jwt.decode(token)).tipo;
-        return (tipo == "CLIENTE");
-    } else {
-        return false;
-    }
-}
-
-/**
- * Controlla che il JWT corrisponda ad un utente
- */
-function verificaUtente(token) {
-    if (verificaJWT(token)) {
-        tipo = (jwt.decode(token)).tipo;
-        return (tipo == "CLIENTE" || tipo == "CORRIERE" || tipo == "MAGAZZINIERE" || tipo == "COMMERCIANTE");
-    } else {
-        return false;
-    }
-}
-
-//TODO da commentare
-function controllaRisultatoQuery(results, errorText) {
+function controllaRisultatoQuery(results) {
     const toControl = JSON.parse(JSON.stringify(results.rows));
     return (toControl.length == 0);
 }
 
-//TODO da commentare
+/**
+ * Ritorna il risultato di una query in formato JSON.
+ * @param {*} response 
+ * @param {*} results Risultato della query da ritornare
+ */
 function returnDataJSON(response, results) {
     const data = JSON.parse(JSON.stringify(results.rows));
     const to_return = { 'results': data };
 
-    return response.status(200).send(to_return);
+    response.status(200).send(to_return);
 }
 
-//TODO commentare
+/**
+ * Ritorna gli Ordini in formato JSON.
+ * @param {*} response 
+ * @param {*} results Risultato della query con gli Ordini da ritornare
+ */
 function returnOrdiniJSON(response, results) {
     const ordini = JSON.parse(JSON.stringify(results.rows));
     formatDataOrdine(ordini);
     const to_return = { 'results': ordini };
 
-    return response.status(200).send(to_return);
+    response.status(200).send(to_return);
 }
 
 /**
  * REST - GET
  */
 
+/**
+ * REST - Ritorna la lista dei Dipendenti
+ */
 app.get('/dipendenti', (req, res) => {
     const token = req.headers.token;
 
@@ -153,6 +167,9 @@ app.get('/dipendenti', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Ritorna la lista dell'Inventario
+ */
 app.get('/inventario', (req, res) => {
     const token = req.headers.token;
 
@@ -164,6 +181,9 @@ app.get('/inventario', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Ritorna il numero dei Prodotti all'interno dell'Inventario
+ */
 app.get('/inventario/count', (req, res) => {
     const token = req.headers.token;
 
@@ -179,6 +199,9 @@ app.get('/inventario/count', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Ritorna il numero dei Dipendenti dell'Attività
+ */
 app.get('/dipendenti/count', (req, res) => {
     const token = req.headers.token;
 
@@ -194,6 +217,9 @@ app.get('/dipendenti/count', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Ritorna il numero dei Magazzini 
+ */
 app.get('/magazzini/count', (req, res) => {
     if (verificaJWT(req.headers.token)) {
         db.getMagazziniCount((err, results) => {
@@ -207,6 +233,9 @@ app.get('/magazzini/count', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Ritorna il numero dei Negozio
+ */
 app.get('/negozi/count', (req, res) => {
     if (verificaJWT(req.headers.token)) {
         db.getNegoziCount((err, results) => {
@@ -220,6 +249,9 @@ app.get('/negozi/count', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Ritorna il numero delle Ditte di Trasporti
+ */
 app.get('/ditte/count', (req, res) => {
     if (verificaJWT(req.headers.token)) {
         db.getDitteTrasportiCount((err, results) => {
@@ -233,6 +265,9 @@ app.get('/ditte/count', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Ritorna le statistiche delle vendite del Negozio
+ */
 app.get('/ordini/stats', (req, res) => {
     const token = req.headers.token;
 
@@ -246,6 +281,9 @@ app.get('/ordini/stats', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Ritorna la lista deglio Ordini
+ */
 app.get('/ordini', (req, res) => {
     const token = req.headers.token;
 
@@ -274,7 +312,9 @@ app.get('/ordini', (req, res) => {
     }
 })
 
-//TODO controllare che l'id dell'Ordine passato sia collegato all'id del token
+/**
+ * REST - Ritorna la lista delle Merci collegate all'Ordine
+ */
 app.get('/merci/:idOrdine', (req, res) => {
     if (verificaJWT(req.headers.token)) {
         try {
@@ -289,7 +329,9 @@ app.get('/merci/:idOrdine', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
-//TODO commentare
+/**
+ * REST - Ritorna la lista delle Merci che un Corriere deve consegnare
+ */
 app.get('/corriere/consegna/merci', (req, res) => {
     if (verificaCorriere(req.headers.token)) {
         db.getMerciCorriere(req, (err, results) => {
@@ -299,7 +341,9 @@ app.get('/corriere/consegna/merci', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
-//TODO commentare
+/**
+ * REST - Ritorna l'Indirizzo del Cliente a cui consegnare la Merce
+ */
 app.get('/corriere/merce/:idMerce/indirizzo/cliente', (req, res) => {
     if (verificaCorriere(req.headers.token)) {
         try {
@@ -313,7 +357,9 @@ app.get('/corriere/merce/:idMerce/indirizzo/cliente', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
-//TODO controllare errori
+/**
+ * REST - Ritorna la lista dei Magazzini
+ */
 app.get('/magazzini', (req, res) => {
     db.getMagazzini((err, results) => {
         if (err) return res.status(500).send('Server error!');
@@ -321,7 +367,9 @@ app.get('/magazzini', (req, res) => {
     })
 });
 
-//TODO controllare errori
+/**
+ * REST - Ritorna le Informazioni del Magazzino
+ */
 app.get('/magazzini/:id', (req, res) => {
     db.getMagazzino(req.params.id, (err, results) => {
         if (err) return res.status(500).send('Server error!');
@@ -330,7 +378,9 @@ app.get('/magazzini/:id', (req, res) => {
     })
 });
 
-//TODO controllare errori
+/**
+ * REST - Ritorna la lista delle Ditte di Trasporti
+ */
 app.get('/ditte-trasporti', (req, res) => {
     db.getDitteTrasporti((err, results) => {
         if (err) return res.status(500).send('Server error!');
@@ -338,7 +388,9 @@ app.get('/ditte-trasporti', (req, res) => {
     })
 });
 
-//TODO controllare errori
+/**
+ * REST - Ritorna le Informazioni della Ditta di Trasporti
+ */
 app.get('/ditte-trasporti/:id', (req, res) => {
     db.getDittaTrasporti(req.params.id, (err, results) => {
         if (err) return res.status(500).send('Server error!');
@@ -347,7 +399,9 @@ app.get('/ditte-trasporti/:id', (req, res) => {
     })
 });
 
-//TODO controllare errori
+/**
+ * REST - Ritorna la lista dei Negozi
+ */
 app.get('/negozi', (req, res) => {
     db.getNegozi((err, results) => {
         if (err) return res.status(500).send('Server error!');
@@ -355,7 +409,9 @@ app.get('/negozi', (req, res) => {
     })
 });
 
-//TODO controllare errori
+/**
+ * REST - Ritorna le Informazioni del Negozio
+ */
 app.get('/negozi/:id', (req, res) => {
     db.getNegozio(req.params.id, (err, results) => {
         if (err) return res.status(500).send('Server error!');
@@ -364,7 +420,9 @@ app.get('/negozi/:id', (req, res) => {
     })
 });
 
-//TODO commentare
+/**
+ * REST - Ritorna le Informazioni dell'Utente
+ */
 app.get('/info/utente', (req, res) => {
     const token = req.headers.token;
     if (verificaUtente(token)) {
@@ -375,12 +433,13 @@ app.get('/info/utente', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
-//TODO commentare
+/**
+ * REST - Ritorna le Informazioni dell'Attività
+ */
 app.get('/info/attivita', (req, res) => {
     const token = req.headers.token;
     if (verificaAttivita(token)) {
         db.getAttivitaInfo(jwt.decode(token).id, (err, results) => {
-            //TODO fare refactor con /info/utente
             if (err) return res.status(500).send('Server error!');
             returnDataJSON(res, results);
         })
@@ -415,21 +474,21 @@ app.post('/login/utente', (req, res) => {
                     const accessToken = jwt.sign({ id: user[0].id, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                     return res.status(200).send({ "accessToken": accessToken });
                 case "COMMERCIANTE":
-                    db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
+                    db.getDipendenteInfo(user[0].id, user[0].tipo, (err, results) => {
                         const commerciante = JSON.parse(JSON.stringify(results.rows));
                         const accessToken = jwt.sign({ id: commerciante[0].id, idNegozio: commerciante[0].id_negozio, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                         return res.status(200).send({ "accessToken": accessToken });
                     });
                     break;
                 case "CORRIERE":
-                    db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
+                    db.getDipendenteInfo(user[0].id, user[0].tipo, (err, results) => {
                         const corriere = JSON.parse(JSON.stringify(results.rows));
                         const accessToken = jwt.sign({ id: corriere[0].id, idDitta: corriere[0].id_ditta, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                         return res.status(200).send({ "accessToken": accessToken });
                     });
                     break;
                 case "MAGAZZINIERE":
-                    db.verificaDipendenteLogin(user[0].id, user[0].tipo, (err, results) => {
+                    db.getDipendenteInfo(user[0].id, user[0].tipo, (err, results) => {
                         const magazziniere = JSON.parse(JSON.stringify(results.rows));
                         const accessToken = jwt.sign({ id: magazziniere[0].id, idMagazzino: magazziniere[0].id_magazzino, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                         return res.status(200).send({ "accessToken": accessToken });
@@ -515,7 +574,7 @@ app.post('/register/dipendente', (req, res) => {
 });
 
 /**
- * REST - Registrazione Attivita'
+ * REST - Registrazione Attività
  */
 app.post('/register/attivita', (req, res) => {
     try {
@@ -567,17 +626,23 @@ app.post('/ordine', (req, res) => {
  * REST - PUT
  */
 
+/**
+ * REST - Imposta lo stato dell'Ordine a "RITIRATO"
+ */
 app.put('/ordine/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaMagazzino(token)) {
         try {
-            db.modificaOrdine(req, res, jwt.decode(token));
+            db.ritiraOrdine(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Modifica le Informazione dell'Attività
+ */
 app.put('/attivita/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaAttivita(token)) {
@@ -589,6 +654,9 @@ app.put('/attivita/:id', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Modifica le Informazione dell'Utente
+ */
 app.put('/utente/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaUtente(token)) {
@@ -600,6 +668,9 @@ app.put('/utente/:id', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Modifica la Password 
+ */
 app.put('/modifica/password/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaJWT(token)) {
@@ -611,6 +682,9 @@ app.put('/modifica/password/:id', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Modifica le Informazioni di un Prodotto
+ */
 app.put('/prodotto/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaNegozio(token)) {
@@ -622,6 +696,9 @@ app.put('/prodotto/:id', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Aggiunge un Corriere alla Merce
+ */
 app.put('/ditta-trasporti/ordine/merce/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaDittaTrasporti(token)) {
@@ -633,6 +710,10 @@ app.put('/ditta-trasporti/ordine/merce/:id', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
+/**
+ * REST - Modifica lo stato della Merce
+ *  PAGATO => IN_TRANSITO, IN_TRANSITO => CONSEGNATO
+ */
 app.put('/merci/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaCorriere(token)) {

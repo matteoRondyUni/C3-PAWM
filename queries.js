@@ -116,7 +116,7 @@ function calcolaTotaleOrdine(inventario, prodottiDaVendere) {
 
 /**
  * Controlla che la Query abbia ritornato almeno un riga.
- * @param {*} results Risultato della query
+ * @param {*} results Risultato della query da controllare
  * @returns true se la query non ha ritornato nulla, false altrimenti
  */
 function controllaRisultatoQuery(results) {
@@ -492,7 +492,12 @@ const findOrdineByCodice = (codice, cb) => {
   });
 }
 
-//TODO da rivedere response
+/**
+ * Vende il Prodotto selezionato e modifica la disponibilità all'interno dell'Inventario del Negozio.
+ * @param {*} prodotto Prodotto da vendere
+ * @param {*} id_ordine ID dell'Ordine
+ * @param {*} response 
+ */
 const vendiProdotto = (prodotto, id_ordine, response) => {
   pool.query('INSERT INTO public.merci_ordine (id_prodotto, id_ordine, quantita, prezzo_acquisto, stato) VALUES ($1, $2, $3, $4, $5)',
     [prodotto.id, id_ordine, prodotto.quantita, prodotto.prezzo, "PAGATO"], (error, results) => {
@@ -505,7 +510,11 @@ const vendiProdotto = (prodotto, id_ordine, response) => {
     });
 }
 
-//TODO da finire
+/**
+ * Crea un nuovo Ordine.
+ * @param {*} request Request con i Dati dell'Ordine da creare.
+ * @param {*} response 
+ */
 const creaOrdine = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   const codiceRitiro = generateCodiceRitiro();
@@ -543,14 +552,11 @@ const creaOrdine = (request, response) => {
               if (ordine.length == 1) {
                 request.body.prodotti.forEach(prodotto => { vendiProdotto(prodotto, ordine[0].id, response); });
                 return response.status(200).send({ 'esito': "1" });
-              }
-              else return response.status(500).send("Server error!");
+              } else return response.status(500).send("Server error!");
             });
           });
-      }
-      else return response.status(500).send("Server error!");
+      } else return response.status(500).send("Server error!");
     });
-
   })
 }
 
@@ -581,8 +587,14 @@ const getDipendenti = (token, cb) => {
   });
 }
 
-//TODO fare commento e riguardare l'inner join
-const verificaDipendenteLogin = (id, tipo, cb) => {
+/**
+ * Ritorna le Informazioni di un Dipendente.
+ * @param {*} id ID del Dipendente
+ * @param {*} tipo Tipologia del Dipendente
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
+const getDipendenteInfo = (id, tipo, cb) => {
   var query;
 
   switch (tipo) {
@@ -618,6 +630,12 @@ const getInventario = (token, cb) => {
     });
 }
 
+/**
+ * Ritorna le statistiche delle vendite del Negozio.
+ * @param {*} token JWT del Negozio o del Commerciante
+ * @param {*} response 
+ * @param {*} cb Callback
+ */
 const getOrdiniStats = (token, response, cb) => {
   getOrdiniNegozio(token, (err, results) => {
     if (err) return response.status(500).send('Server error!');
@@ -637,6 +655,12 @@ const getOrdiniStats = (token, response, cb) => {
   });
 }
 
+/**
+ * Ritorna il numero dei Prodotti all'interno dell'Inventario del Negozio.
+ * @param {*} token JWT del Negozio o del Commerciante
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getInventarioCount = (token, cb) => {
   const decoded_token = jwt.decode(token);
   var idNegozio = getIdNegozio(decoded_token);
@@ -647,6 +671,12 @@ const getInventarioCount = (token, cb) => {
     });
 }
 
+/**
+ * Ritorna il numero dei Dipendenti dell'Attività.
+ * @param {*} token JWT dell'Attività
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getDipendentiCount = (token, cb) => {
   const decoded_token = jwt.decode(token);
   var idAttivita = decoded_token.id;
@@ -667,6 +697,11 @@ const getDipendentiCount = (token, cb) => {
   return pool.query(query, [idAttivita], (error, results) => { cb(error, results) });
 }
 
+/**
+ * Ritorna il numero dei Magazzini.
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getMagazziniCount = (cb) => {
   return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['MAGAZZINO'],
     (error, results) => {
@@ -674,6 +709,11 @@ const getMagazziniCount = (cb) => {
     });
 }
 
+/**
+ * Ritorna il numero dei Negozio.
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getNegoziCount = (cb) => {
   return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['NEGOZIO'],
     (error, results) => {
@@ -681,6 +721,11 @@ const getNegoziCount = (cb) => {
     });
 }
 
+/**
+ * Ritorna il numero delle Ditte di Trasporti.
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getDitteTrasportiCount = (cb) => {
   return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['DITTA_TRASPORTI'],
     (error, results) => {
@@ -751,8 +796,13 @@ const getOrdiniCliente = (token, cb) => {
     });
 }
 
-//TODO rinominare metodo
-const modificaOrdine = (request, response, decoded_token) => {
+/**
+ * Imposta lo stato dell'Ordine a "RITIRATO".
+ * @param {*} request Request con il parametro id
+ * @param {*} response 
+ * @param {*} decoded_token JWT del Magazzino o del Magazziniere
+ */
+const ritiraOrdine = (request, response, decoded_token) => {
   controllaInt(request.params.id, "Il Codice dell'Ordine deve essere un numero!");
   const id = parseInt(request.params.id);
 
@@ -762,7 +812,6 @@ const modificaOrdine = (request, response, decoded_token) => {
 
     pool.query('UPDATE public.ordini SET stato = $1 WHERE id = $2',
       ['RITIRATO', id], (error, results) => {
-        if (error) throw error
         return response.status(200).send({ 'esito': "1" });
       })
   });
@@ -877,6 +926,7 @@ const getMagazzini = (cb) => {
  * @returns il risultato della query
  */
 const getMagazzino = (idMagazzino, cb) => {
+  controllaInt(idMagazzino, "Il Codice del Magazzino deve essere un numero!");
   return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
     [idMagazzino], (error, results) => {
       cb(error, results)
@@ -902,6 +952,7 @@ const getDitteTrasporti = (cb) => {
  * @returns il risultato della query
  */
 const getDittaTrasporti = (idDitta, cb) => {
+  controllaInt(idDitta, "Il Codice della Ditta di Trasporti deve essere un numero!");
   return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
     [idDitta], (error, results) => {
       cb(error, results)
@@ -927,6 +978,7 @@ const getNegozi = (cb) => {
  * @returns il risultato della query
  */
 const getNegozio = (idNegozio, cb) => {
+  controllaInt(idNegozio, "Il Codice del Negozio deve essere un numero!");
   return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
     [idNegozio], (error, results) => {
       cb(error, results)
@@ -970,6 +1022,7 @@ const eliminaProdotto = (request, response, decoded_token) => {
     })
   });
 }
+
 /**
  * Modifica le Informazioni di un Prodotto.
  * @param {*} request 
@@ -1147,12 +1200,13 @@ const cambiaStatoMerce = (request, response, decoded_token) => {
 }
 
 /**
- * 
- * @param {*} idUtente 
+ * Ritorna le Informazioni dell'Utente.
+ * @param {*} idUtente ID dell'Utente
  * @param {*} cb Callback
- * @returns 
+ * @returns le info dell'Utente
  */
 const getUserInfo = (idUtente, cb) => {
+  controllaInt(idUtente, "Il Codice dell'Utente deve essere un numero!");
   return pool.query('select id, nome, cognome, email, telefono, indirizzo from public.utenti where id=$1',
     [idUtente], (error, results) => {
       cb(error, results)
@@ -1160,12 +1214,13 @@ const getUserInfo = (idUtente, cb) => {
 }
 
 /**
- * 
- * @param {*} idAttivita 
+ * Ritorna le Informazioni dell'Attività.
+ * @param {*} idAttivita ID dell'Attività
  * @param {*} cb Callback
- * @returns 
+ * @returns le info dell'Attività
  */
 const getAttivitaInfo = (idAttivita, cb) => {
+  controllaInt(idAttivita, "Il Codice dell'Attività deve essere un numero!");
   return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
     [idAttivita], (error, results) => {
       cb(error, results)
@@ -1185,6 +1240,7 @@ module.exports = {
   findAttivitaByEmail,
   findUserByEmail,
   getAttivitaInfo,
+  getDipendenteInfo,
   getDipendenti,
   getDipendentiCount,
   getDittaTrasporti,
@@ -1208,9 +1264,8 @@ module.exports = {
   getOrdiniStats,
   getUserInfo,
   modificaAttivita,
-  modificaOrdine,
   modificaPassword,
   modificaProdotto,
   modificaUtente,
-  verificaDipendenteLogin
+  ritiraOrdine
 }
