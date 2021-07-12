@@ -76,7 +76,12 @@ function controllaNotNull(toControl, errorText) {
   if (toControl == null) throw errorText;
 }
 
-//TODO da commentare
+/**
+ * Controlla che la quantità dei prodotti da vendere non superi la disponibilità nell'inventario.
+ * @param {*} inventario 
+ * @param {*} prodottiDaVendere 
+ * @returns true se la quantità da vendere supera la disponibilità, false altrimenti
+ */
 function controllaProdottiDaVendere(inventario, prodottiDaVendere) {
   inventario.forEach(prodottoInventario => {
     prodottiDaVendere.forEach(prodotto => {
@@ -90,7 +95,12 @@ function controllaProdottiDaVendere(inventario, prodottiDaVendere) {
   return false;
 }
 
-//TODO commentare
+/**
+ * Calcola il Totale dell'Ordine.
+ * @param {*} inventario 
+ * @param {*} prodottiDaVendere 
+ * @returns il Prezzo Totale
+ */
 function calcolaTotaleOrdine(inventario, prodottiDaVendere) {
   var totale = 0;
   inventario.forEach(prodottoInventario => {
@@ -104,13 +114,21 @@ function calcolaTotaleOrdine(inventario, prodottiDaVendere) {
   return totale;
 }
 
-//TODO da commentare
+/**
+ * Controlla che la Query abbia ritornato almeno un riga.
+ * @param {*} results Risultato della query
+ * @returns true se la query non ha ritornato nulla, false altrimenti
+ */
 function controllaRisultatoQuery(results) {
   const toControl = JSON.parse(JSON.stringify(results.rows));
   return (toControl.length == 0);
 }
 
-//TODO da commentare
+/**
+ * Ritorna l'ID del Negozio.
+ * @param {*} decoded_token JWT decodificato del Negozio o del Commerciante
+ * @returns il Codice Identificativo del Negozio
+ */
 function getIdNegozio(decoded_token) {
   var id_negozio;
   if (decoded_token.tipo == "COMMERCIANTE") id_negozio = decoded_token.idNegozio;
@@ -118,7 +136,11 @@ function getIdNegozio(decoded_token) {
   return id_negozio;
 }
 
-//TODO da commentare
+/**
+ * Ritorna l'ID del Magazzino.
+ * @param {*} decoded_token JWT decodificato del Magazzino o del Magazziniere
+ * @returns il Codice Identificativo del Magazzino
+ */
 function getIdMagazzino(decoded_token) {
   var idMagazzino;
   if (decoded_token.tipo == "MAGAZZINIERE") idMagazzino = decoded_token.idMagazzino
@@ -126,7 +148,14 @@ function getIdMagazzino(decoded_token) {
   return idMagazzino;
 }
 
-//TODO da commentare
+/**
+ * Cambia la Password dell'Attvità o dell'Utente.
+ * @param {*} request 
+ * @param {*} response 
+ * @param {*} results 
+ * @param {*} id ID dell'Attività o dell'Utente
+ * @param {*} tipo Campo per specificare se il tipo è ATTIVITA o UTENTE
+ */
 function cambiaPassword(request, response, results, id, tipo) {
   var query, errorText;
   if (tipo == ATTIVITA) {
@@ -153,7 +182,23 @@ function cambiaPassword(request, response, results, id, tipo) {
   } else return response.status(401).send('La vecchia password non è corretta');
 }
 
+/**
+ * Controlla che i dati per la Registrazione siano corretti.
+ * @param {*} request Request con i dati da controllare
+ * @param {*} tipo Campo per specificare se il tipo è ATTIVITA o UTENTE
+ */
 function controllaDatiRegister(request, tipo) {
+  controllaDatiAccount(request, tipo);
+  controllaPassword(request.body.password);
+}
+
+/**
+ * Controlla che i dati per la Creazione o la Modifica di un Account (ATTIVITA o UTENTE) 
+ * siano corretti.
+ * @param {*} request Request con i dati da controllare
+ * @param {*} tipo  Campo per specificare se il tipo è ATTIVITA o UTENTE
+ */
+function controllaDatiAccount(request, tipo) {
   if (tipo == ATTIVITA)
     controllaString(request.body.nome, "Il campo Ragione Sociale non può essere vuoto!");
   else if (tipo == UTENTE) {
@@ -161,11 +206,15 @@ function controllaDatiRegister(request, tipo) {
     controllaString(request.body.cognome, "Il campo Cognome non può essere vuoto!");
   }
   controllaString(request.body.email, "Il campo Email non può essere vuoto!");
-  controllaPassword(request.body.password);
+
   controllaTelefono(request.body.telefono);
   controllaString(request.body.indirizzo, "Il campo Indirizzo non può essere vuoto!");
 }
 
+/**
+ * Controlla che i dati per la Creazione di un Ordine siano corretti.
+ * @param {*} request Request con i dati da controllare
+ */
 function controllaDatiCreazioneOrdine(request) {
   controllaString(request.body.tipo, "La Tipologia dell'Ordine non può essere vuota!");
   controllaString(request.body.email_cliente, "Il campo Email non può essere vuoto!");
@@ -174,6 +223,16 @@ function controllaDatiCreazioneOrdine(request) {
   controllaInt(request.body.id_ditta, "Deve essere selezionata una Ditta di Trasporti!");
   if (request.body.prodotti.length == 0 || request.body.prodotti == null)
     throw "L'Ordine deve avere almeno una merce!";
+}
+
+/**
+ * Controlla che i dati per la Creazione o la Modifica di un Prodotto siano corretti.
+ * @param {*} request Request con i dati da controllare
+ */
+function controllaDatiProdotto(request) {
+  controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
+  controllaInt(request.body.disponibilita, "La Disponibilità deve essere un numero!");
+  controllaFloat(request.body.prezzo, "Il Prezzo deve essere un numero!");
 }
 
 /**
@@ -363,8 +422,8 @@ const cercaOrdineById = (id_ordine, decoded_token, cb) => {
 }
 
 /**
- * //TODO commentare
- * @param {*} id 
+ * Ricerca una Merce tramite il suo ID.
+ * @param {*} id Codice Identificativo della Merce
  * @param {*} decoded_token JWT decodificato del Corriere
  * @param {*} cb Callback
  */
@@ -692,6 +751,7 @@ const getOrdiniCliente = (token, cb) => {
     });
 }
 
+//TODO rinominare metodo
 const modificaOrdine = (request, response, decoded_token) => {
   controllaInt(request.params.id, "Il Codice dell'Ordine deve essere un numero!");
   const id = parseInt(request.params.id);
@@ -708,7 +768,12 @@ const modificaOrdine = (request, response, decoded_token) => {
   });
 }
 
-//TODO fare commento
+/**
+ * Ritorna la lista delle Merci dell'Ordine.
+ * @param {*} req Request con il parametro idOrdine e con il JWT nell'headers
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getMerciOrdine = (req, cb) => {
   controllaInt(req.params.idOrdine, "Il Codice dell'Ordine deve essere un numero!");
   const idOrdine = parseInt(req.params.idOrdine);
@@ -757,7 +822,12 @@ const getMerciOrdine = (req, cb) => {
   });
 }
 
-//TODO commentare
+/**
+ * Ritorna la lista delle Merci del Corriere.
+ * @param {*} req Request con il JWT del Corriere nell'headers
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getMerciCorriere = (req, cb) => {
   const decoded_token = jwt.decode(req.headers.token);
 
@@ -768,7 +838,12 @@ const getMerciCorriere = (req, cb) => {
     });
 }
 
-//TODO commentare
+/**
+ * Ritorna l'Indirizzo del Cliente collegato ad una Merce.
+ * @param {*} req 
+ * @param {*} cb Callback
+ * @returns il risultato della query
+ */
 const getIndirizzoCliente = (req, cb) => {
   controllaInt(req.params.idMerce, "Il Codice della Merce deve essere un numero!");
   const idMerce = req.params.idMerce;
@@ -858,13 +933,15 @@ const getNegozio = (idNegozio, cb) => {
     });
 }
 
-//TODO fare commento
+/**
+ * Crea un Prodotto da inserire nell'Inventario di un Negozio.
+ * @param {*} request Request con il JWT del Negozio ed i dati del Prodotto da inserire
+ * @param {*} response 
+ */
 const creaProdotto = (request, response) => {
   const decoded_token = jwt.decode(request.body.token_value);
   var id_negozio = getIdNegozio(decoded_token);
-
-  controllaInt(request.body.disponibilita, "La Disponibilità deve essere un numero!");
-  controllaFloat(request.body.prezzo, "Il Prezzo deve essere un numero!");
+  controllaDatiProdotto(request);
 
   pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
     [id_negozio, request.body.nome, request.body.disponibilita, request.body.prezzo], (error, results) => {
@@ -893,11 +970,15 @@ const eliminaProdotto = (request, response, decoded_token) => {
     })
   });
 }
-
+/**
+ * Modifica le Informazioni di un Prodotto.
+ * @param {*} request 
+ * @param {*} response 
+ * @param {*} decoded_token JWT decodificato del Negozio
+ */
 const modificaProdotto = (request, response, decoded_token) => {
   controllaInt(request.params.id, "Il Codice del Prodotto deve essere un numero!");
-  controllaInt(request.body.disponibilita, "La Disponibilità deve essere un numero!");
-  controllaFloat(request.body.prezzo, "Il Prezzo deve essere un numero!");
+  controllaDatiProdotto(request);
 
   const id = parseInt(request.params.id);
 
@@ -913,9 +994,14 @@ const modificaProdotto = (request, response, decoded_token) => {
   });
 }
 
+/**
+ * Modifica le informazioni dell'Attività.
+ * @param {*} request 
+ * @param {*} response 
+ */
 const modificaAttivita = (request, response) => {
   controllaInt(request.params.id, "Il Codice dell'Attività deve essere un numero!");
-  controllaTelefono(request.body.telefono);
+  controllaDatiAccount(request, ATTIVITA);
 
   const id = parseInt(request.params.id);
 
@@ -931,9 +1017,14 @@ const modificaAttivita = (request, response) => {
   });
 }
 
+/**
+ * Modifica le informazioni dell'Utente.
+ * @param {*} request 
+ * @param {*} response 
+ */
 const modificaUtente = (request, response) => {
   controllaInt(request.params.id, "Il Codice dell'Utente deve essere un numero!");
-  controllaTelefono(request.body.telefono);
+  controllaDatiAccount(request, UTENTE);
 
   const id = parseInt(request.params.id);
 
@@ -949,6 +1040,12 @@ const modificaUtente = (request, response) => {
   });
 }
 
+/**
+ * Modifica la Password di un'Attvità o di un Utente.
+ * @param {*} request 
+ * @param {*} response 
+ * @param {*} decoded_token JWT decodificato dell'Attività o dell'Utente
+ */
 const modificaPassword = (request, response, decoded_token) => {
   controllaInt(request.params.id, "L'ID deve essere un numero!");
   controllaPassword(request.body.old_password);
@@ -1014,10 +1111,10 @@ const aggiungiCorriere = (request, response, decoded_token) => {
 }
 
 /**
- * //TODO commentare
- * @param {*} request 
+ * Cambia lo stato della Merce.
+ * @param {*} request Request con il parametro "id" del Merce
  * @param {*} response 
- * @param {*} decoded_token 
+ * @param {*} decoded_token JWT decodificato del Corriere
  */
 const cambiaStatoMerce = (request, response, decoded_token) => {
   controllaInt(request.params.id, "L'ID della Merce deve essere un numero!");
