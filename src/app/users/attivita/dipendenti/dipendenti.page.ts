@@ -36,11 +36,6 @@ export class DipendentiPage implements OnInit {
     this.loadDipendenti(event)
   }
 
-  //TODO eliminare
-  openNav() {
-    document.getElementById("mySidenav").style.width = "250px";
-  }
-
   async loadDipendenti(event) {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
