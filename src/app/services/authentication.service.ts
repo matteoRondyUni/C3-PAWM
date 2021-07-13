@@ -10,12 +10,11 @@ const { Storage } = Plugins;
 
 const TOKEN_KEY = 'my-token';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
-  isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  tipologiaToken: BehaviorSubject<String> = new BehaviorSubject<String>(null);
 
   constructor(private http: HttpClient) {
     this.loadToken();
@@ -24,9 +23,10 @@ export class AuthenticationService {
   async loadToken() {
     const token = await Storage.get({ key: TOKEN_KEY });
     if (token && token.value) {
-      this.isAuthenticated.next(true);
+      const decoded_token: any = jwt_decode(token.value);
+      this.tipologiaToken.next(decoded_token.tipo);
     } else {
-      this.isAuthenticated.next(false);
+      this.tipologiaToken.next("");
     }
   }
 
@@ -53,7 +53,7 @@ export class AuthenticationService {
         }
       }),
       tap(_ => {
-        this.isAuthenticated.next(true);
+        this.loadToken();
       })
     )
   }
@@ -74,23 +74,20 @@ export class AuthenticationService {
         }
       }),
       tap(_ => {
-        this.isAuthenticated.next(true);
+        this.loadToken();
       })
     )
   }
 
   logout(): Promise<void> {
-    this.isAuthenticated.next(false);
+    this.tipologiaToken.next("");
     return Storage.remove({ key: TOKEN_KEY });
   }
 
   registerCliente(credentials): Observable<any> {
     return this.http.post('/register/cliente', credentials).pipe(
       map((data: any) => data.esito),
-      switchMap(esito => {
-        return esito;
-      }
-      ))
+      switchMap(esito => { return esito; }))
   }
 
   async registerDipendente(credenziali): Promise<Observable<any>> {

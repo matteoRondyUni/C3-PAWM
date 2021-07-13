@@ -1,6 +1,12 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthClienteGuard } from './guards/auth-cliente.guard';
+import { AuthNegozioGuard } from './guards/auth-negozio.guard';
+import { AuthCommercianteGuard } from './guards/auth-commerciante.guard';
+import { AuthCorriereGuard } from './guards/auth-corriere.guard';
+import { AuthDitteTrasportiGuard } from './guards/auth-ditte-trasporti.guard';
+import { AuthMagazzinoGuard } from './guards/auth-magazzino.guard';
+import { AuthMagazziniereGuard } from './guards/auth-magazziniere.guard';
 
 const routes: Routes = [
   {
@@ -47,33 +53,37 @@ const routes: Routes = [
   {
     path: 'cliente',
     loadChildren: () => import('./users/cliente/menu/menu.module').then(m => m.MenuPageModule),
-    //  TODO
-    // canLoad: [AuthGuard]
+    canLoad: [AuthClienteGuard]
   },
   {
     path: 'negozio',
-    loadChildren: () => import('./users/negozio/menu/menu.module').then(m => m.MenuPageModule)
-    //TODO: mettere il guard per l'attività
+    loadChildren: () => import('./users/negozio/menu/menu.module').then(m => m.MenuPageModule),
+    canLoad: [AuthNegozioGuard]
   },
   {
     path: 'commerciante',
-    loadChildren: () => import('./users/commerciante/menu/menu.module').then(m => m.MenuPageModule)
+    loadChildren: () => import('./users/commerciante/menu/menu.module').then(m => m.MenuPageModule),
+    canLoad: [AuthCommercianteGuard]
   },
   {
     path: 'corriere',
-    loadChildren: () => import('./users/corriere/menu/menu.module').then(m => m.MenuPageModule)
+    loadChildren: () => import('./users/corriere/menu/menu.module').then(m => m.MenuPageModule),
+    canLoad: [AuthCorriereGuard]
   },
   {
     path: 'trasporti',
-    loadChildren: () => import('./users/ditta/menu/menu.module').then(m => m.MenuPageModule)
+    loadChildren: () => import('./users/ditta/menu/menu.module').then(m => m.MenuPageModule),
+    canLoad: [AuthDitteTrasportiGuard]
   },
   {
     path: 'magazzino',
-    loadChildren: () => import('./users/magazzino/menu/menu.module').then(m => m.MenuPageModule)
+    loadChildren: () => import('./users/magazzino/menu/menu.module').then(m => m.MenuPageModule),
+    canLoad: [AuthMagazzinoGuard]
   },
   {
     path: 'magazziniere',
-    loadChildren: () => import('./users/magazziniere/menu/menu.module').then(m => m.MenuPageModule)
+    loadChildren: () => import('./users/magazziniere/menu/menu.module').then(m => m.MenuPageModule),
+    canLoad: [AuthMagazziniereGuard]
   }
 ];
 
