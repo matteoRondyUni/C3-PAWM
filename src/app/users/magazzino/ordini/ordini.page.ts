@@ -13,7 +13,7 @@ import { ReloadManagerService } from 'src/app/services/reload-manager.service';
   styleUrls: ['./ordini.page.scss'],
 })
 export class OrdiniPage implements OnInit {
-  public segment: string = "cerca";
+  segment: string = "cerca";
   nessun_risultato = false;
   searchbar = document.querySelector('ion-searchbar');
   ordini = [];

@@ -9,7 +9,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./negozi.page.scss'],
 })
 export class NegoziPage implements OnInit {
-  private negozi = [];
+  negozi = [];
 
   constructor(
     private modalController: ModalController,

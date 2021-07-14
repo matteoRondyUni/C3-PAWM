@@ -9,8 +9,8 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./inventario-stats.component.scss'],
 })
 export class InventarioStatsComponent implements OnInit {
-  private n_prodotti: any;
-  private nome;
+  n_prodotti: any;
+  nome;
 
   constructor(
     private http: HttpClient,

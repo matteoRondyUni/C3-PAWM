@@ -11,7 +11,7 @@ import { InfoOrdineLoaderService } from 'src/app/services/info-ordine-loader.ser
   styleUrls: ['./ordini.page.scss'],
 })
 export class OrdiniPage implements OnInit {
-  public segment: string = "ordini_in_transito";
+  segment: string = "ordini_in_transito";
   ordini = [];
   ordiniInTransito = [];
   ordiniDaRitirare = [];

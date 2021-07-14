@@ -24,12 +24,12 @@ export class RegisterAttivitaPage implements OnInit {
 
   ngOnInit() {
     this.credenziali = this.fb.group({
-      ragione_sociale: ['Licio Sport', [Validators.required]],
-      tipo: ['NEGOZIO', [Validators.required]],
-      email: ['licio.sport@gmail.com', [Validators.required, Validators.email]],
-      password: ['kissmelicio', [Validators.required, Validators.minLength(8)]],
-      telefono: ['6666777888', [Validators.required]],
-      indirizzo: ['Corso Garibaldi', [Validators.required]],
+      ragione_sociale: ['', [Validators.required]],
+      tipo: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      telefono: ['', [Validators.required]],
+      indirizzo: ['', [Validators.required]],
     });
   }
 

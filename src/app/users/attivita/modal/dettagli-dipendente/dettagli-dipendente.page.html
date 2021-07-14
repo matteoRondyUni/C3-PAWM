@@ -4,11 +4,11 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-card>
+<ion-content class="ion-content-with-blur-background">
+  <ion-card class="mid-transparent-card">
     <br>
     <br>
-    <img src="../../../../../assets/user.png" class="center">
+    <img src="../../../../../assets/user.png" class="center-img">
 
     <ion-card-header>
       <ion-item>
@@ -45,13 +45,8 @@
       <br>
       <br>
 
-      <ion-buttons>
-        <ion-button color="danger" expand="block" class="center-button" (click)="eliminaDipendente()">ELIMINA DIPENDENTE
-        </ion-button>
-      </ion-buttons>
-
+      <ion-button color="danger" expand="block" (click)="eliminaDipendente()">ELIMINA DIPENDENTE</ion-button>
     </ion-card-content>
-
   </ion-card>
 </ion-content>
 

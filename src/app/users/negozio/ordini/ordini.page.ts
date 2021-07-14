@@ -17,7 +17,7 @@ import { PickProdottoPage } from '../modal/pick-prodotto/pick-prodotto.page';
   styleUrls: ['./ordini.page.scss'],
 })
 export class OrdiniPage implements OnInit {
-  public segment: string = "crea";
+  segment: string = "crea";
   ordine: FormGroup;
   magazzino = { "id": null, "ragione_sociale": null, "indirizzo": null };
   ditta = { "id": null, "ragione_sociale": null, "indirizzo": null };

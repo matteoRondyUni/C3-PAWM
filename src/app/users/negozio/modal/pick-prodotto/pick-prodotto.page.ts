@@ -11,7 +11,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
 })
 export class PickProdottoPage implements OnInit {
   @Input() prodotti_inseriti;
-  private inventario = [];
+  inventario = [];
   prodotti_selezionabili = [];
 
   constructor(

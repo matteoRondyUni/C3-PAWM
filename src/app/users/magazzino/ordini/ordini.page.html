@@ -24,22 +24,22 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-content-with-blur-background">
   <ion-refresher slot="fixed" (ionRefresh)="startReload($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
   <div *ngIf="segment === 'cerca'">
-    <ion-card>
+    <ion-card class="mid-transparent-card">
       <br>
       <br>
       <ion-card-header>
-        <ion-card-title style="font-size:35px"><strong>Cerca ordine</strong></ion-card-title>
+        <ion-card-title style="font-size:35px" class="center-text"><strong>Cerca ordine</strong></ion-card-title>
         <ion-card-subtitle>Inserisci qui sotto il codice univoco relativo all'ordine da cercare</ion-card-subtitle>
       </ion-card-header>
 
       <ion-card-content>
-        <ion-searchbar showcancelbutton="" (search)="cercaOrdine($event)" placeholder="Inserisci il codice">
+        <ion-searchbar class = "transparent-searchbar" showcancelbutton="" (search)="cercaOrdine($event)" placeholder="Inserisci il codice">
         </ion-searchbar>
 
         <br *ngIf="nessun_risultato === true">
@@ -48,8 +48,8 @@
 
         <ion-virtual-scroll [items]="risultati_ricerca">
 
-          <ion-card *virtualItem="let ordine">
-            <ion-item lines="none" class="ordine-attivo">
+          <ion-card *virtualItem="let ordine" class="mid-transparent-card">
+            <ion-item lines="none" class="header-elemento-lista">
 
               <ion-avatar slot="start">
                 <img src="../../../../../assets/box.png">
@@ -64,6 +64,10 @@
               </ion-label>
 
               <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+            </ion-item>
+
+            <ion-item lines="none">
+              <h3 text-capitalize style="font-size:18px">Articoli:</h3>
             </ion-item>
 
             <ion-item>
@@ -94,9 +98,8 @@
 
   <div *ngIf="segment === 'attivi'">
     <ion-virtual-scroll [items]="ordini_attivi">
-
-      <ion-card *virtualItem="let ordine">
-        <ion-item lines="none" class="ordine-attivo">
+      <ion-card *virtualItem="let ordine" class="mid-transparent-card">
+        <ion-item lines="none" class="header-elemento-lista">
 
           <ion-avatar slot="start">
             <img src="../../../../../assets/box.png">
@@ -113,13 +116,13 @@
           <ion-icon name="information-circle-outline" slot="end"></ion-icon>
         </ion-item>
 
-        <ion-item lines="none" class="articoli-attivo">
+        <ion-item lines="none">
           <h3 text-capitalize style="font-size:18px">Articoli:</h3>
         </ion-item>
 
-        <ion-item class="articoli-attivo">
+        <ion-item>
           <ion-virtual-scroll [items]="ordine.merci" class="virtual-attivo">
-            <ion-item lines="full" *virtualItem="let merce" class="articoli-attivo">
+            <ion-item lines="full" *virtualItem="let merce">
               <ion-avatar slot="start">
                 <img src="../../../../../assets/shopping-bag.png">
               </ion-avatar>
@@ -139,11 +142,9 @@
   </div>
 
   <div *ngIf="segment === 'ritirati'">
-
     <ion-virtual-scroll [items]="ordini_ritirati">
-
-      <ion-card *virtualItem="let ordine">
-        <ion-item lines="none">
+      <ion-card *virtualItem="let ordine" class="mid-transparent-card">
+        <ion-item lines="none" class="header-elemento-lista">
 
           <ion-avatar slot="start">
             <img src="../../../../../assets/box.png">

@@ -22,19 +22,19 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-content-with-blur-background">
   <div *ngIf="segment === 'profilo'">
     <form (ngSubmit)="aggiornaProfilo()" [formGroup]="dati">
-      <ion-card>
+      <ion-card class="mid-transparent-card">
         <br>
         <br>
 
         <ion-card-header>
-          <img src="../../../../assets/user.png" class="center">
+          <img src="../../../../assets/user.png" class="center-img">
         </ion-card-header>
 
         <ion-card-content>
-          <h3 class="center-text" style="color:rgb(216, 68, 97);">DATI ATTIVITÀ</h3>
+          <h3 class="center-text" color="medium">DATI ATTIVITÀ</h3>
 
           <ion-item lines="full">
             <ion-label position="floating">Ragione sociale</ion-label>
@@ -57,18 +57,16 @@
           </ion-item>
 
           <br>
-          <ion-buttons>
-            <ion-button type="submit" color="primary" expand="block" class="center-button">SALVA MODIFICHE</ion-button>
-          </ion-buttons>
+          <ion-button type="submit" color="primary" expand="block">SALVA MODIFICHE</ion-button>
         </ion-card-content>
       </ion-card>
     </form>
 
     <form (ngSubmit)="aggiornaPassword()" [formGroup]="passwords">
-      <ion-card>
+      <ion-card class="mid-transparent-card">
         <ion-card-content>
           <br>
-          <h3 class="center-text" style="color:rgb(216, 68, 97);">AGGIORNA PASSWORD</h3>
+          <h3 color="medium" class="center-text">AGGIORNA PASSWORD</h3>
 
           <ion-item lines="full">
             <ion-label position="floating">Vecchia password</ion-label>
@@ -81,9 +79,7 @@
           </ion-item>
 
           <br>
-          <ion-buttons>
-            <ion-button type="submit" color="primary" expand="block" class="center-button">SALVA MODIFICHE</ion-button>
-          </ion-buttons>
+          <ion-button type="submit" color="primary" expand="block">SALVA MODIFICHE</ion-button>
         </ion-card-content>
 
       </ion-card>

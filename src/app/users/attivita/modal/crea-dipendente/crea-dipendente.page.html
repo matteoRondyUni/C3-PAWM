@@ -4,12 +4,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-content-with-blur-background">
   <form (ngSubmit)="register()" [formGroup]="credenziali">
-    <ion-card>
+    <ion-card class="mid-transparent-card">
       <br>
       <br>
-      <img src="../../../../../assets/user.png" class="center">
+      <img src="../../../../../assets/user.png" class="center-img">
 
       <ion-card-content>
 
@@ -51,21 +51,14 @@
 
         <ion-row>
           <ion-col>
-            <ion-buttons>
-              <ion-button color="danger" expand="block" (click)="closeModal()" class="center">ANNULLA</ion-button>
-            </ion-buttons>
+            <ion-button color="danger" expand="block" (click)="closeModal()">ANNULLA</ion-button>
           </ion-col>
 
           <ion-col>
-            <ion-buttons>
-              <ion-button type="submit" color="primary" expand="block" class="center">CREA</ion-button>
-            </ion-buttons>
+            <ion-button type="submit" color="primary" expand="block">CREA</ion-button>
           </ion-col>
         </ion-row>
-
       </ion-card-content>
-
     </ion-card>
   </form>
-
 </ion-content>

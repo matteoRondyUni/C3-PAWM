@@ -14,7 +14,7 @@ import { NegoziPage } from '../../utenti/modal/negozi/negozi.page';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  private cliente = {};
+  cliente = {};
 
   constructor(
     private authService: AuthenticationService,
@@ -27,6 +27,10 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  apriOrdini() {
+    this.router.navigateByUrl('/cliente/ordini', { replaceUrl: true });
   }
 
   apriImpostazioni() {

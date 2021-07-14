@@ -9,8 +9,8 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./dipendenti-stats.component.scss'],
 })
 export class DipendentiStatsComponent implements OnInit {
-  private n_dipendenti: any;
-  private nome;
+  n_dipendenti: any;
+  nome;
 
   constructor(
     private http: HttpClient,

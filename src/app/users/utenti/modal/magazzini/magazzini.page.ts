@@ -9,7 +9,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./magazzini.page.scss'],
 })
 export class MagazziniPage implements OnInit {
-  private magazzini = [];
+  magazzini = [];
 
   constructor(
     private modalController: ModalController,

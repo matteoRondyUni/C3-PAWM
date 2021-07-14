@@ -9,7 +9,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./ditte-trasporti.page.scss'],
 })
 export class DitteTrasportiPage implements OnInit {
-  private ditte = [];
+  ditte = [];
 
   constructor(
     private modalController: ModalController,

@@ -15,6 +15,7 @@ import { DitteTrasportiStatsModule } from 'src/app/components/home/ditte-traspor
 import { DitteTrasportiPageModule } from '../../utenti/modal/ditte-trasporti/ditte-trasporti.module';
 import { NegoziStatsModule } from 'src/app/components/home/negozi-stats/negozi-stats.component.module';
 import { NegoziPageModule } from '../../utenti/modal/negozi/negozi.module';
+import { AcquistiStatsModule } from 'src/app/components/home/acquisti-stats/acquisti-stats.component.module';
 
 @NgModule({
   imports: [
@@ -23,6 +24,7 @@ import { NegoziPageModule } from '../../utenti/modal/negozi/negozi.module';
     IonicModule,
     HomePageRoutingModule,
     InfoUtenteModule,
+    AcquistiStatsModule,
     MagazziniStatsModule,
     MagazziniPageModule,
     DitteTrasportiStatsModule,

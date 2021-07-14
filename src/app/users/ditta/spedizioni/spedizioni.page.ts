@@ -13,7 +13,7 @@ import { DettagliMercePage } from '../modal/dettagli-merce/dettagli-merce.page';
   styleUrls: ['./spedizioni.page.scss'],
 })
 export class SpedizioniPage implements OnInit {
-  public segment: string = "consegnare";
+  segment: string = "consegnare";
   ordini = [];
   ordiniDaConsegnare = [];
   ordiniCompletati = [];
@@ -69,7 +69,7 @@ export class SpedizioniPage implements OnInit {
           var merci = res['results'];
           ordine[merci];
           ordine.merci = merci;
-          this.dividiListaOridini();
+          this.dividiListaOrdini();
 
           if (this.reloadManager.controlMerciOrdine(this.ordini))
             this.reloadManager.completaReload(event);
@@ -81,22 +81,27 @@ export class SpedizioniPage implements OnInit {
     });
   }
 
-  dividiListaOridini() {
-    this.ordini.forEach(ordine => {
-      var daConsegnare = false;
+  dividiListaOrdini() {
+    this.ordiniDaConsegnare = this.ordini.filter(ordine => {
+      if (ordine.merci != undefined && ordine.merci != null) {
+        for (let i = 0; i < ordine.merci.length; i++) {
+          if (ordine.merci[i].id_corriere == null) return ordine;
+        }
+      }
+    });
 
-      if (ordine.merci != undefined && ordine.merci != null)
-        for (let i = 0; i < ordine.merci.length; i++)
-          if (ordine.merci[i].id_corriere == null) daConsegnare = true;
+    this.ordiniCompletati = this.ordini.filter(ordine => {
+      if (ordine.merci != undefined && ordine.merci != null) {
+        var completato = true;
 
-      if (daConsegnare) {
-        if (!this.ordiniDaConsegnare.includes(ordine))
-          this.ordiniDaConsegnare = [...this.ordiniDaConsegnare, ordine];
-      } else
-        if (!this.ordiniCompletati.includes(ordine))
-          this.ordiniCompletati = [...this.ordiniCompletati, ordine];
-    })
+        for (let i = 0; i < ordine.merci.length; i++) {
+          if (ordine.merci[i].id_corriere == null) completato = false;
+        }
+        if (completato) return ordine;
+      }
+    });
   }
+
 
   async aggiungiCorriere(merce) {
     const modal = await this.modalController.create({

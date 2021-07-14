@@ -25,12 +25,12 @@ export class RegisterClientePage implements OnInit {
 
   ngOnInit() {
     this.credenziali = this.fb.group({
-      nome: ['carlo', [Validators.required]],
-      cognome: ['carlo', [Validators.required]],
-      email: ['carlo@gmail.com', [Validators.required, Validators.email]],
-      password: ['carlocarlo', [Validators.required, Validators.minLength(8)]],
-      telefono: ['1234567890', [Validators.required]],
-      indirizzo: ['carlo', [Validators.required]],
+      nome: ['', [Validators.required]],
+      cognome: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      telefono: ['', [Validators.required]],
+      indirizzo: ['', [Validators.required]],
     });
   }
 

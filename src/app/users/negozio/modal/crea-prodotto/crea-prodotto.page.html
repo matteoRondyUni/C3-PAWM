@@ -4,15 +4,14 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-content-with-blur-background">
   <form (ngSubmit)="creaProdotto()" [formGroup]="dati">
-    <ion-card>
+    <ion-card class="mid-transparent-card">
       <br>
       <br>
-      <img src="../../../../../assets/box.png" class="center">
+      <img src="../../../../../assets/box.png" class="center-img">
 
       <ion-card-content>
-
         <ion-item lines="full">
           <ion-label position="floating">Nome</ion-label>
           <ion-input type="name" name="nome" formControlName="nome" required></ion-input>
@@ -36,21 +35,13 @@
 
         <ion-row>
           <ion-col>
-            <ion-buttons>
-              <ion-button color="danger" expand="block" (click)="closeModal()" class="center-button">ANNULLA</ion-button>
-            </ion-buttons>
+            <ion-button expand="block" color="danger" (click)="closeModal()">ANNULLA</ion-button>
           </ion-col>
-
           <ion-col>
-            <ion-buttons>
-              <ion-button type="submit" color="primary" expand="block" class="center-button">CREA</ion-button>
-            </ion-buttons>
+            <ion-button type="submit" expand="block" color="primary">CREA</ion-button>
           </ion-col>
         </ion-row>
-
       </ion-card-content>
-
     </ion-card>
   </form>
-
 </ion-content>

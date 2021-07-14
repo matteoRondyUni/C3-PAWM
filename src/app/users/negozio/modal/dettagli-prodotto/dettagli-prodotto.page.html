@@ -4,12 +4,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-content-with-blur-background">
   <form (ngSubmit)="modificaProdotto()" [formGroup]="dati">
-    <ion-card>
+    <ion-card class="mid-transparent-card">
       <br>
       <br>
-      <img src="../../../../../assets/box.png" class="center">
+      <img src="../../../../../assets/box.png" class="center-img">
 
       <ion-card-content>
 
@@ -36,23 +36,16 @@
 
         <ion-row>
           <ion-col>
-            <ion-buttons>
-              <ion-button type="submit" color="primary" expand="block" class="center-button">SALVA MODIFICHE</ion-button>
-            </ion-buttons>
+            <ion-button type="submit" color="primary" expand="block">SALVA MODIFICHE</ion-button>
           </ion-col>
 
           <ion-col>
-            <ion-buttons>
-              <ion-button color="danger" expand="block" (click)="eliminaProdotto()" class="center-button">ELIMINA PRODOTTO</ion-button>
-            </ion-buttons>
+            <ion-button color="danger" expand="block" (click)="eliminaProdotto()">ELIMINA PRODOTTO</ion-button>
           </ion-col>
         </ion-row>
-
       </ion-card-content>
-
     </ion-card>
   </form>
-
 </ion-content>
 
 <ion-footer>

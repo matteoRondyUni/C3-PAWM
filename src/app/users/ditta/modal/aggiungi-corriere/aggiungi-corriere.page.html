@@ -1,14 +1,12 @@
 <ion-header>
   <ion-toolbar>
-    <!-- TODO DA FINIRE -->
-    <ion-title>aggiungi-corriere</ion-title>
+    <ion-title>Assegna corriere</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-content-with-blur-background">
 
-  <ion-card>
-
+  <ion-card class="mid-transparent-card">
     <ion-card-header>
       <ion-card-title style="font-size:25px"><strong>Dettagli Merce:</strong></ion-card-title>
     </ion-card-header>
@@ -28,11 +26,9 @@
       <ion-button color="primary" expand="block" (click)="assegnaCorriere()">Assegna Corriere</ion-button>
 
     </ion-card-content>
-
   </ion-card>
 
-  <ion-card>
-
+  <ion-card class="mid-transparent-card">
     <ion-card-header>
       <ion-card-title style="font-size:25px"><strong>Corrieri Disponibili:</strong></ion-card-title>
     </ion-card-header>
@@ -52,9 +48,7 @@
         </ion-item>
       </ion-virtual-scroll>
     </ion-card-content>
-
   </ion-card>
-
 </ion-content>
 
 <ion-footer>

@@ -9,9 +9,9 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./negozi-stats.component.scss'],
 })
 export class NegoziStatsComponent implements OnInit {
-  private n_negozi: any;
-  private nome;
-  private sottotitolo;
+  n_negozi: any;
+  nome;
+  sottotitolo;
 
   constructor(
     private http: HttpClient,

@@ -9,10 +9,10 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./vendite-stats.component.scss'],
 })
 export class VenditeStatsComponent implements OnInit {
-  private vendite_totali: number;
-  private vendite_ultimo_mese: number;
-  private current_month: string;
-  private current_year: number;
+  vendite_totali: number;
+  vendite_ultimo_mese: number;
+  current_month: string;
+  current_year: number;
 
   constructor(
     private http: HttpClient,
@@ -47,5 +47,4 @@ export class VenditeStatsComponent implements OnInit {
         this.errorManager.stampaErrore(res, 'Errore');
       });
   }
-
 }

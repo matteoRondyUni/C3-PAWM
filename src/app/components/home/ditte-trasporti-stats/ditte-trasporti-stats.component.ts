@@ -9,9 +9,9 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./ditte-trasporti-stats.component.scss'],
 })
 export class DitteTrasportiStatsComponent implements OnInit {
-  private n_ditte: any;
-  private nome;
-  private sottotitolo;
+  n_ditte: any;
+  nome;
+  sottotitolo;
 
   constructor(
     private http: HttpClient,

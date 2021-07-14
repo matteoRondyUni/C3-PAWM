@@ -9,25 +9,26 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-content-with-blur-background">
   <ion-refresher slot="fixed" (ionRefresh)="startReload($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-card>
-    <br>
-    <ion-button expand="full" (click)="creaProdotto()">
+  <ion-card class="full-transparent-card">
+    <ion-button expand="block" (click)="creaProdotto()">
       Aggiungi
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-button>
+  </ion-card>
 
+  <ion-card class="transparent-card">
     <ion-virtual-scroll [items]="inventario" approximateItemHeight="70px" [headerFn]="separateLetter">
 
       <ion-item-divider *virtualHeader="let header" color="gray">
         <ion-label>{{header}}</ion-label>
       </ion-item-divider>
 
-      <ion-item *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
+      <ion-item lines="full" *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
         <ion-avatar slot="start">
           <img src="../../../../../assets/box.png">
         </ion-avatar>

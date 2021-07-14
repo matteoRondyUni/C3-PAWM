@@ -9,7 +9,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./info-utente.component.scss'],
 })
 export class InfoUtenteComponent implements OnInit {
-  private utente = {};
+  utente = {};
 
   constructor(
     private http: HttpClient,

@@ -5,11 +5,9 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-
   </ion-toolbar>
 
-  <ion-toolbar class="transparent-toolbar">
-
+  <ion-toolbar>
     <ion-item>
       <ion-avatar slot="end" (click)="apriImpostazioni()">
         <img src="../../../../../assets/user.png">
@@ -17,13 +15,11 @@
       <h3>Bentornato, {{this.commerciante.nome}}!</h3>
       <br>
     </ion-item>
-
   </ion-toolbar>
-
 </ion-header>
 
-<ion-content>
-  <div cards>
+<ion-content class="ion-content-with-blur-background">
+  <div home-cards>
     <div class="grid-full">
       <app-vendite-stats (click)="apriOrdini()"></app-vendite-stats>
 

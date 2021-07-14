@@ -9,26 +9,26 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-content-with-blur-background">
   <ion-refresher slot="fixed" (ionRefresh)="startReload($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-card>
-    <br>
-    <ion-button expand="full" (click)="creaDipendente()">
+  <ion-card class="full-transparent-card">
+    <ion-button expand="block" (click)="creaDipendente()">
       Aggiungi
       <ion-icon name="person-add-outline"></ion-icon>
     </ion-button>
+  </ion-card>
 
-
+  <ion-card class="transparent-card">
     <ion-virtual-scroll [items]="dipendenti" approximateItemHeight="70px" [headerFn]="separateLetter">
 
       <ion-item-divider *virtualHeader="let header" color="gray">
         <ion-label>{{header}}</ion-label>
       </ion-item-divider>
 
-      <ion-item *virtualItem="let dipendente" (click)="apriDettagli(dipendente)">
+      <ion-item lines="full" *virtualItem="let dipendente" (click)="apriDettagli(dipendente)">
         <ion-avatar slot="start">
           <img src="../../../../../assets/user.png">
         </ion-avatar>

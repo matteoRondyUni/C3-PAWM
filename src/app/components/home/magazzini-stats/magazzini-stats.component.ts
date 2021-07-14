@@ -9,9 +9,9 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
   styleUrls: ['./magazzini-stats.component.scss'],
 })
 export class MagazziniStatsComponent implements OnInit {
-  private n_magazzini: any;
-  private nome;
-  private sottotitolo;
+  n_magazzini: any;
+  nome;
+  sottotitolo;
 
   constructor(
     private http: HttpClient,
