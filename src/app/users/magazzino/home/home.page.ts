@@ -16,7 +16,7 @@ import { MagazziniPage } from '../../utenti/modal/magazzini/magazzini.page';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  magazzino = {};
+  magazzino = { "ragione_sociale": "" };
 
   constructor(
     private authService: AuthenticationService,

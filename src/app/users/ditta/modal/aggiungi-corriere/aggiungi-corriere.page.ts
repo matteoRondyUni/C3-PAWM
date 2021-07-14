@@ -20,7 +20,7 @@ export class AggiungiCorrierePage implements OnInit {
   @Input() stato;
 
   dipendenti = [];
-  corriere = { "id": null };
+  corriere = { "id": null, "cognome": "", "nome": "" };
 
   constructor(
     private http: HttpClient,

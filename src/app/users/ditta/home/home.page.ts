@@ -15,7 +15,7 @@ import { DitteTrasportiPage } from '../../utenti/modal/ditte-trasporti/ditte-tra
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  ditta = {};
+  ditta = { "ragione_sociale": "" };
 
   constructor(
     private authService: AuthenticationService,

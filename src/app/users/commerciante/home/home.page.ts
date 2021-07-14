@@ -14,7 +14,7 @@ import { NegoziPage } from '../../utenti/modal/negozi/negozi.page';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  commerciante = {};
+  commerciante = { "nome": "" };
 
   constructor(
     private authService: AuthenticationService,
