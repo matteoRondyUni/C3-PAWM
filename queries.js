@@ -200,7 +200,7 @@ function controllaDatiRegister(request, tipo) {
  */
 function controllaDatiAccount(request, tipo) {
   if (tipo == ATTIVITA)
-    controllaString(request.body.nome, "Il campo Ragione Sociale non può essere vuoto!");
+    controllaString(request.body.ragione_sociale, "Il campo Ragione Sociale non può essere vuoto!");
   else if (tipo == UTENTE) {
     controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
     controllaString(request.body.cognome, "Il campo Cognome non può essere vuoto!");
