@@ -1,11 +1,9 @@
 const Pool = require('pg').Pool
+const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({
-  host: "localhost",
-  port: 5432,
-  user: "postgres",
-  password: "postgres123",
-  database: "C3-PAWM-DB"
+  connectionString
 })
+
 const crypto = require("crypto");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
