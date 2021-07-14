@@ -34,13 +34,6 @@ export class RegisterClientePage implements OnInit {
     });
   }
 
-  isRegistrationPage() {
-    document.getElementById("header-registration").style.color = "white";
-    document.getElementById("header-registration").style.backgroundColor = "#2196F3";
-    document.getElementById("header-registration-label").style.color = "white";
-    document.getElementById("header-registration-label").style.backgroundColor = "#2196F3";
-  }
-
   async register() {
     const loading = await this.loadingController.create();
     await loading.present();
@@ -48,7 +41,7 @@ export class RegisterClientePage implements OnInit {
     this.authService.registerCliente(this.credenziali.value).subscribe(
       async (res) => {
         await loading.dismiss();
-        this.router.navigateByUrl('/login');
+        this.router.navigateByUrl('/login', { replaceUrl: true });
         const alert = await this.alertController.create({
           header: 'Registrazione completata',
           message: "Ora puoi effettuare il login",

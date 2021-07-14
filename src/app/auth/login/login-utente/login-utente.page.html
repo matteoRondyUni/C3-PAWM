@@ -8,8 +8,6 @@
     </ion-toolbar>
   </ion-header>
 
-  {{ isLoginPage() }}
-
   <ion-content [fullscreen]="true">
     <form (ngSubmit)="login()" [formGroup]="credentials">
       <div class="login-card">

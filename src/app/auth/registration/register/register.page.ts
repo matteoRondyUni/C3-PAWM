@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -6,16 +7,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./register.page.scss'],
 })
 export class RegisterPage implements OnInit {
-  constructor() { }
+  
+  constructor(private router : Router) { }
 
   ngOnInit() {
   }
 
-  isRegistrationPage() {
-    document.getElementById("header-registration").style.color = "white";
-    document.getElementById("header-registration").style.backgroundColor = "#2196F3";
-    document.getElementById("header-registration-label").style.color = "white";
-    document.getElementById("header-registration-label").style.backgroundColor = "#2196F3";
+  apriRegisterUtente(){
+    this.router.navigateByUrl('/register-cliente', { replaceUrl: true });
   }
 
+  apriRegisterAttivita(){
+    this.router.navigateByUrl('/register-attivita', { replaceUrl: true });
+  }
 }

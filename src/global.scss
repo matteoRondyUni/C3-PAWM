@@ -30,6 +30,12 @@
     --background: url('./assets/SfondoC3Home.jpg') no-repeat center center / cover;
 }
 
+.toolbar-active-item{
+    --background: #2196F3;
+    --color: #fff;
+    --color-selected: rgb(15, 37, 80);
+}
+
 .menu-active-item{
     border-left: 8px solid var(--ion-color-primary);
 }

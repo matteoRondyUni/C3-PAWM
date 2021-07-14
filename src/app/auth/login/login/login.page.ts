@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -7,16 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginPage implements OnInit {
 
-  constructor() { }
+  constructor(private router : Router) { }
 
   ngOnInit() {
   }
 
-  isLoginPage() {
-    document.getElementById("header-login").style.color = "white";
-    document.getElementById("header-login").style.backgroundColor = "#2196F3";
-    document.getElementById("header-login-label").style.color = "white";
-    document.getElementById("header-login-label").style.backgroundColor = "#2196F3";
+  apriLoginUtente(){
+    this.router.navigateByUrl('/login-utente', { replaceUrl: true });
   }
 
+  apriLoginAttivita(){
+    this.router.navigateByUrl('/login-attivita', { replaceUrl: true });
+  }
 }

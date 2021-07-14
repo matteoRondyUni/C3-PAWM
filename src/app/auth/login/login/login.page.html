@@ -8,8 +8,6 @@
     </ion-toolbar>
   </ion-header>
 
-  {{ isLoginPage() }}
-
   <ion-content [fullscreen]="true">
     <ion-slides #slides pager="true">
       <ion-slide>
@@ -28,13 +26,11 @@
           <img src="" />
           <h1 style="font-size:35px"><strong>Sei pronto?</strong></h1>
           <br>
-          <ion-button fill="clear" style="font-size:20px" href="/login-utente"><strong>Effettua il Login come
-              utente</strong>
+          <ion-button fill="clear" style="font-size:20px" (click)="apriLoginUtente()"><strong>Login come utente</strong>
             <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
           <br>
-          <ion-button fill="clear" style="font-size:20px" href="/login-attivita"><strong>Effettua il Login come
-              attività</strong>
+          <ion-button fill="clear" style="font-size:20px" (click)="apriLoginAttivita()"><strong>Login come attività</strong>
             <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
         </div>

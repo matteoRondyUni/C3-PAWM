@@ -29,13 +29,6 @@ export class LoginUtentePage implements OnInit {
     });
   }
 
-  isLoginPage() {
-    document.getElementById("header-login").style.color = "white";
-    document.getElementById("header-login").style.backgroundColor = "#2196F3";
-    document.getElementById("header-login-label").style.color = "white";
-    document.getElementById("header-login-label").style.backgroundColor = "#2196F3";
-  }
-
   async login() {
     const loading = await this.loadingController.create();
     await loading.present();

@@ -8,8 +8,6 @@
     </ion-toolbar>
   </ion-header>
 
-  {{ isRegistrationPage() }}
-
   <ion-content [fullscreen]="true">
     <ion-slides #slides pager="true">
 
@@ -29,11 +27,11 @@
           <img src="" />
           <h1 style="font-size:35px"><strong>Sei pronto?</strong></h1>
           <br>
-          <ion-button fill="clear" style="font-size:20px" href="/register-cliente"><strong>Registrati come cliente</strong>
+          <ion-button fill="clear" style="font-size:20px" (click)="apriRegisterUtente()"><strong>Registrati come cliente</strong>
             <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
           <br>
-          <ion-button fill="clear" style="font-size:20px" href="/register-attivita"><strong>Registrati come attività</strong>
+          <ion-button fill="clear" style="font-size:20px" (click)="apriRegisterAttivita()"><strong>Registrati come attività</strong>
             <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
         </div>
