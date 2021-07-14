@@ -403,7 +403,8 @@ app.get('/ditte-trasporti/:id', (req, res) => {
  */
 app.get('/negozi', (req, res) => {
     db.getNegozi((err, results) => {
-        if (err) return res.status(500).send('Server error!');
+        console.log(err);
+        if (err) return res.status(500).send(err);
         returnDataJSON(res, results);
     })
 });
