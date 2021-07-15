@@ -8,14 +8,15 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content [fullscreen]="true">
+  <ion-content [fullscreen]="true" class="ion-content-with-hexagon-background">
+
     <ion-slides #slides pager="true">
       <ion-slide>
         <div>
           <img src="" />
-          <h1 style="font-size:35px"><strong>Effettua ora il Login</strong></h1>
-          <p>Sei un cliente o un'attività? C3 PAWM è un potente e pratico strumento per tutte le esigenze.</p>
-          <ion-button fill="clear" style="font-size:20px" (click)="slides.slideNext()"><strong>PROSEGUI</strong>
+          <h1 style="font-size:35px; text-shadow: 2px 2px #000000;"><strong>Effettua ora il Login</strong></h1>
+          <p style="text-shadow: 1.5px 1.5px #000000;">Sei un cliente o un'attività? C3 PAWM è un potente e pratico strumento per tutte le esigenze.</p>
+          <ion-button  style="font-size:20px; text-shadow: 2px 2px #000000;" (click)="slides.slideNext()"><strong>PROSEGUI</strong>
             <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
         </div>
@@ -26,16 +27,19 @@
           <img src="" />
           <h1 style="font-size:35px"><strong>Sei pronto?</strong></h1>
           <br>
-          <ion-button fill="clear" style="font-size:20px" (click)="apriLoginUtente()"><strong>Login come utente</strong>
+          <ion-button fill="clear" style="font-size:20px" (click)="apriLoginUtente()"><strong>Login come
+              utente</strong>
             <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
           <br>
-          <ion-button fill="clear" style="font-size:20px" (click)="apriLoginAttivita()"><strong>Login come attività</strong>
+          <ion-button fill="clear" style="font-size:20px" (click)="apriLoginAttivita()"><strong>Login come
+              attività</strong>
             <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
         </div>
       </ion-slide>
     </ion-slides>
+
   </ion-content>
 
   <app-cookie-alert></app-cookie-alert>
