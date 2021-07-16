@@ -11,7 +11,7 @@
   <ion-content [fullscreen]="true" class="ion-content-with-hexagon-background">
     <form (ngSubmit)="login()" [formGroup]="credentials">
       <div class="login-card">
-        <ion-card>
+        <ion-card class="home-transparent-card">
           <br>
           <br>
           <ion-card-header>
@@ -36,7 +36,7 @@
             <ion-row>
               <ion-col>
                 <div>
-                  <ion-button type="submit" color="danger" expand="block">Sign In</ion-button>
+                  <ion-button type="submit" color="primary" expand="block">Sign In</ion-button>
                 </div>
                 <br>
                 <a [routerLink]="['/forgot-password']" class="small-text forgot-password">Forgot Password?</a>
