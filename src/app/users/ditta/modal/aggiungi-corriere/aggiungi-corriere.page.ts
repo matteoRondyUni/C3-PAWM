@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { AlertController, LoadingController, ModalController, NavParams, ToastController } from '@ionic/angular';
 import { Component, Input, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ModalController, NavParams } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
@@ -29,8 +29,18 @@ export class AggiungiCorrierePage implements OnInit {
     private modalController: ModalController,
     private loadingController: LoadingController,
     private alertController: AlertController,
+    private toastController: ToastController,
     private navParams: NavParams) {
     this.loadDipendenti();
+  }
+
+  async presentToast() {
+    const toast = await this.toastController.create({
+      message: 'Hai selezionato il corriere ' + this.corriere.cognome + ' ' + this.corriere.nome,
+      duration: 1000,
+      color: "light"
+    });
+    toast.present();
   }
 
   ngOnInit() {
@@ -55,6 +65,7 @@ export class AggiungiCorrierePage implements OnInit {
 
   async pickCorriere(corriere) {
     this.corriere = corriere;
+    this.presentToast();
   }
 
   async loadDipendenti() {

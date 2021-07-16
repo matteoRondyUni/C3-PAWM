@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
@@ -101,7 +101,6 @@ export class SpedizioniPage implements OnInit {
       }
     });
   }
-
 
   async aggiungiCorriere(merce) {
     const modal = await this.modalController.create({
