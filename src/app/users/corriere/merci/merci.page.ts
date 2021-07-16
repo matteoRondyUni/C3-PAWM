@@ -53,7 +53,6 @@ export class MerciPage implements OnInit {
     this.http.get('/corriere/consegna/merci', { headers }).subscribe(
       async (res) => {
         this.merci = res['results'];
-        console.log(this.merci);
         this.dividiLista();
         this.caricaIndirizzoMerce();
         this.reloadManager.completaReload(event);

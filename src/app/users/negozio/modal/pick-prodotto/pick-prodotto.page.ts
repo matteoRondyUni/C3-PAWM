@@ -44,9 +44,6 @@ export class PickProdottoPage implements OnInit {
 
       this.prodotti_selezionabili = [...this.prodotti_selezionabili,];
     } else this.prodotti_selezionabili = this.inventario;
-
-    console.log("this.prodotti_selezionabili:", this.prodotti_selezionabili)
-
   }
 
   async loadInventario() {
@@ -56,7 +53,6 @@ export class PickProdottoPage implements OnInit {
     this.http.get('/inventario', { headers }).subscribe(
       async (res) => {
         this.inventario = res['results'];
-        console.log("this.prodotti_inseriti:", this.prodotti_inseriti)
         this.getProdottiSelezionabili();
       },
       async (res) => {

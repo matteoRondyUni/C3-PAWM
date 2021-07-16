@@ -27,7 +27,6 @@ export class InfoUtenteComponent implements OnInit {
       async (res) => {
         const tmp = res['results'];
         this.utente = tmp[0];
-        console.log(this.utente);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');

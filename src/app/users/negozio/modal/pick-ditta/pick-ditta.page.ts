@@ -30,7 +30,6 @@ export class PickDittaPage implements OnInit {
     this.http.get('/ditte-trasporti').subscribe(
       async (res) => {
         this.ditte = res['results'];
-        console.log("ditte:", this.ditte);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');

@@ -55,7 +55,6 @@ export class OrdiniPage implements OnInit {
         this.ordini = res['results'];
         this.loadMerci(token_value, event);
         this.infoOrdineLoader.loadInfoOrdine(this.ordini);
-        console.log(this.ordini);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');

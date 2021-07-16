@@ -35,8 +35,6 @@ export class LoginAttivitaPage implements OnInit {
 
     this.authService.loginAttivita(this.credentials.value).subscribe(
       async (res) => {
-        console.log("res: ", res);
-        console.log("primo metodo: ", (await this.authService.getToken()).value);
         await loading.dismiss();
 
         switch (res) {

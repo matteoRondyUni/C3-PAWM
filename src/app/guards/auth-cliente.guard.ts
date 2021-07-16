@@ -15,7 +15,6 @@ export class AuthClienteGuard implements CanLoad {
       filter(val => val !== null),
       take(1),
       map(tipologiaToken => {
-        console.log("tipologiatoken", tipologiaToken);
         if (tipologiaToken == 'CLIENTE')
           return true;
         else {

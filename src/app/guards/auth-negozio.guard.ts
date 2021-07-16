@@ -15,7 +15,6 @@ export class AuthNegozioGuard implements CanLoad {
       filter(val => val !== null),
       take(1),
       map(tipologiaToken => {
-        console.log("tipologiatoken", tipologiaToken);
         if (tipologiaToken == 'NEGOZIO')
           return true;
         else {

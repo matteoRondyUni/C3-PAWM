@@ -30,7 +30,6 @@ export class PickMagazzinoPage implements OnInit {
     this.http.get('/magazzini').subscribe(
       async (res) => {
         this.magazzini = res['results'];
-        console.log("magazzini:", this.magazzini);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');

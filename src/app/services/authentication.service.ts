@@ -40,9 +40,7 @@ export class AuthenticationService {
     return this.http.post('/login/utente', credentials).pipe(
       map((data: any) => data.accessToken),
       switchMap(token => {
-        console.log("token login", token);
         const decoded_token: any = jwt_decode(token);
-        console.log("tmp: ", decoded_token.tipo);
         Storage.set({ key: TOKEN_KEY, value: token });
         switch (decoded_token.tipo) {
           case "CLIENTE": return "1";
@@ -62,9 +60,7 @@ export class AuthenticationService {
     return this.http.post('/login/attivita', credentials).pipe(
       map((data: any) => data.accessToken),
       switchMap(token => {
-        console.log("token login", token);
         const tipoAttivita: any = jwt_decode(token);
-        console.log("tmp: ", tipoAttivita.tipo);
         Storage.set({ key: TOKEN_KEY, value: token });
         switch (tipoAttivita.tipo) {
           case "NEGOZIO": return "1";

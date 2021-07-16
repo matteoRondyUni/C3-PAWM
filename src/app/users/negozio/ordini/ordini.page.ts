@@ -103,7 +103,6 @@ export class OrdiniPage implements OnInit {
         prodottoSelezionato.quantita = 1
         this.prodotti = [...this.prodotti, prodottoSelezionato];
       }
-      console.log(this.prodotti);
     });
 
     return await modal.present();
@@ -115,7 +114,6 @@ export class OrdiniPage implements OnInit {
     this.prodotti = [...this.prodotti];
   }
 
-  //TODO controllare dati da inviare
   async creaOrdine() {
     const loading = await this.loadingController.create();
     await loading.present();
@@ -161,7 +159,6 @@ export class OrdiniPage implements OnInit {
         this.ordini = res['results'];
         this.loadMerci(token_value, event);
         this.infoOrdineLoader.loadInfoOrdine(this.ordini);
-        console.log(this.ordini);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
@@ -202,7 +199,6 @@ export class OrdiniPage implements OnInit {
   modificaQuantita(prodotto, event) {
     var quantita = parseInt(event.target.value);
     this.prodotti.forEach(element => {
-      console.log(element.id);
       if (element.id == prodotto.id) {
         element.quantita = quantita
       }
