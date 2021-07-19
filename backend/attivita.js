@@ -7,7 +7,10 @@ const pool = new Pool({
 })
 
 const jwt = require('jsonwebtoken');
+
 const controller = require('./controller');
+const general = require('./general');
+const utente = require('./utente');
 
 const ERRORE_DATI_QUERY = "Errore nei dati!";
 /**
@@ -58,7 +61,7 @@ const cercaDipendenteById = (id, decoded_token, cb) => {
  * @param {*} response 
  */
 const creaAttivita = (request, response) => {
-    controllaDatiRegister(request, TIPO);
+    controller.controllaDatiRegister(request, TIPO);
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(request.body.password + "secret", salt);
@@ -77,7 +80,7 @@ const creaAttivita = (request, response) => {
  * @returns il risultato della query
  */
 const findAttivitaByEmail = (email, cb) => {
-    controllaNotNull(email, "L'email non deve essere null!");
+    controller.controllaNotNull(email, "L'email non deve essere null!");
     return pool.query('SELECT * FROM public.attivita WHERE email = $1', [email], (error, results) => {
         cb(error, results)
     });
@@ -103,7 +106,7 @@ const getAttivitaInfo = (idAttivita, cb) => {
  * @param {*} response 
  */
 const creaDipendente = (request, response) => {
-    controllaDatiRegister(request, UTENTE);
+    controller.controllaDatiRegister(request, UTENTE);
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(request.body.password + "secret", salt);
@@ -129,7 +132,7 @@ const creaDipendente = (request, response) => {
         [request.body.nome, request.body.cognome, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo, tipo], (error, results) => {
             if (error) return response.status(400).send(ERRORE_DATI_QUERY);
 
-            findUserByEmail(request.body.email, (err, results) => {
+            utente.findUserByEmail(request.body.email, (err, results) => {
                 if (err) return response.status(500).send('Server error!');
 
                 const dipendente = JSON.parse(JSON.stringify(results.rows));
@@ -152,12 +155,12 @@ const creaDipendente = (request, response) => {
  * @param {*} decoded_token JWT decodificato dell'Attività
  */
 const eliminaDipendente = (request, response, decoded_token) => {
-    controllaInt(request.params.id, "Il Codice del Dipendente deve essere un numero!");
+    controller.controllaInt(request.params.id, "Il Codice del Dipendente deve essere un numero!");
     const id = parseInt(request.params.id);
 
     cercaDipendenteById(id, decoded_token, (err, results) => {
         if (err) return response.status(500).send('Server Error!');
-        if (controllaRisultatoQuery(results)) return response.status(404).send('Dipendente non trovato!');
+        if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Dipendente non trovato!');
 
         pool.query('DELETE FROM public.utenti WHERE id = $1', [id], (error, results) => {
             return response.status(200).send({ 'esito': "1" });
@@ -286,12 +289,13 @@ const modificaPassword = (request, response, decoded_token) => {
 
     cercaAttivitaById(id, (err, results) => {
         if (err) return response.status(500).send('Server Error!');
-        cambiaPassword(request, response, results, id, TIPO);
+        general.cambiaPassword(request, response, results, id, TIPO);
     });
 }
 
 module.exports = {
     TIPO,
+    cercaDipendenteById,
     creaAttivita,
     creaDipendente,
     eliminaDipendente,

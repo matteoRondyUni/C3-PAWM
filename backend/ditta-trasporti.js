@@ -8,6 +8,10 @@ const pool = new Pool({
 
 const jwt = require('jsonwebtoken');
 
+const controller = require('./controller');
+const general = require('./general');
+const attivita = require('./attivita');
+
 /**
  * Aggiunge il Corriere ad una Merce di un Ordine.
  * @param {*} request 
@@ -16,19 +20,19 @@ const jwt = require('jsonwebtoken');
  * @returns il risultato della query
  */
 const aggiungiCorriere = (request, response, decoded_token) => {
-    controllaInt(request.params.id, "L'ID della Merce deve essere un numero!");
-    controllaInt(request.body.id_ordine, "L'ID dell'Ordine deve essere un numero!");
+    controller.controllaInt(request.params.id, "L'ID della Merce deve essere un numero!");
+    controller.controllaInt(request.body.id_ordine, "L'ID dell'Ordine deve essere un numero!");
 
     const id_merce_ordine = parseInt(request.params.id);
     const id_ordine = request.body.id_ordine;
 
-    cercaOrdineById(id_ordine, decoded_token, (err, results) => {
+    general.cercaOrdineById(id_ordine, decoded_token, (err, results) => {
         if (err) return response.status(500).send('Server Error!');
-        if (controllaRisultatoQuery(results)) return response.status(404).send('Ordine non trovato!');
+        if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Ordine non trovato!');
 
-        cercaDipendenteById(request.body.id_corriere, decoded_token, (err, results) => {
+        attivita.cercaDipendenteById(request.body.id_corriere, decoded_token, (err, results) => {
             if (err) return response.status(500).send('Server Error!');
-            if (controllaRisultatoQuery(results)) return response.status(404).send('Corriere non trovato!');
+            if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Corriere non trovato!');
 
             pool.query('UPDATE public.merci_ordine SET id_corriere = $1 WHERE id = $2',
                 [request.body.id_corriere, id_merce_ordine], (error, results) => {
@@ -73,7 +77,7 @@ const getDitteTrasporti = (cb) => {
  * @returns il risultato della query
  */
 const getDittaTrasporti = (idDitta, cb) => {
-    controllaInt(idDitta, "Il Codice della Ditta di Trasporti deve essere un numero!");
+    controller.controllaInt(idDitta, "Il Codice della Ditta di Trasporti deve essere un numero!");
     return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
         [idDitta], (error, results) => {
             cb(error, results)

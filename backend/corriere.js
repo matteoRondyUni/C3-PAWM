@@ -6,6 +6,11 @@ const pool = new Pool({
     }
 })
 
+const jwt = require('jsonwebtoken');
+
+const controller = require('./controller');
+const general = require('./general');
+
 /**
  * Cambia lo stato della Merce.
  * @param {*} request Request con il parametro "id" del Merce
@@ -13,10 +18,10 @@ const pool = new Pool({
  * @param {*} decoded_token JWT decodificato del Corriere
  */
 const cambiaStatoMerce = (request, response, decoded_token) => {
-    controllaInt(request.params.id, "L'ID della Merce deve essere un numero!");
+    controller.controllaInt(request.params.id, "L'ID della Merce deve essere un numero!");
     const idMerce = parseInt(request.params.id);
 
-    cercaMerceById(idMerce, decoded_token, (err, results) => {
+    general.cercaMerceById(idMerce, decoded_token, (err, results) => {
         if (err) return response.status(500).send('Server Error!');
 
         const merce = JSON.parse(JSON.stringify(results.rows));
@@ -65,7 +70,7 @@ const getMerciCorriere = (req, cb) => {
  * @returns il risultato della query
  */
 const getIndirizzoCliente = (req, cb) => {
-    controllaInt(req.params.idMerce, "Il Codice della Merce deve essere un numero!");
+    controller.controllaInt(req.params.idMerce, "Il Codice della Merce deve essere un numero!");
     const idMerce = req.params.idMerce;
     const decoded_token = jwt.decode(req.headers.token);
 
