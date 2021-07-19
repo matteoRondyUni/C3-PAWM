@@ -8,7 +8,7 @@ import { AlertController, LoadingController } from '@ionic/angular';
 @Component({
   selector: 'app-register-attivita',
   templateUrl: './register-attivita.page.html',
-  styleUrls: ['./register-attivita.page.scss'],
+  styleUrls: ['../../auth.scss'],
 })
 export class RegisterAttivitaPage implements OnInit {
   credenziali: FormGroup;

@@ -6,7 +6,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
 @Component({
   selector: 'app-dipendenti-stats',
   templateUrl: './dipendenti-stats.component.html',
-  styleUrls: ['./dipendenti-stats.component.scss'],
+  styleUrls: ['../home-components.scss'],
 })
 export class DipendentiStatsComponent implements OnInit {
   n_dipendenti: any;

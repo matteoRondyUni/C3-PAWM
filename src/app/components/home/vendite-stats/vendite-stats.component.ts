@@ -6,7 +6,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
 @Component({
   selector: 'app-vendite-stats',
   templateUrl: './vendite-stats.component.html',
-  styleUrls: ['./vendite-stats.component.scss'],
+  styleUrls: ['../home-components.scss'],
 })
 export class VenditeStatsComponent implements OnInit {
   vendite_totali: number;

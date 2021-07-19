@@ -4,7 +4,7 @@ import { AlertController } from '@ionic/angular';
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.page.html',
-  styleUrls: ['./forgot-password.page.scss'],
+  styleUrls: ['../auth.scss'],
 })
 export class ForgotPasswordPage implements OnInit {
 
@@ -15,7 +15,6 @@ export class ForgotPasswordPage implements OnInit {
 
   async presentAlert() {
     const alert = await this.alertController.create({
-      cssClass: 'my-custom-class',
       header: 'Siamo spiacenti!',
       message: 'Questa feature non è ancora stata implementata.',
       buttons: ['CAPITO!']

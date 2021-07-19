@@ -6,7 +6,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
 @Component({
   selector: 'app-acquisti-stats',
   templateUrl: './acquisti-stats.component.html',
-  styleUrls: ['./acquisti-stats.component.scss'],
+  styleUrls: ['../home-components.scss'],
 })
 export class AcquistiStatsComponent implements OnInit {
   acquisti_totali: number;

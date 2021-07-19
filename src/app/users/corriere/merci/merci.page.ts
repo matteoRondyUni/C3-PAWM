@@ -91,7 +91,6 @@ export class MerciPage implements OnInit {
       }
 
       const alert = await this.alertController.create({
-        cssClass: 'my-custom-class',
         header: 'Cambiare lo stato della merce!',
         message: messaggio,
         buttons: [

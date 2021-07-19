@@ -6,7 +6,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
 @Component({
   selector: 'app-ditte-trasporti-stats',
   templateUrl: './ditte-trasporti-stats.component.html',
-  styleUrls: ['./ditte-trasporti-stats.component.scss'],
+  styleUrls: ['../home-components.scss'],
 })
 export class DitteTrasportiStatsComponent implements OnInit {
   n_ditte: any;

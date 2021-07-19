@@ -6,7 +6,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
 @Component({
   selector: 'app-inventario-stats',
   templateUrl: './inventario-stats.component.html',
-  styleUrls: ['./inventario-stats.component.scss'],
+  styleUrls: ['../home-components.scss'],
 })
 export class InventarioStatsComponent implements OnInit {
   n_prodotti: any;

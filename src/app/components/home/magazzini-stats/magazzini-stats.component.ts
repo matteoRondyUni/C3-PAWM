@@ -6,7 +6,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
 @Component({
   selector: 'app-magazzini-stats',
   templateUrl: './magazzini-stats.component.html',
-  styleUrls: ['./magazzini-stats.component.scss'],
+  styleUrls: ['../home-components.scss'],
 })
 export class MagazziniStatsComponent implements OnInit {
   n_magazzini: any;

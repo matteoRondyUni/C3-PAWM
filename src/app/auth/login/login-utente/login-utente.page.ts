@@ -8,7 +8,7 @@ import { AlertController, LoadingController } from '@ionic/angular';
 @Component({
   selector: 'app-login-utente',
   templateUrl: './login-utente.page.html',
-  styleUrls: ['./login-utente.page.scss'],
+  styleUrls: ['../../auth.scss'],
 })
 export class LoginUtentePage implements OnInit {
   credentials: FormGroup;

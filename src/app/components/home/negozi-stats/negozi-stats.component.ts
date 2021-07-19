@@ -6,7 +6,7 @@ import { ErrorManagerService } from 'src/app/services/error-manager.service';
 @Component({
   selector: 'app-negozi-stats',
   templateUrl: './negozi-stats.component.html',
-  styleUrls: ['./negozi-stats.component.scss'],
+  styleUrls: ['../home-components.scss'],
 })
 export class NegoziStatsComponent implements OnInit {
   n_negozi: any;
