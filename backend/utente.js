@@ -56,7 +56,7 @@ const modificaUtente = (request, response) => {
 
         pool.query('UPDATE public.utenti SET nome = $1, cognome = $2, email = $3, telefono = $4, indirizzo = $5 WHERE id = $6',
             [request.body.nome, request.body.cognome, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {
-                if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+                if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
                 return response.status(200).send({ 'esito': "1" });
             })
     });

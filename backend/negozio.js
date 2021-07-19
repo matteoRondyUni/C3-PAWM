@@ -8,8 +8,8 @@ const pool = new Pool({
 
 const crypto = require("crypto");
 const jwt = require('jsonwebtoken');
-
-const ERRORE_DATI_QUERY = "Errore nei dati!";
+const controller = require('./controller');
+const utente = require('./utente');
 
 /**
  * Genera il Codice di Ritiro per l'Ordine.
@@ -75,11 +75,11 @@ function calcolaTotaleOrdine(inventario, prodottiDaVendere) {
  * @param {*} request Request con i dati da controllare
  */
 function controllaDatiCreazioneOrdine(request) {
-    controllaString(request.body.tipo, "La Tipologia dell'Ordine non può essere vuota!");
-    controllaString(request.body.email_cliente, "Il campo Email non può essere vuoto!");
+    controller.controllaString(request.body.tipo, "La Tipologia dell'Ordine non può essere vuota!");
+    controller.controllaString(request.body.email_cliente, "Il campo Email non può essere vuoto!");
     if (request.body.tipo == "MAGAZZINO")
-        controllaInt(request.body.id_magazzino, "Deve essere selezionato un Magazzino!");
-    controllaInt(request.body.id_ditta, "Deve essere selezionata una Ditta di Trasporti!");
+        controller.controllaInt(request.body.id_magazzino, "Deve essere selezionato un Magazzino!");
+    controller.controllaInt(request.body.id_ditta, "Deve essere selezionata una Ditta di Trasporti!");
     if (request.body.prodotti.length == 0 || request.body.prodotti == null)
         throw "L'Ordine deve avere almeno una merce!";
 }
@@ -89,9 +89,9 @@ function controllaDatiCreazioneOrdine(request) {
  * @param {*} request Request con i dati da controllare
  */
 function controllaDatiProdotto(request) {
-    controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
-    controllaInt(request.body.disponibilita, "La Disponibilità deve essere un numero!");
-    controllaFloat(request.body.prezzo, "Il Prezzo deve essere un numero!");
+    controller.controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
+    controller.controllaInt(request.body.disponibilita, "La Disponibilità deve essere un numero!");
+    controller.controllaFloat(request.body.prezzo, "Il Prezzo deve essere un numero!");
 }
 
 /**
@@ -137,7 +137,7 @@ const creaProdotto = (request, response) => {
 
     pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
         [id_negozio, request.body.nome, request.body.disponibilita, request.body.prezzo], (error, results) => {
-            if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+            if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
             return response.status(200).send({ 'esito': "1" });
         })
 }
@@ -150,12 +150,12 @@ const creaProdotto = (request, response) => {
  * @returns il risultato della query
  */
 const eliminaProdotto = (request, response, decoded_token) => {
-    controllaInt(request.params.id, "Il Codice del Prodotto deve essere un numero!");
+    controller.controllaInt(request.params.id, "Il Codice del Prodotto deve essere un numero!");
     const id = parseInt(request.params.id);
 
     cercaProdottoById(id, decoded_token, (err, results) => {
         if (err) return response.status(500).send('Server Error!');
-        if (controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
+        if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
         pool.query('DELETE FROM public.prodotti WHERE id = $1', [id], (error, results) => {
             return response.status(200).send({ 'esito': "1" });
@@ -214,10 +214,10 @@ const creaOrdine = (request, response) => {
         var erroreDisponibilita = controllaProdottiDaVendere(inventario, request.body.prodotti);
         var totale = calcolaTotaleOrdine(inventario, request.body.prodotti);
 
-        findUserByEmail(request.body.email_cliente, (err, results) => {
+        utente.findUserByEmail(request.body.email_cliente, (err, results) => {
             if (err) return response.status(500).send('Server error!');
             if (erroreDisponibilita) return response.status(400).send("La Quantità supera la Disponibilità!");
-            if (controllaRisultatoQuery(results)) return response.status(404).send("L'email inserita non è associata a nessun Cliente!");
+            if (controller.controllaRisultatoQuery(results)) return response.status(404).send("L'email inserita non è associata a nessun Cliente!");
 
             const cliente = JSON.parse(JSON.stringify(results.rows));
 
@@ -227,7 +227,7 @@ const creaOrdine = (request, response) => {
                 pool.query('INSERT INTO public.ordini (id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, totale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
                     [id_negozio, request.body.id_magazzino, id_cliente, request.body.id_ditta, request.body.tipo, "PAGATO", codiceRitiro, totale],
                     (error, results) => {
-                        if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+                        if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
 
                         findOrdineByCodice(codiceRitiro, (err, results) => {
                             if (err) return response.status(500).send('Server error!');
@@ -254,11 +254,11 @@ const creaOrdine = (request, response) => {
 const vendiProdotto = (prodotto, id_ordine, response) => {
     pool.query('INSERT INTO public.merci_ordine (id_prodotto, id_ordine, quantita, prezzo_acquisto, stato) VALUES ($1, $2, $3, $4, $5)',
         [prodotto.id, id_ordine, prodotto.quantita, prodotto.prezzo, "PAGATO"], (error, results) => {
-            if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+            if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
 
             pool.query('UPDATE public.prodotti SET disponibilita = $1 WHERE id = $2',
                 [(prodotto.disponibilita - prodotto.quantita), prodotto.id], (error, results) => {
-                    if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+                    if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
                 });
         });
 }
@@ -270,7 +270,7 @@ const vendiProdotto = (prodotto, id_ordine, response) => {
  * @returns il risultato della query
  */
 const findOrdineByCodice = (codice, cb) => {
-    controllaNotNull(codice, "Il Codice di Ritiro non deve essere null!");
+    controller.controllaNotNull(codice, "Il Codice di Ritiro non deve essere null!");
     return pool.query('SELECT * FROM public.ordini WHERE codice_ritiro = $1', [codice], (error, results) => {
         cb(error, results)
     });
@@ -283,18 +283,18 @@ const findOrdineByCodice = (codice, cb) => {
  * @param {*} decoded_token JWT decodificato del Negozio
  */
 const modificaProdotto = (request, response, decoded_token) => {
-    controllaInt(request.params.id, "Il Codice del Prodotto deve essere un numero!");
+    controller.controllaInt(request.params.id, "Il Codice del Prodotto deve essere un numero!");
     controllaDatiProdotto(request);
 
     const id = parseInt(request.params.id);
 
     cercaProdottoById(id, decoded_token, (err, results) => {
         if (err) return response.status(500).send('Server Error!');
-        if (controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
+        if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
         pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
             [request.body.nome, request.body.disponibilita, request.body.prezzo, id], (error, results) => {
-                if (error) return response.status(400).send(ERRORE_DATI_QUERY);
+                if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
                 return response.status(200).send({ 'esito': "1" });
             })
     });
@@ -319,7 +319,7 @@ const getNegozi = (cb) => {
  * @returns il risultato della query
  */
 const getNegozio = (idNegozio, cb) => {
-    controllaInt(idNegozio, "Il Codice del Negozio deve essere un numero!");
+    controller.controllaInt(idNegozio, "Il Codice del Negozio deve essere un numero!");
     return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
         [idNegozio], (error, results) => {
             cb(error, results)
