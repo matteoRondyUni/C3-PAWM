@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const db = require('./queries');
+const db = require('./backend/general');
 const jwt = require('jsonwebtoken');
 
 const SECRET_KEY = "secretkey23456";
