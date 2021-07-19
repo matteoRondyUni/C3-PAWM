@@ -33,7 +33,7 @@ const cercaUtenteById = (id, cb) => {
  * @returns il risultato della query
  */
 const findUserByEmail = (email, cb) => {
-    controllaNotNull(email, "L'email non deve essere null!");
+    controller.controllaNotNull(email, "L'email non deve essere null!");
     return pool.query('SELECT * FROM public.utenti WHERE email = $1', [email], (error, results) => {
         cb(error, results)
     });
@@ -45,14 +45,14 @@ const findUserByEmail = (email, cb) => {
  * @param {*} response 
  */
 const modificaUtente = (request, response) => {
-    controllaInt(request.params.id, "Il Codice dell'Utente deve essere un numero!");
-    controllaDatiAccount(request, controller.UTENTE);
+    controller.controllaInt(request.params.id, "Il Codice dell'Utente deve essere un numero!");
+    controller.controllaDatiAccount(request, controller.UTENTE);
 
     const id = parseInt(request.params.id);
 
     cercaUtenteById(id, (err, results) => {
         if (err) return response.status(500).send('Server Error!');
-        if (controllaRisultatoQuery(results)) return response.status(404).send('Utente non trovato!');
+        if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Utente non trovato!');
 
         pool.query('UPDATE public.utenti SET nome = $1, cognome = $2, email = $3, telefono = $4, indirizzo = $5 WHERE id = $6',
             [request.body.nome, request.body.cognome, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {

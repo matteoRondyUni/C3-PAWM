@@ -1,5 +1,6 @@
 const attivita = require('./attivita');
 const utente = require('./utente');
+const ERRORE_DATI_QUERY = "Errore nei dati!";
 
 /**
  * Controlla che la password sia compresa tra 8 e 16 caratteri.
@@ -94,6 +95,7 @@ function controllaDatiAccount(request, tipo) {
 }
 
 module.exports = {
+    ERRORE_DATI_QUERY,
     controllaDatiAccount,
     controllaDatiRegister,
     controllaFloat,

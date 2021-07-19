@@ -9,8 +9,6 @@ const pool = new Pool({
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const ERRORE_DATI_QUERY = "Errore nei dati!";
-
 const controller = require('./controller');
 const attivita = require('./attivita');
 const utente = require('./utente');
