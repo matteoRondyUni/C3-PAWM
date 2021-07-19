@@ -6,6 +6,10 @@ const pool = new Pool({
     }
 })
 
+const jwt = require('jsonwebtoken');
+const general = require('./general');
+const controller = require('./controller');
+
 /**
  * Ritorna l'ID del Magazzino.
  * @param {*} decoded_token JWT decodificato del Magazzino o del Magazziniere
@@ -37,7 +41,7 @@ const getMagazzini = (cb) => {
  * @returns il risultato della query
  */
 const getMagazzino = (idMagazzino, cb) => {
-    controllaInt(idMagazzino, "Il Codice del Magazzino deve essere un numero!");
+    controller.controllaInt(idMagazzino, "Il Codice del Magazzino deve essere un numero!");
     return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
         [idMagazzino], (error, results) => {
             cb(error, results)
@@ -79,12 +83,12 @@ const getOrdiniMagazzino = (token, cb) => {
  * @param {*} decoded_token JWT del Magazzino o del Magazziniere
  */
 const ritiraOrdine = (request, response, decoded_token) => {
-    controllaInt(request.params.id, "Il Codice dell'Ordine deve essere un numero!");
+    controller.controllaInt(request.params.id, "Il Codice dell'Ordine deve essere un numero!");
     const id = parseInt(request.params.id);
 
-    cercaOrdineById(id, decoded_token, (err, results) => {
+    general.cercaOrdineById(id, decoded_token, (err, results) => {
         if (err) return response.status(500).send('Server Error!');
-        if (controllaRisultatoQuery(results)) return response.status(404).send('Ordine non trovato!');
+        if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Ordine non trovato!');
 
         pool.query('UPDATE public.ordini SET stato = $1 WHERE id = $2',
             ['RITIRATO', id], (error, results) => {
