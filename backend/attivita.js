@@ -1,16 +1,10 @@
-const Pool = require('pg').Pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-})
-
-const jwt = require('jsonwebtoken');
-
+const db = require('./database');
 const controller = require('./controller');
 const general = require('./general');
 const utente = require('./utente');
+
+const jwt = require('jsonwebtoken');
+
 
 const ERRORE_DATI_QUERY = "Errore nei dati!";
 /**
@@ -25,7 +19,7 @@ const TIPO = "ATTIVITA";
  * @returns il risultato della query
  */
 const cercaAttivitaById = (id, cb) => {
-    return pool.query('SELECT * FROM public.attivita WHERE id = $1', [id], (error, results) => {
+    return db.pool.query('SELECT * FROM public.attivita WHERE id = $1', [id], (error, results) => {
         cb(error, results)
     });
 }
@@ -50,7 +44,7 @@ const cercaDipendenteById = (id, decoded_token, cb) => {
             query = 'SELECT * FROM public.magazzinieri WHERE id = $1 AND id_magazzino = $2';
             break;
     }
-    return pool.query(query, [id, decoded_token.id], (error, results) => {
+    return db.pool.query(query, [id, decoded_token.id], (error, results) => {
         cb(error, results)
     });
 }
@@ -66,7 +60,7 @@ const creaAttivita = (request, response) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(request.body.password + "secret", salt);
 
-    pool.query('INSERT INTO public.attivita ( ragione_sociale, tipo, email, password, salt, telefono, indirizzo ) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+    db.pool.query('INSERT INTO public.attivita ( ragione_sociale, tipo, email, password, salt, telefono, indirizzo ) VALUES ($1, $2, $3, $4, $5, $6, $7)',
         [request.body.ragione_sociale, request.body.tipo, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo], (error, results) => {
             if (error) return response.status(400).send(ERRORE_DATI_QUERY);
             return response.status(200).send({ 'esito': "1" });
@@ -81,7 +75,7 @@ const creaAttivita = (request, response) => {
  */
 const findAttivitaByEmail = (email, cb) => {
     controller.controllaNotNull(email, "L'email non deve essere null!");
-    return pool.query('SELECT * FROM public.attivita WHERE email = $1', [email], (error, results) => {
+    return db.pool.query('SELECT * FROM public.attivita WHERE email = $1', [email], (error, results) => {
         cb(error, results)
     });
 }
@@ -94,7 +88,7 @@ const findAttivitaByEmail = (email, cb) => {
  */
 const getAttivitaInfo = (idAttivita, cb) => {
     controller.controllaInt(idAttivita, "Il Codice dell'Attività deve essere un numero!");
-    return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
+    return db.pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
         [idAttivita], (error, results) => {
             cb(error, results)
         });
@@ -128,7 +122,7 @@ const creaDipendente = (request, response) => {
             break;
     }
 
-    pool.query('INSERT INTO public.utenti ( nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+    db.pool.query('INSERT INTO public.utenti ( nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
         [request.body.nome, request.body.cognome, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo, tipo], (error, results) => {
             if (error) return response.status(400).send(ERRORE_DATI_QUERY);
 
@@ -138,7 +132,7 @@ const creaDipendente = (request, response) => {
                 const dipendente = JSON.parse(JSON.stringify(results.rows));
 
                 if (dipendente.length == 1) {
-                    pool.query(query, [dipendente[0].id, decoded_token.id], (error, results) => {
+                    db.pool.query(query, [dipendente[0].id, decoded_token.id], (error, results) => {
                         if (error) return response.status(400).send(ERRORE_DATI_QUERY);
                         return response.status(200).send({ 'esito': "1" });
                     })
@@ -162,7 +156,7 @@ const eliminaDipendente = (request, response, decoded_token) => {
         if (err) return response.status(500).send('Server Error!');
         if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Dipendente non trovato!');
 
-        pool.query('DELETE FROM public.utenti WHERE id = $1', [id], (error, results) => {
+        db.pool.query('DELETE FROM public.utenti WHERE id = $1', [id], (error, results) => {
             return response.status(200).send({ 'esito': "1" });
         })
     });
@@ -190,7 +184,7 @@ const getDipendenteInfo = (id, tipo, cb) => {
             break;
     }
 
-    return pool.query(query, [id], (error, results) => {
+    return db.pool.query(query, [id], (error, results) => {
         cb(error, results)
     })
 }
@@ -217,7 +211,7 @@ const getDipendenti = (token, cb) => {
             break;
     }
 
-    return pool.query(query, [decoded_token.id], (error, results) => {
+    return db.pool.query(query, [decoded_token.id], (error, results) => {
         cb(error, results)
     });
 }
@@ -245,7 +239,7 @@ const getDipendentiCount = (token, cb) => {
             break;
     }
 
-    return pool.query(query, [idAttivita], (error, results) => { cb(error, results) });
+    return db.pool.query(query, [idAttivita], (error, results) => { cb(error, results) });
 }
 
 /**
@@ -263,7 +257,7 @@ const modificaAttivita = (request, response) => {
         if (err) return response.status(500).send('Server Error!');
         if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Attivita non trovata!');
 
-        pool.query('UPDATE public.attivita SET ragione_sociale = $1, email = $2, telefono = $3, indirizzo = $4 WHERE id = $5',
+        db.pool.query('UPDATE public.attivita SET ragione_sociale = $1, email = $2, telefono = $3, indirizzo = $4 WHERE id = $5',
             [request.body.ragione_sociale, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {
                 if (error) return response.status(400).send(ERRORE_DATI_QUERY);
                 return response.status(200).send({ 'esito': "1" });

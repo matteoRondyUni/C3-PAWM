@@ -1,16 +1,9 @@
-const Pool = require('pg').Pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-})
-
-const jwt = require('jsonwebtoken');
-
+const db = require('./database');
 const controller = require('./controller');
 const general = require('./general');
 const attivita = require('./attivita');
+
+const jwt = require('jsonwebtoken');
 
 /**
  * Aggiunge il Corriere ad una Merce di un Ordine.
@@ -34,7 +27,7 @@ const aggiungiCorriere = (request, response, decoded_token) => {
             if (err) return response.status(500).send('Server Error!');
             if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Corriere non trovato!');
 
-            pool.query('UPDATE public.merci_ordine SET id_corriere = $1 WHERE id = $2',
+            db.pool.query('UPDATE public.merci_ordine SET id_corriere = $1 WHERE id = $2',
                 [request.body.id_corriere, id_merce_ordine], (error, results) => {
                     return response.status(200).send({ 'esito': "1" });
                 })
@@ -52,7 +45,7 @@ const getOrdiniDittaTrasporti = (token, cb) => {
     const decoded_token = jwt.decode(token);
     var idDittaTrasporti = decoded_token.id;
 
-    return pool.query('select id, id_negozio, id_magazzino, id_cliente, tipo, stato, data_ordine from public.ordini where id_ditta=$1 ORDER BY data_ordine DESC',
+    return db.pool.query('select id, id_negozio, id_magazzino, id_cliente, tipo, stato, data_ordine from public.ordini where id_ditta=$1 ORDER BY data_ordine DESC',
         [idDittaTrasporti], (error, results) => {
             cb(error, results)
         });
@@ -64,7 +57,7 @@ const getOrdiniDittaTrasporti = (token, cb) => {
  * @returns il risultato della query
  */
 const getDitteTrasporti = (cb) => {
-    return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
+    return db.pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
         ["DITTA_TRASPORTI"], (error, results) => {
             cb(error, results)
         });
@@ -78,7 +71,7 @@ const getDitteTrasporti = (cb) => {
  */
 const getDittaTrasporti = (idDitta, cb) => {
     controller.controllaInt(idDitta, "Il Codice della Ditta di Trasporti deve essere un numero!");
-    return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
+    return db.pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
         [idDitta], (error, results) => {
             cb(error, results)
         });
@@ -90,7 +83,7 @@ const getDittaTrasporti = (idDitta, cb) => {
  * @returns il risultato della query
  */
 const getDitteTrasportiCount = (cb) => {
-    return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['DITTA_TRASPORTI'],
+    return db.pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['DITTA_TRASPORTI'],
         (error, results) => {
             cb(error, results)
         });

@@ -1,15 +1,8 @@
-const Pool = require('pg').Pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-})
-
-const jwt = require('jsonwebtoken');
-
+const db = require('./database');
 const controller = require('./controller');
 const general = require('./general');
+
+const jwt = require('jsonwebtoken');
 
 /**
  * Cambia lo stato della Merce.
@@ -40,7 +33,7 @@ const cambiaStatoMerce = (request, response, decoded_token) => {
                 return response.status(500).send('Impossibile cambiare lo stato della Merce!');
         }
 
-        pool.query('UPDATE public.merci_ordine SET stato = $1 WHERE id = $2',
+        db.pool.query('UPDATE public.merci_ordine SET stato = $1 WHERE id = $2',
             [nuovoStato, idMerce], (error, results) => {
                 return response.status(200).send({ 'esito': "1" });
             })
@@ -56,7 +49,7 @@ const cambiaStatoMerce = (request, response, decoded_token) => {
 const getMerciCorriere = (req, cb) => {
     const decoded_token = jwt.decode(req.headers.token);
 
-    return pool.query('select public.merci_ordine.id, id_cliente, id_magazzino, quantita, public.merci_ordine.stato' +
+    return db.pool.query('select public.merci_ordine.id, id_cliente, id_magazzino, quantita, public.merci_ordine.stato' +
         ' from public.merci_ordine inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id' +
         ' where id_corriere=$1 and public.merci_ordine.stato<>$2', [decoded_token.id, "CONSEGNATO"], (error, results) => {
             cb(error, results)
@@ -74,7 +67,7 @@ const getIndirizzoCliente = (req, cb) => {
     const idMerce = req.params.idMerce;
     const decoded_token = jwt.decode(req.headers.token);
 
-    return pool.query('select public.utenti.indirizzo from (public.merci_ordine' +
+    return db.pool.query('select public.utenti.indirizzo from (public.merci_ordine' +
         ' inner join public.ordini on public.merci_ordine.id_ordine = public.ordini.id)' +
         ' inner join public.utenti on public.ordini.id_cliente = public.utenti.id' +
         ' where public.merci_ordine.id = $1 and public.ordini.id_magazzino IS null and public.merci_ordine.id_corriere = $2',

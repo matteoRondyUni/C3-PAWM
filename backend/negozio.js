@@ -1,15 +1,9 @@
-const Pool = require('pg').Pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-})
+const db = require('./database');
+const controller = require('./controller');
+const utente = require('./utente');
 
 const crypto = require("crypto");
 const jwt = require('jsonwebtoken');
-const controller = require('./controller');
-const utente = require('./utente');
 
 /**
  * Genera il Codice di Ritiro per l'Ordine.
@@ -104,7 +98,7 @@ function controllaDatiProdotto(request) {
 const cercaProdottoById = (id, decoded_token, cb) => {
     var id_negozio = getIdNegozio(decoded_token);
 
-    return pool.query('SELECT * FROM public.prodotti WHERE id = $1 AND id_negozio = $2', [id, id_negozio], (error, results) => {
+    return db.pool.query('SELECT * FROM public.prodotti WHERE id = $1 AND id_negozio = $2', [id, id_negozio], (error, results) => {
         cb(error, results)
     });
 }
@@ -119,7 +113,7 @@ const getOrdiniNegozio = (token, cb) => {
     const decoded_token = jwt.decode(token);
     var idNegozio = getIdNegozio(decoded_token);
 
-    return pool.query('select id, id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine, totale from public.ordini where id_negozio=$1 ORDER BY id DESC',
+    return db.pool.query('select id, id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine, totale from public.ordini where id_negozio=$1 ORDER BY id DESC',
         [idNegozio], (error, results) => {
             cb(error, results)
         });
@@ -135,7 +129,7 @@ const creaProdotto = (request, response) => {
     var id_negozio = getIdNegozio(decoded_token);
     controllaDatiProdotto(request);
 
-    pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
+    db.pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
         [id_negozio, request.body.nome, request.body.disponibilita, request.body.prezzo], (error, results) => {
             if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
             return response.status(200).send({ 'esito': "1" });
@@ -157,7 +151,7 @@ const eliminaProdotto = (request, response, decoded_token) => {
         if (err) return response.status(500).send('Server Error!');
         if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
-        pool.query('DELETE FROM public.prodotti WHERE id = $1', [id], (error, results) => {
+        db.pool.query('DELETE FROM public.prodotti WHERE id = $1', [id], (error, results) => {
             return response.status(200).send({ 'esito': "1" });
         })
     });
@@ -173,7 +167,7 @@ const getInventario = (token, cb) => {
     const decoded_token = jwt.decode(token);
     var idNegozio = getIdNegozio(decoded_token);
 
-    return pool.query('select id, nome, disponibilita, prezzo from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
+    return db.pool.query('select id, nome, disponibilita, prezzo from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
         [idNegozio], (error, results) => {
             cb(error, results)
         });
@@ -189,7 +183,7 @@ const getInventarioCount = (token, cb) => {
     const decoded_token = jwt.decode(token);
     var idNegozio = getIdNegozio(decoded_token);
 
-    return pool.query('SELECT COUNT(*) FROM public.prodotti WHERE id_negozio = $1;',
+    return db.pool.query('SELECT COUNT(*) FROM public.prodotti WHERE id_negozio = $1;',
         [idNegozio], (error, results) => {
             cb(error, results)
         });
@@ -224,7 +218,7 @@ const creaOrdine = (request, response) => {
             if (cliente.length == 1) {
                 id_cliente = cliente[0].id;
 
-                pool.query('INSERT INTO public.ordini (id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, totale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+                db.pool.query('INSERT INTO public.ordini (id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, totale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
                     [id_negozio, request.body.id_magazzino, id_cliente, request.body.id_ditta, request.body.tipo, "PAGATO", codiceRitiro, totale],
                     (error, results) => {
                         if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
@@ -252,11 +246,11 @@ const creaOrdine = (request, response) => {
  * @param {*} response 
  */
 const vendiProdotto = (prodotto, id_ordine, response) => {
-    pool.query('INSERT INTO public.merci_ordine (id_prodotto, id_ordine, quantita, prezzo_acquisto, stato) VALUES ($1, $2, $3, $4, $5)',
+    db.pool.query('INSERT INTO public.merci_ordine (id_prodotto, id_ordine, quantita, prezzo_acquisto, stato) VALUES ($1, $2, $3, $4, $5)',
         [prodotto.id, id_ordine, prodotto.quantita, prodotto.prezzo, "PAGATO"], (error, results) => {
             if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
 
-            pool.query('UPDATE public.prodotti SET disponibilita = $1 WHERE id = $2',
+            db.pool.query('UPDATE public.prodotti SET disponibilita = $1 WHERE id = $2',
                 [(prodotto.disponibilita - prodotto.quantita), prodotto.id], (error, results) => {
                     if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
                 });
@@ -271,7 +265,7 @@ const vendiProdotto = (prodotto, id_ordine, response) => {
  */
 const findOrdineByCodice = (codice, cb) => {
     controller.controllaNotNull(codice, "Il Codice di Ritiro non deve essere null!");
-    return pool.query('SELECT * FROM public.ordini WHERE codice_ritiro = $1', [codice], (error, results) => {
+    return db.pool.query('SELECT * FROM public.ordini WHERE codice_ritiro = $1', [codice], (error, results) => {
         cb(error, results)
     });
 }
@@ -292,7 +286,7 @@ const modificaProdotto = (request, response, decoded_token) => {
         if (err) return response.status(500).send('Server Error!');
         if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
-        pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
+        db.pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
             [request.body.nome, request.body.disponibilita, request.body.prezzo, id], (error, results) => {
                 if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
                 return response.status(200).send({ 'esito': "1" });
@@ -306,7 +300,7 @@ const modificaProdotto = (request, response, decoded_token) => {
  * @returns il risultato della query
  */
 const getNegozi = (cb) => {
-    return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
+    return db.pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
         ["NEGOZIO"], (error, results) => {
             cb(error, results)
         });
@@ -320,7 +314,7 @@ const getNegozi = (cb) => {
  */
 const getNegozio = (idNegozio, cb) => {
     controller.controllaInt(idNegozio, "Il Codice del Negozio deve essere un numero!");
-    return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
+    return db.pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
         [idNegozio], (error, results) => {
             cb(error, results)
         });
@@ -332,7 +326,7 @@ const getNegozio = (idNegozio, cb) => {
  * @returns il risultato della query
  */
 const getNegoziCount = (cb) => {
-    return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['NEGOZIO'],
+    return db.pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['NEGOZIO'],
         (error, results) => {
             cb(error, results)
         });

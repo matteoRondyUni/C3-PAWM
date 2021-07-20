@@ -1,10 +1,18 @@
 const express = require('express');
 const app = express();
-const db = require('./backend/general');
-const jwt = require('jsonwebtoken');
+
+const general = require('./backend/general');
+const attivita = require('./backend/attivita');
+const controller = require('./backend/controller');
+const corriere = require('./backend/corriere');
+const ditta_trasporti = require('./backend/ditta-trasporti');
+const magazzino = require('./backend/magazzino');
+const negozio = require('./backend/negozio');
+const utente = require('./backend/utente');
 
 const SECRET_KEY = "secretkey23456";
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 //Run the app by serving the static files in the dist directory
 app.use(express.static(__dirname + '/www'));
@@ -115,16 +123,6 @@ function formatDataOrdine(ordini) {
 }
 
 /**
- * Controlla che la Query abbia ritornato almeno un riga.
- * @param {*} results Risultato della query da controllare
- * @returns true se la query non ha ritornato nulla, false altrimenti
- */
-function controllaRisultatoQuery(results) {
-    const toControl = JSON.parse(JSON.stringify(results.rows));
-    return (toControl.length == 0);
-}
-
-/**
  * Ritorna il risultato di una query in formato JSON.
  * @param {*} response 
  * @param {*} results Risultato della query da ritornare
@@ -150,7 +148,7 @@ function returnOrdiniJSON(response, results) {
 }
 
 /**
- * REST - GET
+ * REST - GET------------------------------------------------------------
  */
 
 /**
@@ -160,7 +158,7 @@ app.get('/dipendenti', (req, res) => {
     const token = req.headers.token;
 
     if (verificaAttivita(token)) {
-        db.getDipendenti(token, (err, results) => {
+        attivita.getDipendenti(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
             returnDataJSON(res, results);
         });
@@ -174,7 +172,7 @@ app.get('/inventario', (req, res) => {
     const token = req.headers.token;
 
     if (verificaNegozio(token)) {
-        db.getInventario(token, (err, results) => {
+        negozio.getInventario(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
             returnDataJSON(res, results);
         });
@@ -188,7 +186,7 @@ app.get('/inventario/count', (req, res) => {
     const token = req.headers.token;
 
     if (verificaNegozio(token)) {
-        db.getInventarioCount(token, (err, results) => {
+        negozio.getInventarioCount(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
 
             const count = JSON.parse(JSON.stringify(results.rows));
@@ -206,7 +204,7 @@ app.get('/dipendenti/count', (req, res) => {
     const token = req.headers.token;
 
     if (verificaAttivita(token)) {
-        db.getDipendentiCount(token, (err, results) => {
+        attivita.getDipendentiCount(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
 
             const count = JSON.parse(JSON.stringify(results.rows));
@@ -222,7 +220,7 @@ app.get('/dipendenti/count', (req, res) => {
  */
 app.get('/magazzini/count', (req, res) => {
     if (verificaJWT(req.headers.token)) {
-        db.getMagazziniCount((err, results) => {
+        magazzino.getMagazziniCount((err, results) => {
             if (err) return res.status(500).send('Server error!');
 
             const count = JSON.parse(JSON.stringify(results.rows));
@@ -238,7 +236,7 @@ app.get('/magazzini/count', (req, res) => {
  */
 app.get('/negozi/count', (req, res) => {
     if (verificaJWT(req.headers.token)) {
-        db.getNegoziCount((err, results) => {
+        negozio.getNegoziCount((err, results) => {
             if (err) return res.status(500).send('Server error!');
 
             const count = JSON.parse(JSON.stringify(results.rows));
@@ -254,7 +252,7 @@ app.get('/negozi/count', (req, res) => {
  */
 app.get('/ditte/count', (req, res) => {
     if (verificaJWT(req.headers.token)) {
-        db.getDitteTrasportiCount((err, results) => {
+        ditta_trasporti.getDitteTrasportiCount((err, results) => {
             if (err) return res.status(500).send('Server error!');
 
             const count = JSON.parse(JSON.stringify(results.rows));
@@ -272,7 +270,7 @@ app.get('/ordini/stats', (req, res) => {
     const token = req.headers.token;
 
     if (verificaNegozio(token) || verificaCliente(token)) {
-        db.getOrdiniStats(token, res, (tmp) => {
+        general.getOrdiniStats(token, res, (tmp) => {
             const stats = JSON.parse(JSON.stringify(tmp));
             const to_return = { 'results': stats };
             return res.status(200).send(to_return);
@@ -287,22 +285,22 @@ app.get('/ordini', (req, res) => {
     const token = req.headers.token;
 
     if (verificaNegozio(token)) {
-        db.getOrdiniNegozio(token, (err, results) => {
+        negozio.getOrdiniNegozio(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
             returnOrdiniJSON(res, results);
         });
     } else if (verificaMagazzino(token)) {
-        db.getOrdiniMagazzino(token, (err, results) => {
+        magazzino.getOrdiniMagazzino(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
             returnOrdiniJSON(res, results);
         });
     } else if (verificaDittaTrasporti(token)) {
-        db.getOrdiniDittaTrasporti(token, (err, results) => {
+        ditta_trasporti.getOrdiniDittaTrasporti(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
             returnOrdiniJSON(res, results);
         });
     } else if (verificaCliente(token)) {
-        db.getOrdiniCliente(token, (err, results) => {
+        general.getOrdiniCliente(token, (err, results) => {
             if (err) return res.status(500).send('Server error!');
             returnOrdiniJSON(res, results);
         });
@@ -317,7 +315,7 @@ app.get('/ordini', (req, res) => {
 app.get('/merci/:idOrdine', (req, res) => {
     if (verificaJWT(req.headers.token)) {
         try {
-            db.getMerciOrdine(req, (err, results) => {
+            general.getMerciOrdine(req, (err, results) => {
                 if (err) return res.status(500).send('Server error!');
                 if (controllaRisultatoQuery(results)) return res.status(400).send("L'Ordine non ha merci collegate!");
                 returnDataJSON(res, results);
@@ -333,7 +331,7 @@ app.get('/merci/:idOrdine', (req, res) => {
  */
 app.get('/corriere/consegna/merci', (req, res) => {
     if (verificaCorriere(req.headers.token)) {
-        db.getMerciCorriere(req, (err, results) => {
+        corriere.getMerciCorriere(req, (err, results) => {
             if (err) return res.status(500).send('Server error!');
             returnDataJSON(res, results);
         });
@@ -346,7 +344,7 @@ app.get('/corriere/consegna/merci', (req, res) => {
 app.get('/corriere/merce/:idMerce/indirizzo/cliente', (req, res) => {
     if (verificaCorriere(req.headers.token)) {
         try {
-            db.getIndirizzoCliente(req, (err, results) => {
+            corriere.getIndirizzoCliente(req, (err, results) => {
                 if (err) return res.status(500).send('Server error!');
                 returnDataJSON(res, results);
             });
@@ -360,7 +358,7 @@ app.get('/corriere/merce/:idMerce/indirizzo/cliente', (req, res) => {
  * REST - Ritorna la lista dei Magazzini
  */
 app.get('/magazzini', (req, res) => {
-    db.getMagazzini((err, results) => {
+    magazzino.getMagazzini((err, results) => {
         if (err) return res.status(500).send('Server error!');
         returnDataJSON(res, results);
     })
@@ -370,9 +368,9 @@ app.get('/magazzini', (req, res) => {
  * REST - Ritorna le Informazioni del Magazzino
  */
 app.get('/magazzini/:id', (req, res) => {
-    db.getMagazzino(req.params.id, (err, results) => {
+    magazzino.getMagazzino(req.params.id, (err, results) => {
         if (err) return res.status(500).send('Server error!');
-        if (controllaRisultatoQuery(results)) return res.status(404).send('Magazzino non trovato!');
+        if (controller.controllaRisultatoQuery(results)) return res.status(404).send('Magazzino non trovato!');
         returnDataJSON(res, results);
     })
 });
@@ -381,7 +379,7 @@ app.get('/magazzini/:id', (req, res) => {
  * REST - Ritorna la lista delle Ditte di Trasporti
  */
 app.get('/ditte-trasporti', (req, res) => {
-    db.getDitteTrasporti((err, results) => {
+    ditta_trasporti.getDitteTrasporti((err, results) => {
         if (err) return res.status(500).send('Server error!');
         returnDataJSON(res, results);
     })
@@ -391,9 +389,9 @@ app.get('/ditte-trasporti', (req, res) => {
  * REST - Ritorna le Informazioni della Ditta di Trasporti
  */
 app.get('/ditte-trasporti/:id', (req, res) => {
-    db.getDittaTrasporti(req.params.id, (err, results) => {
+    ditta_trasporti.getDittaTrasporti(req.params.id, (err, results) => {
         if (err) return res.status(500).send('Server error!');
-        if (controllaRisultatoQuery(results)) return res.status(404).send('Ditta di Trasporti non trovata!');
+        if (controller.controllaRisultatoQuery(results)) return res.status(404).send('Ditta di Trasporti non trovata!');
         returnDataJSON(res, results);
     })
 });
@@ -402,7 +400,7 @@ app.get('/ditte-trasporti/:id', (req, res) => {
  * REST - Ritorna la lista dei Negozi
  */
 app.get('/negozi', (req, res) => {
-    db.getNegozi((err, results) => {
+    negozio.getNegozi((err, results) => {
         if (err) return res.status(500).send('Server error!');
         returnDataJSON(res, results);
     })
@@ -412,9 +410,9 @@ app.get('/negozi', (req, res) => {
  * REST - Ritorna le Informazioni del Negozio
  */
 app.get('/negozi/:id', (req, res) => {
-    db.getNegozio(req.params.id, (err, results) => {
+    negozio.getNegozio(req.params.id, (err, results) => {
         if (err) return res.status(500).send('Server error!');
-        if (controllaRisultatoQuery(results)) return res.status(404).send('Negozio non trovato!');
+        if (controller.controllaRisultatoQuery(results)) return res.status(404).send('Negozio non trovato!');
         returnDataJSON(res, results);
     })
 });
@@ -425,7 +423,7 @@ app.get('/negozi/:id', (req, res) => {
 app.get('/info/utente', (req, res) => {
     const token = req.headers.token;
     if (verificaUtente(token)) {
-        db.getUserInfo(jwt.decode(token).id, (err, results) => {
+        utente.getUserInfo(jwt.decode(token).id, (err, results) => {
             if (err) return res.status(500).send('Server error!');
             returnDataJSON(res, results);
         })
@@ -438,7 +436,7 @@ app.get('/info/utente', (req, res) => {
 app.get('/info/attivita', (req, res) => {
     const token = req.headers.token;
     if (verificaAttivita(token)) {
-        db.getAttivitaInfo(jwt.decode(token).id, (err, results) => {
+        attivita.getAttivitaInfo(jwt.decode(token).id, (err, results) => {
             if (err) return res.status(500).send('Server error!');
             returnDataJSON(res, results);
         })
@@ -446,7 +444,7 @@ app.get('/info/attivita', (req, res) => {
 });
 
 /**
- * REST - POST
+ * REST - POST-----------------------------------------------------------
  */
 
 /**
@@ -456,9 +454,9 @@ app.post('/login/utente', (req, res) => {
     const password = req.body.password;
 
     try {
-        db.findUserByEmail(req.body.email, (err, results) => {
+        utente.findUserByEmail(req.body.email, (err, results) => {
             if (err) return res.status(500).send('Server Error!');
-            if (controllaRisultatoQuery(results)) return res.status(404).send('Utente non trovato!');
+            if (controller.controllaRisultatoQuery(results)) return res.status(404).send('Utente non trovato!');
 
             const user = JSON.parse(JSON.stringify(results.rows));
 
@@ -473,21 +471,21 @@ app.post('/login/utente', (req, res) => {
                     const accessToken = jwt.sign({ id: user[0].id, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                     return res.status(200).send({ "accessToken": accessToken });
                 case "COMMERCIANTE":
-                    db.getDipendenteInfo(user[0].id, user[0].tipo, (err, results) => {
+                    attivita.getDipendenteInfo(user[0].id, user[0].tipo, (err, results) => {
                         const commerciante = JSON.parse(JSON.stringify(results.rows));
                         const accessToken = jwt.sign({ id: commerciante[0].id, idNegozio: commerciante[0].id_negozio, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                         return res.status(200).send({ "accessToken": accessToken });
                     });
                     break;
                 case "CORRIERE":
-                    db.getDipendenteInfo(user[0].id, user[0].tipo, (err, results) => {
+                    attivita.getDipendenteInfo(user[0].id, user[0].tipo, (err, results) => {
                         const corriere = JSON.parse(JSON.stringify(results.rows));
                         const accessToken = jwt.sign({ id: corriere[0].id, idDitta: corriere[0].id_ditta, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                         return res.status(200).send({ "accessToken": accessToken });
                     });
                     break;
                 case "MAGAZZINIERE":
-                    db.getDipendenteInfo(user[0].id, user[0].tipo, (err, results) => {
+                    attivita.getDipendenteInfo(user[0].id, user[0].tipo, (err, results) => {
                         const magazziniere = JSON.parse(JSON.stringify(results.rows));
                         const accessToken = jwt.sign({ id: magazziniere[0].id, idMagazzino: magazziniere[0].id_magazzino, tipo: user[0].tipo }, SECRET_KEY, { algorithm: 'HS256', expiresIn: expiresIn });
                         return res.status(200).send({ "accessToken": accessToken });
@@ -496,6 +494,7 @@ app.post('/login/utente', (req, res) => {
             }
         })
     } catch (error) {
+        console.log('error:', error);
         return res.status(400).send(error);
     }
 });
@@ -506,9 +505,9 @@ app.post('/login/utente', (req, res) => {
 app.post('/login/attivita', (req, res) => {
     const password = req.body.password;
     try {
-        db.findAttivitaByEmail(req.body.email, (err, results) => {
+        attivita.findAttivitaByEmail(req.body.email, (err, results) => {
             if (err) return res.status(500).send('Server Error!');
-            if (controllaRisultatoQuery(results)) return res.status(404).send('Attività non trovata!');
+            if (controller.controllaRisultatoQuery(results)) return res.status(404).send('Attività non trovata!');
 
             const attivita = JSON.parse(JSON.stringify(results.rows));
 
@@ -530,13 +529,13 @@ app.post('/login/attivita', (req, res) => {
  */
 app.post('/register/cliente', (req, res) => {
     try {
-        db.findUserByEmail(req.body.email, (err, results) => {
+        utente.findUserByEmail(req.body.email, (err, results) => {
             try {
                 if (err) return res.status(500).send('Server error!');
                 const users = JSON.parse(JSON.stringify(results.rows));
 
                 if (users.length == 0)
-                    db.creaCliente(req, res);
+                    general.creaCliente(req, res);
                 else return res.status(400).send("L'email \'" + users[0].email + "\' è già stata usata!");
             } catch (error) {
                 return res.status(400).send(error);
@@ -553,14 +552,14 @@ app.post('/register/cliente', (req, res) => {
 app.post('/register/dipendente', (req, res) => {
     if (verificaAttivita(req.body.token_value)) {
         try {
-            db.findUserByEmail(req.body.email, (err, results) => {
+            utente.findUserByEmail(req.body.email, (err, results) => {
                 try {
                     if (err) return res.status(500).send('Server error!');
 
                     const dipendenti = JSON.parse(JSON.stringify(results.rows));
 
                     if (dipendenti.length == 0)
-                        db.creaDipendente(req, res);
+                        attivita.creaDipendente(req, res);
                     else return res.status(400).send("L'email \'" + dipendenti[0].email + "\' è già stata usata!");
                 } catch (error) {
                     return res.status(400).send(error);
@@ -577,15 +576,15 @@ app.post('/register/dipendente', (req, res) => {
  */
 app.post('/register/attivita', (req, res) => {
     try {
-        db.findAttivitaByEmail(req.body.email, (err, results) => {
+        attivita.findAttivitaByEmail(req.body.email, (err, results) => {
             try {
                 if (err) return res.status(500).send('Server error!');
 
-                const attivita = JSON.parse(JSON.stringify(results.rows));
+                const risultati = JSON.parse(JSON.stringify(results.rows));
 
-                if (attivita.length == 0)
-                    db.creaAttivita(req, res);
-                else return res.status(400).send("L'email \'" + attivita[0].email + "\' è già stata usata!");
+                if (risultati.length == 0)
+                    attivita.creaAttivita(req, res);
+                else return res.status(400).send("L'email \'" + risultati[0].email + "\' è già stata usata!");
             } catch (error) {
                 return res.status(400).send(error);
             }
@@ -601,7 +600,7 @@ app.post('/register/attivita', (req, res) => {
 app.post('/prodotto', (req, res) => {
     if (verificaNegozio(req.body.token_value)) {
         try {
-            db.creaProdotto(req, res);
+            negozio.creaProdotto(req, res);
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -614,7 +613,7 @@ app.post('/prodotto', (req, res) => {
 app.post('/ordine', (req, res) => {
     if (verificaNegozio(req.body.token_value)) {
         try {
-            db.creaOrdine(req, res);
+            negozio.creaOrdine(req, res);
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -622,7 +621,7 @@ app.post('/ordine', (req, res) => {
 })
 
 /**
- * REST - PUT
+ * REST - PUT------------------------------------------------------------
  */
 
 /**
@@ -632,7 +631,7 @@ app.put('/ordine/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaMagazzino(token)) {
         try {
-            db.ritiraOrdine(req, res, jwt.decode(token));
+            magazzino.ritiraOrdine(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -646,7 +645,7 @@ app.put('/attivita/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaAttivita(token)) {
         try {
-            db.modificaAttivita(req, res);
+            attivita.modificaAttivita(req, res);
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -660,7 +659,7 @@ app.put('/utente/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaUtente(token)) {
         try {
-            db.modificaUtente(req, res);
+            utente.modificaUtente(req, res);
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -672,9 +671,15 @@ app.put('/utente/:id', (req, res) => {
  */
 app.put('/modifica/password/:id', (req, res) => {
     const token = req.body.token_value;
-    if (verificaJWT(token)) {
+    if (verificaAttivita(token)) {
         try {
-            db.modificaPassword(req, res, jwt.decode(token));
+            attivita.modificaPassword(req, res, jwt.decode(token));
+        } catch (error) {
+            return res.status(400).send(error);
+        }
+    } else if (verificaUtente(token)) {
+        try {
+            utente.modificaPassword(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -688,7 +693,7 @@ app.put('/prodotto/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaNegozio(token)) {
         try {
-            db.modificaProdotto(req, res, jwt.decode(token));
+            negozio.modificaProdotto(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -702,7 +707,7 @@ app.put('/ditta-trasporti/ordine/merce/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaDittaTrasporti(token)) {
         try {
-            db.aggiungiCorriere(req, res, jwt.decode(token));
+            ditta_trasporti.aggiungiCorriere(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -717,7 +722,7 @@ app.put('/merci/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaCorriere(token)) {
         try {
-            db.cambiaStatoMerce(req, res, jwt.decode(token));
+            corriere.cambiaStatoMerce(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -725,7 +730,7 @@ app.put('/merci/:id', (req, res) => {
 })
 
 /**
- * REST - DELETE
+ * REST - DELETE---------------------------------------------------------
  */
 
 /**
@@ -735,7 +740,7 @@ app.delete('/dipendenti/:id', (req, res) => {
     const token = req.headers.token;
     if (verificaAttivita(token)) {
         try {
-            db.eliminaDipendente(req, res, jwt.decode(token));
+            attivita.eliminaDipendente(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -749,7 +754,7 @@ app.delete('/prodotto/:id', (req, res) => {
     const token = req.headers.token;
     if (verificaNegozio(token)) {
         try {
-            db.eliminaProdotto(req, res, jwt.decode(token));
+            negozio.eliminaProdotto(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }

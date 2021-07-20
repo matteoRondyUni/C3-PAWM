@@ -1,18 +1,18 @@
-const Pool = require('pg').Pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-})
+// // import * as controller from './controller.js';
+// module.import={
+//     ()* from './controller.js'
+// }
+
+// var controller = import('./controller.js');
+
+const db = require('./database');
+const controller = require('./controller');
+const general = require('./general');
 
 /**
  * Tipologia che indica un Utente
  */
 const TIPO = "UTENTE";
-
-const controller = require('./controller');
-const general = require('./general');
 
 /**
  * Ricerca un utente tramite il suo ID.
@@ -21,7 +21,7 @@ const general = require('./general');
  * @returns il risultato della query
  */
 const cercaUtenteById = (id, cb) => {
-    return pool.query('SELECT * FROM public.utenti WHERE id = $1', [id], (error, results) => {
+    return db.pool.query('SELECT * FROM public.utenti WHERE id = $1', [id], (error, results) => {
         cb(error, results)
     });
 }
@@ -34,7 +34,7 @@ const cercaUtenteById = (id, cb) => {
  */
 const findUserByEmail = (email, cb) => {
     controller.controllaNotNull(email, "L'email non deve essere null!");
-    return pool.query('SELECT * FROM public.utenti WHERE email = $1', [email], (error, results) => {
+    return db.pool.query('SELECT * FROM public.utenti WHERE email = $1', [email], (error, results) => {
         cb(error, results)
     });
 }
@@ -54,7 +54,7 @@ const modificaUtente = (request, response) => {
         if (err) return response.status(500).send('Server Error!');
         if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Utente non trovato!');
 
-        pool.query('UPDATE public.utenti SET nome = $1, cognome = $2, email = $3, telefono = $4, indirizzo = $5 WHERE id = $6',
+        db.pool.query('UPDATE public.utenti SET nome = $1, cognome = $2, email = $3, telefono = $4, indirizzo = $5 WHERE id = $6',
             [request.body.nome, request.body.cognome, request.body.email, request.body.telefono, request.body.indirizzo, id], (error, results) => {
                 if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
                 return response.status(200).send({ 'esito': "1" });
@@ -92,7 +92,7 @@ const modificaPassword = (request, response, decoded_token) => {
  */
 const getUserInfo = (idUtente, cb) => {
     controller.controllaInt(idUtente, "Il Codice dell'Utente deve essere un numero!");
-    return pool.query('select id, nome, cognome, email, telefono, indirizzo from public.utenti where id=$1',
+    return db.pool.query('select id, nome, cognome, email, telefono, indirizzo from public.utenti where id=$1',
         [idUtente], (error, results) => {
             cb(error, results)
         });

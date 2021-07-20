@@ -1,14 +1,8 @@
-const Pool = require('pg').Pool
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-})
-
-const jwt = require('jsonwebtoken');
+const db = require('./database');
 const general = require('./general');
 const controller = require('./controller');
+
+const jwt = require('jsonwebtoken');
 
 /**
  * Ritorna l'ID del Magazzino.
@@ -28,7 +22,7 @@ function getIdMagazzino(decoded_token) {
  * @returns il risultato della query
  */
 const getMagazzini = (cb) => {
-    return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
+    return db.pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where tipo=$1 ORDER BY ragione_sociale ASC',
         ["MAGAZZINO"], (error, results) => {
             cb(error, results)
         });
@@ -42,7 +36,7 @@ const getMagazzini = (cb) => {
  */
 const getMagazzino = (idMagazzino, cb) => {
     controller.controllaInt(idMagazzino, "Il Codice del Magazzino deve essere un numero!");
-    return pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
+    return db.pool.query('select id, ragione_sociale, email, telefono, indirizzo from public.attivita where id=$1',
         [idMagazzino], (error, results) => {
             cb(error, results)
         });
@@ -54,7 +48,7 @@ const getMagazzino = (idMagazzino, cb) => {
  * @returns il risultato della query
  */
 const getMagazziniCount = (cb) => {
-    return pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['MAGAZZINO'],
+    return db.pool.query('SELECT COUNT(*) FROM public.attivita WHERE tipo = $1;', ['MAGAZZINO'],
         (error, results) => {
             cb(error, results)
         });
@@ -70,7 +64,7 @@ const getOrdiniMagazzino = (token, cb) => {
     const decoded_token = jwt.decode(token);
     var idMagazzino = getIdMagazzino(decoded_token);
 
-    return pool.query('select id, id_negozio, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine from public.ordini where id_magazzino=$1 ORDER BY id DESC',
+    return db.pool.query('select id, id_negozio, id_cliente, id_ditta, tipo, stato, codice_ritiro, data_ordine from public.ordini where id_magazzino=$1 ORDER BY id DESC',
         [idMagazzino], (error, results) => {
             cb(error, results)
         });
@@ -90,7 +84,7 @@ const ritiraOrdine = (request, response, decoded_token) => {
         if (err) return response.status(500).send('Server Error!');
         if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Ordine non trovato!');
 
-        pool.query('UPDATE public.ordini SET stato = $1 WHERE id = $2',
+        db.pool.query('UPDATE public.ordini SET stato = $1 WHERE id = $2',
             ['RITIRATO', id], (error, results) => {
                 return response.status(200).send({ 'esito': "1" });
             })

@@ -1,18 +1,11 @@
-const Pool = require('pg').Pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-})
-
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
+const db = require('./database');
 const controller = require('./controller');
 const negozio = require('./negozio');
 const attivita = require('./attivita');
 const utente = require('./utente');
+
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 /**
  * Cambia la Password dell'Attvità o dell'Utente.
@@ -41,7 +34,7 @@ function cambiaPassword(request, response, results, id, tipo) {
   if (hash == data.password) {
     const new_hash = bcrypt.hashSync(request.body.new_password + "secret", data.salt);
 
-    pool.query(query, [new_hash, id], (error, results) => {
+    db.pool.query(query, [new_hash, id], (error, results) => {
       if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
       return response.status(200).send({ 'esito': "1" });
     });
@@ -59,7 +52,7 @@ const creaCliente = (request, response) => {
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);
 
-  pool.query('INSERT INTO public.utenti (nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+  db.pool.query('INSERT INTO public.utenti (nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     [request.body.nome, request.body.cognome, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo, "CLIENTE"], (error, results) => {
       if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
       return response.status(200).send({ 'esito': "1" });
@@ -99,7 +92,7 @@ const cercaOrdineById = (id_ordine, decoded_token, cb) => {
       break;
   }
 
-  pool.query(query, [id_ordine, id_owner], (error, results) => {
+  db.pool.query(query, [id_ordine, id_owner], (error, results) => {
     cb(error, results);
   });
 }
@@ -111,7 +104,7 @@ const cercaOrdineById = (id_ordine, decoded_token, cb) => {
  * @param {*} cb Callback
  */
 const cercaMerceById = (id, decoded_token, cb) => {
-  pool.query('SELECT * FROM public.merci_ordine WHERE id = $1 AND id_corriere = $2', [id, decoded_token.id], (error, results) => {
+  db.pool.query('SELECT * FROM public.merci_ordine WHERE id = $1 AND id_corriere = $2', [id, decoded_token.id], (error, results) => {
     cb(error, results);
   });
 }
@@ -162,7 +155,7 @@ const getOrdiniStats = (token, response, cb) => {
 const getOrdiniCliente = (token, cb) => {
   const decoded_token = jwt.decode(token);
 
-  return pool.query('select id, id_negozio, id_magazzino, id_ditta, stato, codice_ritiro, data_ordine, totale from public.ordini where id_cliente=$1 ORDER BY id DESC',
+  return db.pool.query('select id, id_negozio, id_magazzino, id_ditta, stato, codice_ritiro, data_ordine, totale from public.ordini where id_cliente=$1 ORDER BY id DESC',
     [decoded_token.id], (error, results) => {
       cb(error, results)
     });
@@ -217,7 +210,7 @@ const getMerciOrdine = (req, cb) => {
       break;
   }
 
-  return pool.query(query, [idOrdine, controlId], (error, results) => {
+  return db.pool.query(query, [idOrdine, controlId], (error, results) => {
     cb(error, results)
   });
 }
