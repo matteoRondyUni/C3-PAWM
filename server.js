@@ -317,7 +317,7 @@ app.get('/merci/:idOrdine', (req, res) => {
         try {
             general.getMerciOrdine(req, (err, results) => {
                 if (err) return res.status(500).send('Server error!');
-                if (controllaRisultatoQuery(results)) return res.status(400).send("L'Ordine non ha merci collegate!");
+                if (controller.controllaRisultatoQuery(results)) return res.status(400).send("L'Ordine non ha merci collegate!");
                 returnDataJSON(res, results);
             });
         } catch (error) {

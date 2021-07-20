@@ -131,7 +131,7 @@ const creaProdotto = (request, response) => {
 
     db.pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
         [id_negozio, request.body.nome, request.body.disponibilita, request.body.prezzo], (error, results) => {
-            if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
+            if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
             return response.status(200).send({ 'esito': "1" });
         })
 }
@@ -221,7 +221,7 @@ const creaOrdine = (request, response) => {
                 db.pool.query('INSERT INTO public.ordini (id_negozio, id_magazzino, id_cliente, id_ditta, tipo, stato, codice_ritiro, totale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
                     [id_negozio, request.body.id_magazzino, id_cliente, request.body.id_ditta, request.body.tipo, "PAGATO", codiceRitiro, totale],
                     (error, results) => {
-                        if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
+                        if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
 
                         findOrdineByCodice(codiceRitiro, (err, results) => {
                             if (err) return response.status(500).send('Server error!');
@@ -248,11 +248,11 @@ const creaOrdine = (request, response) => {
 const vendiProdotto = (prodotto, id_ordine, response) => {
     db.pool.query('INSERT INTO public.merci_ordine (id_prodotto, id_ordine, quantita, prezzo_acquisto, stato) VALUES ($1, $2, $3, $4, $5)',
         [prodotto.id, id_ordine, prodotto.quantita, prodotto.prezzo, "PAGATO"], (error, results) => {
-            if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
+            if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
 
             db.pool.query('UPDATE public.prodotti SET disponibilita = $1 WHERE id = $2',
                 [(prodotto.disponibilita - prodotto.quantita), prodotto.id], (error, results) => {
-                    if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
+                    if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
                 });
         });
 }
@@ -288,7 +288,7 @@ const modificaProdotto = (request, response, decoded_token) => {
 
         db.pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
             [request.body.nome, request.body.disponibilita, request.body.prezzo, id], (error, results) => {
-                if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
+                if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
                 return response.status(200).send({ 'esito': "1" });
             })
     });

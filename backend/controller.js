@@ -1,6 +1,5 @@
 const attivita = require('./attivita');
 const utente = require('./utente');
-const ERRORE_DATI_QUERY = "Errore nei dati!";
 
 /**
  * Controlla che la password sia compresa tra 8 e 16 caratteri.
@@ -52,7 +51,6 @@ exports.controllaString = function (toControl, errorText) {
  * @param {String} errorText Errore da stampare
  */
 exports.controllaNotNull = function (toControl, errorText) {
-    console.log('siamo qui');
     if (toControl == null) throw errorText;
 }
 
@@ -61,7 +59,7 @@ exports.controllaNotNull = function (toControl, errorText) {
  * @param {*} results Risultato della query da controllare
  * @returns true se la query non ha ritornato nulla, false altrimenti
  */
-exports.controllaRisultatoQuery = function (results) {
+exports.controllaRisultatoQuery = (results) => {
     const toControl = JSON.parse(JSON.stringify(results.rows));
     return (toControl.length == 0);
 }
@@ -93,8 +91,4 @@ exports.controllaDatiAccount = function (request, tipo) {
 
     controllaTelefono(request.body.telefono);
     controllaString(request.body.indirizzo, "Il campo Indirizzo non può essere vuoto!");
-}
-
-module.exports = {
-    ERRORE_DATI_QUERY
 }

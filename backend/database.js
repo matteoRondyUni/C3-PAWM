@@ -6,6 +6,8 @@
 //     }
 // })
 
+ERRORE_DATI_QUERY = "Errore nei dati!";
+
 const Pool = require('pg').Pool
 const pool = new Pool({
   host: "localhost",
@@ -16,5 +18,6 @@ const pool = new Pool({
 })
 
 module.exports = {
-    pool
+  ERRORE_DATI_QUERY,
+  pool
 }

@@ -35,7 +35,7 @@ function cambiaPassword(request, response, results, id, tipo) {
     const new_hash = bcrypt.hashSync(request.body.new_password + "secret", data.salt);
 
     db.pool.query(query, [new_hash, id], (error, results) => {
-      if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
+      if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
       return response.status(200).send({ 'esito': "1" });
     });
   } else return response.status(401).send('La vecchia password non è corretta');
@@ -54,7 +54,7 @@ const creaCliente = (request, response) => {
 
   db.pool.query('INSERT INTO public.utenti (nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     [request.body.nome, request.body.cognome, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo, "CLIENTE"], (error, results) => {
-      if (error) return response.status(400).send(controller.ERRORE_DATI_QUERY);
+      if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
       return response.status(200).send({ 'esito': "1" });
     })
 }
