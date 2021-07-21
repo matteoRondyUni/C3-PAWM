@@ -1,6 +1,15 @@
 const attivita = require('./attivita');
 const utente = require('./utente');
 
+// /**
+//  * Controlla che la password sia compresa tra 8 e 16 caratteri.
+//  * @param {String} password password da controllare
+//  */
+// function controllaPassword(password) {
+//     if (password == null || password.length < 8 || password.length > 16)
+//         throw "La password deve essere compresa tra 8 e 16 caratteri.";
+// }
+
 /**
  * Controlla che la password sia compresa tra 8 e 16 caratteri.
  * @param {String} password password da controllare
@@ -9,6 +18,12 @@ exports.controllaPassword = function (password) {
     if (password == null || password.length < 8 || password.length > 16)
         throw "La password deve essere compresa tra 8 e 16 caratteri.";
 }
+
+// /**
+//  * Controlla che la password sia compresa tra 8 e 16 caratteri.
+//  * @param {String} password password da controllare
+//  */
+//  exports.controllaPassword = controllaPassword;
 
 /**
  * Controlla che il numero telefonico sia un formato corretto.
@@ -70,8 +85,8 @@ exports.controllaRisultatoQuery = (results) => {
  * @param {*} tipo Campo per specificare se il tipo è ATTIVITA o UTENTE
  */
 exports.controllaDatiRegister = function (request, tipo) {
-    controllaDatiAccount(request, tipo);
-    controllaPassword(request.body.password);
+    exports.controllaDatiAccount(request, tipo);
+    exports.controllaPassword(request.body.password);
 }
 
 /**
@@ -82,13 +97,13 @@ exports.controllaDatiRegister = function (request, tipo) {
  */
 exports.controllaDatiAccount = function (request, tipo) {
     if (attivita.TIPO == tipo)
-        controllaString(request.body.ragione_sociale, "Il campo Ragione Sociale non può essere vuoto!");
+        exports.controllaString(request.body.ragione_sociale, "Il campo Ragione Sociale non può essere vuoto!");
     else if (utente.TIPO == tipo) {
-        controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
-        controllaString(request.body.cognome, "Il campo Cognome non può essere vuoto!");
+        exports.controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
+        exports.controllaString(request.body.cognome, "Il campo Cognome non può essere vuoto!");
     }
-    controllaString(request.body.email, "Il campo Email non può essere vuoto!");
+    exports.controllaString(request.body.email, "Il campo Email non può essere vuoto!");
 
-    controllaTelefono(request.body.telefono);
-    controllaString(request.body.indirizzo, "Il campo Indirizzo non può essere vuoto!");
+    exports.controllaTelefono(request.body.telefono);
+    exports.controllaString(request.body.indirizzo, "Il campo Indirizzo non può essere vuoto!");
 }

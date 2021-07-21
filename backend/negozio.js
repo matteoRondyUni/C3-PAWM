@@ -33,16 +33,17 @@ function getIdNegozio(decoded_token) {
  * @returns true se la quantità da vendere supera la disponibilità, false altrimenti
  */
 function controllaProdottiDaVendere(inventario, prodottiDaVendere) {
+    var to_return = false;
     inventario.forEach(prodottoInventario => {
         prodottiDaVendere.forEach(prodotto => {
             if (prodottoInventario.id == prodotto.id) {
                 prodotto.disponibilita = prodottoInventario.disponibilita;
                 if (prodotto.disponibilita < prodotto.quantita)
-                    return true;
+                    to_return = true;
             }
         })
     });
-    return false;
+    return to_return;
 }
 
 /**

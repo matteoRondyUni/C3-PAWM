@@ -8,14 +8,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 /**
- * Cambia la Password dell'Attvità o dell'Utente.
- * @param {*} request 
- * @param {*} response 
- * @param {*} results 
- * @param {*} id ID dell'Attività o dell'Utente
- * @param {*} tipo Campo per specificare se il tipo è ATTIVITA o UTENTE
- */
-function cambiaPassword(request, response, results, id, tipo) {
+* Cambia la Password dell'Attività o dell'Utente.
+* @param {*} request 
+* @param {*} response 
+* @param {*} results 
+* @param {*} id ID dell'Attività o dell'Utente
+* @param {*} tipo Campo per specificare se il tipo è ATTIVITA o UTENTE
+*/
+exports.cambiaPassword = function (request, response, results, id, tipo) {
   var query, errorText;
   if (attivita.TIPO == tipo) {
     query = 'UPDATE public.attivita SET password = $1 WHERE id = $2';
@@ -46,7 +46,7 @@ function cambiaPassword(request, response, results, id, tipo) {
  * @param {*} request 
  * @param {*} response 
  */
-const creaCliente = (request, response) => {
+exports.creaCliente = (request, response) => {
   controller.controllaDatiRegister(request, utente.TIPO);
 
   const salt = bcrypt.genSaltSync(10);
@@ -66,7 +66,7 @@ const creaCliente = (request, response) => {
  * @param {*} cb Callback
  * @returns il risultato della query
  */
-const cercaOrdineById = (id_ordine, decoded_token, cb) => {
+exports.cercaOrdineById = (id_ordine, decoded_token, cb) => {
   var query, id_owner;
 
   switch (decoded_token.tipo) {
@@ -103,7 +103,7 @@ const cercaOrdineById = (id_ordine, decoded_token, cb) => {
  * @param {*} decoded_token JWT decodificato del Corriere
  * @param {*} cb Callback
  */
-const cercaMerceById = (id, decoded_token, cb) => {
+exports.cercaMerceById = (id, decoded_token, cb) => {
   db.pool.query('SELECT * FROM public.merci_ordine WHERE id = $1 AND id_corriere = $2', [id, decoded_token.id], (error, results) => {
     cb(error, results);
   });
@@ -131,7 +131,7 @@ function calcolaVendite(ordini) {
  * @param {*} response 
  * @param {*} cb Callback
  */
-const getOrdiniStats = (token, response, cb) => {
+exports.getOrdiniStats = (token, response, cb) => {
   const decoded_token = jwt.decode(token);
   if (decoded_token.tipo == 'COMMERCIANTE' || decoded_token.tipo == 'NEGOZIO')
     negozio.getOrdiniNegozio(token, (err, results) => {
@@ -139,7 +139,7 @@ const getOrdiniStats = (token, response, cb) => {
       cb(calcolaVendite(JSON.parse(JSON.stringify(results.rows))));
     });
   else if (decoded_token.tipo == 'CLIENTE') {
-    getOrdiniCliente(token, (err, results) => {
+    exports.getOrdiniCliente(token, (err, results) => {
       if (err) return response.status(500).send('Server error!');
       cb(calcolaVendite(JSON.parse(JSON.stringify(results.rows))));
     });
@@ -152,7 +152,7 @@ const getOrdiniStats = (token, response, cb) => {
  * @param {*} cb Callback
  * @returns il risultato della query
  */
-const getOrdiniCliente = (token, cb) => {
+exports.getOrdiniCliente = (token, cb) => {
   const decoded_token = jwt.decode(token);
 
   return db.pool.query('select id, id_negozio, id_magazzino, id_ditta, stato, codice_ritiro, data_ordine, totale from public.ordini where id_cliente=$1 ORDER BY id DESC',
@@ -167,7 +167,7 @@ const getOrdiniCliente = (token, cb) => {
  * @param {*} cb Callback
  * @returns il risultato della query
  */
-const getMerciOrdine = (req, cb) => {
+exports.getMerciOrdine = (req, cb) => {
   controller.controllaInt(req.params.idOrdine, "Il Codice dell'Ordine deve essere un numero!");
   const idOrdine = parseInt(req.params.idOrdine);
   const decoded_token = jwt.decode(req.headers.token);
@@ -213,14 +213,4 @@ const getMerciOrdine = (req, cb) => {
   return db.pool.query(query, [idOrdine, controlId], (error, results) => {
     cb(error, results)
   });
-}
-
-module.exports = {
-  cambiaPassword,
-  cercaMerceById,
-  cercaOrdineById,
-  creaCliente,
-  getMerciOrdine,
-  getOrdiniCliente,
-  getOrdiniStats
 }

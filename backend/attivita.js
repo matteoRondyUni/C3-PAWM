@@ -3,6 +3,7 @@ const controller = require('./controller');
 const general = require('./general');
 const utente = require('./utente');
 
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 /**
