@@ -1,10 +1,3 @@
-// // import * as controller from './controller.js';
-// module.import={
-//     ()* from './controller.js'
-// }
-
-// var controller = import('./controller.js');
-
 const db = require('./database');
 const controller = require('./controller');
 const general = require('./general');
@@ -46,7 +39,7 @@ const findUserByEmail = (email, cb) => {
  */
 const modificaUtente = (request, response) => {
     controller.controllaInt(request.params.id, "Il Codice dell'Utente deve essere un numero!");
-    controller.controllaDatiAccount(request, controller.UTENTE);
+    controller.controllaDatiAccount(request, TIPO);
 
     const id = parseInt(request.params.id);
 

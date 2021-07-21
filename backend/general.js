@@ -47,7 +47,7 @@ function cambiaPassword(request, response, results, id, tipo) {
  * @param {*} response 
  */
 const creaCliente = (request, response) => {
-  controller.controllaDatiRegister(request, UTENTE);
+  controller.controllaDatiRegister(request, utente.TIPO);
 
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(request.body.password + "secret", salt);

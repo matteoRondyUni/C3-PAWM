@@ -562,10 +562,12 @@ app.post('/register/dipendente', (req, res) => {
                         attivita.creaDipendente(req, res);
                     else return res.status(400).send("L'email \'" + dipendenti[0].email + "\' è già stata usata!");
                 } catch (error) {
+                    console.log(error)
                     return res.status(400).send(error);
                 }
             });
         } catch (error) {
+            console.log(error)
             return res.status(400).send(error);
         }
     } else return res.status(401).send('JWT non valido!');

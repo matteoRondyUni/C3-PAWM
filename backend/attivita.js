@@ -98,7 +98,7 @@ const getAttivitaInfo = (idAttivita, cb) => {
  * @param {*} response 
  */
 const creaDipendente = (request, response) => {
-    controller.controllaDatiRegister(request, UTENTE);
+    controller.controllaDatiRegister(request, utente.TIPO);
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(request.body.password + "secret", salt);
