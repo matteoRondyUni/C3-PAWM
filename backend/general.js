@@ -29,10 +29,10 @@ exports.cambiaPassword = function (request, response, results, id, tipo) {
   if (risultati.length == 0) return response.status(404).send(errorText);
 
   const data = risultati[0];
-  const hash = bcrypt.hashSync(request.body.old_password + "secret", data.salt);
+  const hash = bcrypt.hashSync(request.body.old_password + process.env.SECRET_PWD, data.salt);
 
   if (hash == data.password) {
-    const new_hash = bcrypt.hashSync(request.body.new_password + "secret", data.salt);
+    const new_hash = bcrypt.hashSync(request.body.new_password + process.env.SECRET_PWD, data.salt);
 
     db.pool.query(query, [new_hash, id], (error, results) => {
       if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
@@ -50,7 +50,7 @@ exports.creaCliente = (request, response) => {
   controller.controllaDatiRegister(request, utente.TIPO);
 
   const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync(request.body.password + "secret", salt);
+  const hash = bcrypt.hashSync(request.body.password + process.env.SECRET_PWD, salt);
 
   db.pool.query('INSERT INTO public.utenti (nome, cognome, email, password, salt, telefono, indirizzo, tipo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     [request.body.nome, request.body.cognome, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo, "CLIENTE"], (error, results) => {
