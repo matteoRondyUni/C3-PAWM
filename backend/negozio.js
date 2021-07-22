@@ -130,8 +130,8 @@ const creaProdotto = (request, response) => {
     var id_negozio = getIdNegozio(decoded_token);
     controllaDatiProdotto(request);
 
-    db.pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo) VALUES ($1, $2, $3, $4)',
-        [id_negozio, request.body.nome, request.body.disponibilita, request.body.prezzo], (error, results) => {
+    db.pool.query('INSERT INTO public.prodotti (id_negozio, nome, disponibilita, prezzo, stato) VALUES ($1, $2, $3, $4, $5)',
+        [id_negozio, request.body.nome, request.body.disponibilita, request.body.prezzo, "IN_CATALOGO"], (error, results) => {
             if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
             return response.status(200).send({ 'esito': "1" });
         })
@@ -153,6 +153,21 @@ const eliminaProdotto = (request, response, decoded_token) => {
         if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
         db.pool.query('DELETE FROM public.prodotti WHERE id = $1', [id], (error, results) => {
+            return response.status(200).send({ 'esito': "1" });
+        })
+    });
+}
+
+//TODO commentare
+const cambiaStatoProdotto = (request, response, decoded_token) => {
+    controller.controllaInt(request.params.id, "Il Codice del Prodotto deve essere un numero!");
+    const id = parseInt(request.params.id);
+
+    cercaProdottoById(id, decoded_token, (err, results) => {
+        if (err) return response.status(500).send('Server Error!');
+        if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
+
+        db.pool.query('UPDATE public.prodotti SET stato = $1, disponibilita = $2 WHERE id = $3', ["NON_IN_CATALOGO", 0, id], (error, results) => {
             return response.status(200).send({ 'esito': "1" });
         })
     });
@@ -287,6 +302,10 @@ const modificaProdotto = (request, response, decoded_token) => {
         if (err) return response.status(500).send('Server Error!');
         if (controller.controllaRisultatoQuery(results)) return response.status(404).send('Prodotto non trovato!');
 
+        const tmp = JSON.parse(JSON.stringify(results.rows));
+        if (tmp[0].stato == "NON_IN_CATALOGO")
+            return response.status(403).send('Non si può modificare un Prodotto che non è in Catalogo!');
+
         db.pool.query('UPDATE public.prodotti SET nome = $1, disponibilita = $2, prezzo = $3 WHERE id = $4',
             [request.body.nome, request.body.disponibilita, request.body.prezzo, id], (error, results) => {
                 if (error) return response.status(400).send(db.ERRORE_DATI_QUERY);
@@ -334,6 +353,7 @@ const getNegoziCount = (cb) => {
 }
 
 module.exports = {
+    cambiaStatoProdotto,
     creaOrdine,
     creaProdotto,
     eliminaProdotto,
