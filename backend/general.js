@@ -175,12 +175,12 @@ exports.getMerciOrdine = (req, cb) => {
 
   switch (decoded_token.tipo) {
     case 'NEGOZIO':
-      query = 'select public.merci_ordine.id, public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine' +
+      query = 'select public.merci_ordine.id, public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
         ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 AND public.prodotti.id_negozio=$2 ORDER BY public.prodotti.nome';
       controlId = decoded_token.id;
       break;
     case 'COMMERCIANTE':
-      query = 'select public.merci_ordine.id, public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, stato from public.merci_ordine' +
+      query = 'select public.merci_ordine.id, public.merci_ordine.id, public.prodotti.nome, quantita, prezzo_acquisto, public.merci_ordine.stato from public.merci_ordine' +
         ' inner join public.prodotti on public.merci_ordine.id_prodotto = public.prodotti.id where id_ordine=$1 AND public.prodotti.id_negozio=$2 ORDER BY public.prodotti.nome';
       controlId = decoded_token.idNegozio;
       break;
