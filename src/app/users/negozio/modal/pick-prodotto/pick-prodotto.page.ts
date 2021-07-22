@@ -33,17 +33,15 @@ export class PickProdottoPage implements OnInit {
   }
 
   getProdottiSelezionabili() {
-    if (this.prodotti_inseriti.length > 0) {
-      this.inventario.forEach(prodotto => {
-        var presente = false;
-        this.prodotti_inseriti.forEach(inserito => {
-          if (prodotto.id == inserito.id) presente = true;
-        })
-        if (!presente) this.prodotti_selezionabili.push(prodotto);
+    this.inventario.forEach(prodotto => {
+      var presente = false;
+      this.prodotti_inseriti.forEach(inserito => {
+        if (prodotto.id == inserito.id) presente = true;
       })
+      if (!presente && prodotto.stato != 'NON_IN_CATALOGO') this.prodotti_selezionabili.push(prodotto);
+    })
 
-      this.prodotti_selezionabili = [...this.prodotti_selezionabili,];
-    } else this.prodotti_selezionabili = this.inventario;
+    this.prodotti_selezionabili = [...this.prodotti_selezionabili,];
   }
 
   async loadInventario() {
