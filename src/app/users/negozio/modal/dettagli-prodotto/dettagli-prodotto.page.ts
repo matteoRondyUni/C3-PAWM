@@ -46,8 +46,7 @@ export class DettagliProdottoPage implements OnInit {
     this.modalController.dismiss();
   }
 
-  //TODO DA MODIFICARE
-  async eliminaProdotto() {
+  async modificaStatoProdotto() {
     const loading = await this.loadingController.create();
     await loading.present();
 
@@ -58,10 +57,10 @@ export class DettagliProdottoPage implements OnInit {
       map((data: any) => data.esito),
       switchMap(esito => { return esito; })).subscribe(
         async (res) => {
-          const text = 'Il prodotto ' + this.nome + ' è stato eliminato';
+          const text = 'Il prodotto ' + this.nome + ' è stato tolto dal Catalogo.';
           await loading.dismiss();
           const alert = await this.alertController.create({
-            header: 'Prodotto eliminato',
+            header: 'Prodotto Fuori Catalogo',
             message: text,
             buttons: ['OK'],
           });
@@ -71,7 +70,7 @@ export class DettagliProdottoPage implements OnInit {
         async (res) => {
           await loading.dismiss();
           this.modalController.dismiss(false);
-          this.errorManager.stampaErrore(res, 'Eliminazione Fallita');
+          this.errorManager.stampaErrore(res, 'Modifica Fallita');
         });
   }
 

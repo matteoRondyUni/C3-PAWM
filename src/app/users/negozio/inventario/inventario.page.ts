@@ -13,7 +13,10 @@ import { DettagliProdottoPage } from '../modal/dettagli-prodotto/dettagli-prodot
   styleUrls: ['./inventario.page.scss'],
 })
 export class InventarioPage implements OnInit {
+  segment: string = "inCatalogo";
   inventario = [];
+  inventarioInCatalogo = [];
+  inventarioNonInCatalogo = [];
 
   constructor(
     private http: HttpClient,
@@ -25,6 +28,10 @@ export class InventarioPage implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  segmentChanged(ev: any) {
+    this.segment = ev.detail.value;
   }
 
   /**
@@ -42,12 +49,25 @@ export class InventarioPage implements OnInit {
     this.http.get('/inventario', { headers }).subscribe(
       async (res) => {
         this.inventario = res['results'];
+        this.filtraInventario();
         this.reloadManager.completaReload(event);
       },
       async (res) => {
         this.errorManager.stampaErrore(res, 'Errore');
         this.reloadManager.completaReload(event);
       });
+  }
+
+  filtraInventario() {
+    this.inventarioInCatalogo = [];
+    this.inventarioNonInCatalogo = [];
+
+    this.inventarioInCatalogo = this.inventario.filter(prodotto => {
+      if (prodotto.stato == 'IN_CATALOGO') return prodotto;
+    });
+    this.inventarioNonInCatalogo = this.inventario.filter(prodotto => {
+      if (prodotto.stato == 'NON_IN_CATALOGO') return prodotto;
+    });
   }
 
   separateLetter(record, recordIndex, records) {

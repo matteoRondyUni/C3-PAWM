@@ -699,7 +699,9 @@ app.put('/prodotto/:id', (req, res) => {
     } else return res.status(401).send('JWT non valido!');
 });
 
-//TODO commentare
+/**
+ * REST - Modifica lo Stato di un Prodotto
+ */
 app.put('/prodotto/disponibilita/:id', (req, res) => {
     const token = req.body.token_value;
     if (verificaNegozio(token)) {
@@ -752,20 +754,6 @@ app.delete('/dipendenti/:id', (req, res) => {
     if (verificaAttivita(token)) {
         try {
             attivita.eliminaDipendente(req, res, jwt.decode(token));
-        } catch (error) {
-            return res.status(400).send(error);
-        }
-    } else return res.status(401).send('JWT non valido!');
-});
-
-/**
- * REST - Elimina prodotto
- */
-app.delete('/prodotto/:id', (req, res) => {
-    const token = req.headers.token;
-    if (verificaNegozio(token)) {
-        try {
-            negozio.eliminaProdotto(req, res, jwt.decode(token));
         } catch (error) {
             return res.status(400).send(error);
         }

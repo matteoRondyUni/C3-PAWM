@@ -158,7 +158,13 @@ const eliminaProdotto = (request, response, decoded_token) => {
     });
 }
 
-//TODO commentare
+/**
+ * Modifica lo Stato di un Prodotto e lo imposta a "NON_IN_CATALOGO"
+ * @param {*} request 
+ * @param {*} response 
+ * @param {*} decoded_token JWT decodificato del Negozio
+ * @returns il risultato della query
+ */
 const cambiaStatoProdotto = (request, response, decoded_token) => {
     controller.controllaInt(request.params.id, "Il Codice del Prodotto deve essere un numero!");
     const id = parseInt(request.params.id);

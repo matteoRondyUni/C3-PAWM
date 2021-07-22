@@ -7,6 +7,19 @@
     </ion-buttons>
 
   </ion-toolbar>
+
+  <ion-toolbar>
+
+    <ion-segment (ionChange)="segmentChanged($event)" value="inCatalogo">
+      <ion-segment-button value="inCatalogo">
+        <ion-label>In Catalogo</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="fuoriCatalogo">
+        <ion-label>Fuori Catalogo</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-content-with-blur-background">
@@ -14,32 +27,55 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-card class="full-transparent-card">
-    <ion-button expand="block" (click)="creaProdotto()">
-      Aggiungi
-      <ion-icon name="add-circle-outline"></ion-icon>
-    </ion-button>
-  </ion-card>
+  <div *ngIf="segment === 'inCatalogo'">
+    <ion-card class="full-transparent-card">
+      <ion-button expand="block" (click)="creaProdotto()">
+        Aggiungi
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-card>
 
-  <ion-card class="transparent-card">
-    <ion-virtual-scroll [items]="inventario" approximateItemHeight="70px" [headerFn]="separateLetter">
+    <ion-card class="transparent-card">
+      <ion-virtual-scroll [items]="inventarioInCatalogo" approximateItemHeight="70px" [headerFn]="separateLetter">
 
-      <ion-item-divider *virtualHeader="let header" color="gray">
-        <ion-label>{{header}}</ion-label>
-      </ion-item-divider>
+        <ion-item-divider *virtualHeader="let header" color="gray">
+          <ion-label>{{header}}</ion-label>
+        </ion-item-divider>
 
-      <ion-item lines="full" *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
-        <ion-avatar slot="start">
-          <img src="../../../../../assets/box.png">
-        </ion-avatar>
+        <ion-item lines="full" *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
+          <ion-avatar slot="start">
+            <img src="../../../../../assets/box.png">
+          </ion-avatar>
 
-        <ion-label>
-          <h2 text-capitalize>{{prodotto.nome}}</h2>
-        </ion-label>
+          <ion-label>
+            <h2 text-capitalize>{{prodotto.nome}}</h2>
+          </ion-label>
 
-        <ion-icon name="information-circle-outline" slot="end"></ion-icon>
-      </ion-item>
-    </ion-virtual-scroll>
-  </ion-card>
+          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
+        </ion-item>
+      </ion-virtual-scroll>
+    </ion-card>
+  </div>
+
+  <div *ngIf="segment === 'fuoriCatalogo'">
+    <ion-card class="transparent-card">
+      <ion-virtual-scroll [items]="inventarioNonInCatalogo" approximateItemHeight="70px" [headerFn]="separateLetter">
+
+        <ion-item-divider *virtualHeader="let header" color="gray">
+          <ion-label>{{header}}</ion-label>
+        </ion-item-divider>
+
+        <ion-item lines="full" *virtualItem="let prodotto">
+          <ion-avatar slot="start">
+            <img src="../../../../../assets/box.png">
+          </ion-avatar>
+
+          <ion-label>
+            <h2 text-capitalize>{{prodotto.nome}}</h2>
+          </ion-label>
+        </ion-item>
+      </ion-virtual-scroll>
+    </ion-card>
+  </div>
 
 </ion-content>
