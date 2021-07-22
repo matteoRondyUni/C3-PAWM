@@ -183,7 +183,7 @@ const getInventario = (token, cb) => {
     const decoded_token = jwt.decode(token);
     var idNegozio = getIdNegozio(decoded_token);
 
-    return db.pool.query('select id, nome, disponibilita, prezzo from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
+    return db.pool.query('select id, nome, disponibilita, prezzo, stato from public.prodotti where id_negozio=$1 ORDER BY nome ASC',
         [idNegozio], (error, results) => {
             cb(error, results)
         });
