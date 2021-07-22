@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AlertController, LoadingController } from '@ionic/angular';
-import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ErrorManagerService } from 'src/app/services/error-manager.service';
@@ -54,7 +53,15 @@ export class OrdiniPage implements OnInit {
     this.risultati_ricerca = this.ordini_attivi.filter(ordine => {
       if (ordine.codice_ritiro === event.target.value) {
         trovato = true;
-        return ordine;
+        var tmp = true;
+
+        ordine.merci.forEach(merce => {
+          if (merce.stato != 'CONSEGNATO') tmp = false;
+        });
+
+        if (tmp)
+          return ordine;
+        else this.nessun_risultato = true;
       }
     });
 
