@@ -15,6 +15,8 @@ Il progetto si pone dunque come obiettivo quello di fornire un supporto tramite 
 ***
 ## Sviluppo:
 
+TODO da finire
+
 L'app è stata sviluppata tramite Ionic e Angular Framework. 
 
 
