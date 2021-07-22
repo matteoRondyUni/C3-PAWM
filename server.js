@@ -10,7 +10,7 @@ const magazzino = require('./backend/magazzino');
 const negozio = require('./backend/negozio');
 const utente = require('./backend/utente');
 
-const SECRET_KEY = "secretkey23456";
+const SECRET_KEY = process.env.SECRET_JWT;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -460,7 +460,7 @@ app.post('/login/utente', (req, res) => {
 
             const user = JSON.parse(JSON.stringify(results.rows));
 
-            const toControl = bcrypt.hashSync(password + "secret", user[0].salt);
+            const toControl = bcrypt.hashSync(password + process.env.SECRET_PWD, user[0].salt);
             const result = (user[0].password == toControl);
             if (!result) return res.status(401).send('Password non valida!');
 
@@ -510,7 +510,7 @@ app.post('/login/attivita', (req, res) => {
 
             const attivita = JSON.parse(JSON.stringify(results.rows));
 
-            const toControl = bcrypt.hashSync(password + "secret", attivita[0].salt);
+            const toControl = bcrypt.hashSync(password + process.env.SECRET_PWD, attivita[0].salt);
             const result = (attivita[0].password == toControl);
             if (!result) return res.status(401).send('Password non valida!');
 

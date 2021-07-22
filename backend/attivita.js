@@ -57,7 +57,7 @@ const creaAttivita = (request, response) => {
     controller.controllaDatiRegister(request, TIPO);
 
     const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(request.body.password + "secret", salt);
+    const hash = bcrypt.hashSync(request.body.password + process.env.SECRET_PWD, salt);
 
     db.pool.query('INSERT INTO public.attivita ( ragione_sociale, tipo, email, password, salt, telefono, indirizzo ) VALUES ($1, $2, $3, $4, $5, $6, $7)',
         [request.body.ragione_sociale, request.body.tipo, request.body.email, hash, salt, request.body.telefono, request.body.indirizzo], (error, results) => {
@@ -102,7 +102,7 @@ const creaDipendente = (request, response) => {
     controller.controllaDatiRegister(request, utente.TIPO);
 
     const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(request.body.password + "secret", salt);
+    const hash = bcrypt.hashSync(request.body.password + process.env.SECRET_PWD, salt);
     const decoded_token = jwt.decode(request.body.token_value);
     var query, tipo;
 
