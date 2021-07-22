@@ -58,6 +58,7 @@ CREATE TABLE public.prodotti
     nome text NOT NULL,
     disponibilita integer NOT NULL,
     prezzo numeric NOT NULL,
+    stato text NOT NULL,
     PRIMARY KEY ("id")
 );
 
