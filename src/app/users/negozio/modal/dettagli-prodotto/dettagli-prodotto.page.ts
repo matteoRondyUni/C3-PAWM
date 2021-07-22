@@ -46,14 +46,15 @@ export class DettagliProdottoPage implements OnInit {
     this.modalController.dismiss();
   }
 
+  //TODO DA MODIFICARE
   async eliminaProdotto() {
     const loading = await this.loadingController.create();
     await loading.present();
 
     const token_value = (await this.authService.getToken()).value;
-    const headers = { 'token': token_value };
+    const to_send = { 'token_value': token_value };
 
-    this.http.delete('/prodotto/' + this.id_prodotto, { headers }).pipe(
+    this.http.put('/prodotto/disponibilita/' + this.id_prodotto, to_send).pipe(
       map((data: any) => data.esito),
       switchMap(esito => { return esito; })).subscribe(
         async (res) => {
