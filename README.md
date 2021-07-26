@@ -12,7 +12,7 @@ L’idea di fondo è considerare il trasporto della merce, una volta acquistata,
 Il progetto si pone dunque come obiettivo quello di fornire un supporto tramite punti di prelievo per rendere l’esperienza degli acquisti in centro più facile e interessante.
 
 ***
-## Funzionalità:
+## **Funzionalità**:
 La piattaforma prevede la creazione di 3 tipi principali di utenti:
 * **Attività**: un profilo di tipo aziendale (Negozi, Ditte di Trasporti o Magazzini); 
 * **Dipendente**: Commercianti, Corrieri o Magazzinieri collegati ad una Attività;
