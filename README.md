@@ -62,8 +62,6 @@ Le funzionalità dell’app sono state sviluppate tramite l’uso di chiamate _R
 
 L'hosting e il Database sono stati offerti dalla piattaforma [Heroku](https://www.heroku.com/).
 
-<br>
-
 ### **Database**:
 Il Database è stato realizzato con [PostgreSQL](https://www.postgresql.org/), di seguito la lista delle tabelle utilizzate:
 
