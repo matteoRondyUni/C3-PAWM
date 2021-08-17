@@ -85,6 +85,9 @@ export class OrdiniPage implements OnInit {
   }
 
   async loadMerci(ordini, token_value, event) {
+    if (this.ordini.length == 0)
+      this.reloadManager.completaReload(event);
+
     await ordini.forEach(ordine => {
       const headers = { 'token': token_value };
       this.http.get('/merci/' + ordine.id, { headers }).subscribe(

@@ -22,6 +22,7 @@ export class ReloadManagerService {
    * @returns true se il Reload è stato terminato, false altrimenti
    */
   controlMerciOrdine(ordini) {
+    if (ordini.lenght == 0) return true;
     for (let i = 0; i < ordini.length; i++) {
       if (ordini[i].merci == null || ordini[i].merci == undefined || ordini[i].merci.length == 0)
         return false;
