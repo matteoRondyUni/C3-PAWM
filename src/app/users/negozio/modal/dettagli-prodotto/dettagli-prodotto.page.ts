@@ -53,25 +53,23 @@ export class DettagliProdottoPage implements OnInit {
     const token_value = (await this.authService.getToken()).value;
     const to_send = { 'token_value': token_value };
 
-    this.http.put('/prodotto/disponibilita/' + this.id_prodotto, to_send).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; })).subscribe(
-        async (res) => {
-          const text = 'Il prodotto ' + this.nome + ' è stato tolto dal Catalogo.';
-          await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Prodotto Fuori Catalogo',
-            message: text,
-            buttons: ['OK'],
-          });
-          this.modalController.dismiss(true);
-          await alert.present();
-        },
-        async (res) => {
-          await loading.dismiss();
-          this.modalController.dismiss(false);
-          this.errorManager.stampaErrore(res, 'Modifica Fallita');
+    this.http.put('/prodotto/disponibilita/' + this.id_prodotto, to_send).subscribe(
+      async (res) => {
+        const text = 'Il prodotto ' + this.nome + ' è stato tolto dal Catalogo.';
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Prodotto Fuori Catalogo',
+          message: text,
+          buttons: ['OK'],
         });
+        this.modalController.dismiss(true);
+        await alert.present();
+      },
+      async (res) => {
+        await loading.dismiss();
+        this.modalController.dismiss(false);
+        this.errorManager.stampaErrore(res, 'Modifica Fallita');
+      });
   }
 
   async modificaProdotto() {
@@ -86,25 +84,23 @@ export class DettagliProdottoPage implements OnInit {
       'token_value': token_value
     }
 
-    this.http.put('/prodotto/' + this.id_prodotto, to_send).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; })).subscribe(
-        async (res) => {
-          const text = 'I dati del prodotto sono stati aggiornati';
-          await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Prodotto modificato',
-            message: text,
-            buttons: ['OK'],
-          });
-          this.modalController.dismiss(true);
-          await alert.present();
-        },
-        async (res) => {
-          await loading.dismiss();
-          this.modalController.dismiss(false);
-          this.errorManager.stampaErrore(res, 'Modifica Fallita');
+    this.http.put('/prodotto/' + this.id_prodotto, to_send).subscribe(
+      async (res) => {
+        const text = 'I dati del prodotto sono stati aggiornati';
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Prodotto modificato',
+          message: text,
+          buttons: ['OK'],
         });
+        this.modalController.dismiss(true);
+        await alert.present();
+      },
+      async (res) => {
+        await loading.dismiss();
+        this.modalController.dismiss(false);
+        this.errorManager.stampaErrore(res, 'Modifica Fallita');
+      });
   }
 
 }

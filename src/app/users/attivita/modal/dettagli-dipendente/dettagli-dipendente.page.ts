@@ -49,24 +49,22 @@ export class DettagliDipendentePage implements OnInit {
     const token_value = (await this.authService.getToken()).value;
     const headers = { 'token': token_value };
 
-    this.http.delete('/dipendenti/' + this.id_dipendente, { headers }).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; })).subscribe(
-        async (res) => {
-          const text = 'Il dipendente ' + this.nome + ' ' + this.cognome + ' è stato eliminato';
-          await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Dipendente eliminato',
-            message: text,
-            buttons: ['OK'],
-          });
-          this.modalController.dismiss(true);
-          await alert.present();
-        },
-        async (res) => {
-          await loading.dismiss();
-          this.modalController.dismiss(false);
-          this.errorManager.stampaErrore(res, 'Eliminazione Fallita');
+    this.http.delete('/dipendenti/' + this.id_dipendente, { headers }).subscribe(
+      async (res) => {
+        const text = 'Il dipendente ' + this.nome + ' ' + this.cognome + ' è stato eliminato';
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Dipendente eliminato',
+          message: text,
+          buttons: ['OK'],
         });
+        this.modalController.dismiss(true);
+        await alert.present();
+      },
+      async (res) => {
+        await loading.dismiss();
+        this.modalController.dismiss(false);
+        this.errorManager.stampaErrore(res, 'Eliminazione Fallita');
+      });
   }
 }

@@ -49,23 +49,21 @@ export class CreaProdottoPage implements OnInit {
       'token_value': token_value
     }
 
-    this.http.post('/prodotto', to_send).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; })).subscribe(
-        async (res) => {
-          await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Nuovo prodotto creato',
-            message: "Ora è stato aggiunto alla lista",
-            buttons: ['OK'],
-          });
-          this.modalController.dismiss(true);
-          await alert.present();
-        },
-        async (res) => {
-          await loading.dismiss();
-          this.modalController.dismiss(false);
-          this.errorManager.stampaErrore(res, 'Creazione prodotto fallita');
+    this.http.post('/prodotto', to_send).subscribe(
+      async (res) => {
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Nuovo prodotto creato',
+          message: "Ora è stato aggiunto alla lista",
+          buttons: ['OK'],
         });
+        this.modalController.dismiss(true);
+        await alert.present();
+      },
+      async (res) => {
+        await loading.dismiss();
+        this.modalController.dismiss(false);
+        this.errorManager.stampaErrore(res, 'Creazione prodotto fallita');
+      });
   }
 }

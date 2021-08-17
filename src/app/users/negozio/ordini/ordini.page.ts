@@ -129,23 +129,21 @@ export class OrdiniPage implements OnInit {
       'prodotti': this.prodotti
     }
 
-    this.http.post('/ordine', to_send).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; })).subscribe(
-        async (res) => {
-          await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Nuovo ordine creato',
-            message: "Ora è stato aggiunto allo storico",
-            buttons: ['OK'],
-          });
-          await alert.present();
-          this.loadOrdini(null);
-        },
-        async (res) => {
-          await loading.dismiss();
-          this.errorManager.stampaErrore(res, 'Creazione ordine fallita');
+    this.http.post('/ordine', to_send).subscribe(
+      async (res) => {
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Nuovo ordine creato',
+          message: "Ora è stato aggiunto allo storico",
+          buttons: ['OK'],
         });
+        await alert.present();
+        this.loadOrdini(null);
+      },
+      async (res) => {
+        await loading.dismiss();
+        this.errorManager.stampaErrore(res, 'Creazione ordine fallita');
+      });
   }
 
   async loadOrdini(event) {

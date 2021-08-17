@@ -123,23 +123,21 @@ export class OrdiniPage implements OnInit {
     const token_value = (await this.authService.getToken()).value;
     const to_send = { 'token_value': token_value };
 
-    this.http.put('/ordine/' + ordine.id, to_send).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; })).subscribe(
-        async (res) => {
-          const text = 'L\'ordine è stato contrassegnato come ritirato';
-          await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Ordine ritirato',
-            message: text,
-            buttons: ['OK'],
-          });
-          this.loadOrdini(null);
-          await alert.present();
-        },
-        async (res) => {
-          await loading.dismiss();
-          this.errorManager.stampaErrore(res, 'Modifica Fallita');
+    this.http.put('/ordine/' + ordine.id, to_send).subscribe(
+      async (res) => {
+        const text = 'L\'ordine è stato contrassegnato come ritirato';
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Ordine ritirato',
+          message: text,
+          buttons: ['OK'],
         });
+        this.loadOrdini(null);
+        await alert.present();
+      },
+      async (res) => {
+        await loading.dismiss();
+        this.errorManager.stampaErrore(res, 'Modifica Fallita');
+      });
   }
 }

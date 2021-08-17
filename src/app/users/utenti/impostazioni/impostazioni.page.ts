@@ -83,24 +83,22 @@ export class ImpostazioniPage implements OnInit {
       'token_value': token_value
     }
 
-    this.http.put('/utente/' + this.user.id, to_send).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; })).subscribe(
-        async (res) => {
-          const text = 'I tuoi dati sono stati aggiornati';
-          this.getDatiProfilo()
-          await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Profilo aggiornato',
-            message: text,
-            buttons: ['OK'],
-          });
-          await alert.present();
-        },
-        async (res) => {
-          await loading.dismiss();
-          this.errorManager.stampaErrore(res, 'Modifica Fallita');
+    this.http.put('/utente/' + this.user.id, to_send).subscribe(
+      async (res) => {
+        const text = 'I tuoi dati sono stati aggiornati';
+        this.getDatiProfilo()
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Profilo aggiornato',
+          message: text,
+          buttons: ['OK'],
         });
+        await alert.present();
+      },
+      async (res) => {
+        await loading.dismiss();
+        this.errorManager.stampaErrore(res, 'Modifica Fallita');
+      });
 
   }
 
@@ -115,22 +113,20 @@ export class ImpostazioniPage implements OnInit {
       'token_value': token_value
     }
 
-    this.http.put('/modifica/password/' + this.user.id, to_send).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; })).subscribe(
-        async (res) => {
-          const text = 'La password del tuo account è stata aggiornata';
-          await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Password aggiornata',
-            message: text,
-            buttons: ['OK'],
-          });
-          await alert.present();
-        },
-        async (res) => {
-          await loading.dismiss();
-          this.errorManager.stampaErrore(res, 'Modifica Fallita');
+    this.http.put('/modifica/password/' + this.user.id, to_send).subscribe(
+      async (res) => {
+        const text = 'La password del tuo account è stata aggiornata';
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Password aggiornata',
+          message: text,
+          buttons: ['OK'],
         });
+        await alert.present();
+      },
+      async (res) => {
+        await loading.dismiss();
+        this.errorManager.stampaErrore(res, 'Modifica Fallita');
+      });
   }
 }

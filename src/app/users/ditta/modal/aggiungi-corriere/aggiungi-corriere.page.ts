@@ -93,25 +93,23 @@ export class AggiungiCorrierePage implements OnInit {
       'token_value': token_value
     }
 
-    this.http.put('/ditta-trasporti/ordine/merce/' + this.id, to_send).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; })).subscribe(
-        async (res) => {
-          const text = 'I dati della Merce sono stati aggiornati';
-          await loading.dismiss();
-          const alert = await this.alertController.create({
-            header: 'Merce modificata',
-            message: text,
-            buttons: ['OK'],
-          });
-          this.modalController.dismiss(true);
-          await alert.present();
-        },
-        async (res) => {
-          await loading.dismiss();
-          this.modalController.dismiss(false);
-          this.errorManager.stampaErrore(res, 'Modifica Fallita');
+    this.http.put('/ditta-trasporti/ordine/merce/' + this.id, to_send).subscribe(
+      async (res) => {
+        const text = 'I dati della Merce sono stati aggiornati';
+        await loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Merce modificata',
+          message: text,
+          buttons: ['OK'],
         });
+        this.modalController.dismiss(true);
+        await alert.present();
+      },
+      async (res) => {
+        await loading.dismiss();
+        this.modalController.dismiss(false);
+        this.errorManager.stampaErrore(res, 'Modifica Fallita');
+      });
   }
 
 }
