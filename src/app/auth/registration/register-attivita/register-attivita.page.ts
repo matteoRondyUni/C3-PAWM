@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
-import { AuthenticationService } from '../../../services/authentication.service';
-import { ErrorManagerService } from '../../../services/error-manager.service';
+import { AuthenticationService } from '../../../services/authentication-service/authentication.service';
+import { ErrorManagerService } from '../../../services/error-manager/error-manager.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
 
 @Component({
   selector: 'app-register-attivita',
@@ -18,7 +19,7 @@ export class RegisterAttivitaPage implements OnInit {
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
     private router: Router,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private loadingController: LoadingController
   ) { }
 
@@ -42,12 +43,7 @@ export class RegisterAttivitaPage implements OnInit {
       async (res) => {
         await loading.dismiss();
         this.router.navigateByUrl('/login', { replaceUrl: true });
-        const alert = await this.alertController.create({
-          header: 'Registrazione completata',
-          message: "Ora puoi effettuare il login",
-          buttons: ['OK'],
-        });
-        await alert.present();
+        this.alertManager.createInfoAlert('Registrazione completata', 'Ora puoi effettuare il login');
       },
       async (res) => {
         await loading.dismiss();

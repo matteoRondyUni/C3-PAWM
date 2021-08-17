@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ModalController, NavParams } from '@ionic/angular';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { ErrorManagerService } from 'src/app/services/error-manager.service';
-import { map, switchMap } from 'rxjs/operators';
+import { LoadingController, ModalController, NavParams } from '@ionic/angular';
+import { AuthenticationService } from 'src/app/services/authentication-service/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager/error-manager.service';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
 
 @Component({
   selector: 'app-dettagli-dipendente',
@@ -25,7 +25,7 @@ export class DettagliDipendentePage implements OnInit {
     private errorManager: ErrorManagerService,
     private modalController: ModalController,
     private loadingController: LoadingController,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private navParams: NavParams
   ) { }
 
@@ -51,20 +51,14 @@ export class DettagliDipendentePage implements OnInit {
 
     this.http.delete('/dipendenti/' + this.id_dipendente, { headers }).subscribe(
       async (res) => {
-        const text = 'Il dipendente ' + this.nome + ' ' + this.cognome + ' è stato eliminato';
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Dipendente eliminato',
-          message: text,
-          buttons: ['OK'],
-        });
-        this.modalController.dismiss(true);
-        await alert.present();
+        this.alertManager.createInfoAlert('Dipendente eliminato', 'Il dipendente ' + this.nome + ' ' + this.cognome + ' è stato eliminato');
       },
       async (res) => {
         await loading.dismiss();
         this.modalController.dismiss(false);
         this.errorManager.stampaErrore(res, 'Eliminazione Fallita');
       });
+    this.modalController.dismiss(true);
   }
 }

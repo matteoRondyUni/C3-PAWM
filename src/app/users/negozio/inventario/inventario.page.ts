@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { ErrorManagerService } from 'src/app/services/error-manager.service';
-import { ReloadManagerService } from 'src/app/services/reload-manager.service';
+import { AuthenticationService } from 'src/app/services/authentication-service/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager/reload-manager.service';
 import { CreaProdottoPage } from '../modal/crea-prodotto/crea-prodotto.page';
 import { DettagliProdottoPage } from '../modal/dettagli-prodotto/dettagli-prodotto.page';
 

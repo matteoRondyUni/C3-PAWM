@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -8,19 +8,12 @@ import { AlertController } from '@ionic/angular';
 })
 export class ForgotPasswordPage implements OnInit {
 
-  constructor(public alertController: AlertController) { }
+  constructor(public alertManager: AlertManagerService) { }
 
   ngOnInit() {
   }
 
   async presentAlert() {
-    const alert = await this.alertController.create({
-      header: 'Siamo spiacenti!',
-      message: 'Questa feature non è ancora stata implementata.',
-      buttons: ['CAPITO!']
-    });
-
-    await alert.present();
+    this.alertManager.createInfoAlert('Siamo spiacenti!', 'Questa feature non è ancora stata implementata.');
   }
-
 }

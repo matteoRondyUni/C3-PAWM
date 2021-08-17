@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
-import { map, switchMap } from 'rxjs/operators';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { LoadingController } from '@ionic/angular';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
+import { AuthenticationService } from 'src/app/services/authentication-service/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager/error-manager.service';
 
 @Component({
   selector: 'app-impostazioni',
@@ -21,7 +21,7 @@ export class ImpostazioniPage implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private authService: AuthenticationService,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private errorManager: ErrorManagerService,
     private loadingController: LoadingController
   ) {
@@ -83,21 +83,14 @@ export class ImpostazioniPage implements OnInit {
 
     this.http.put('/attivita/' + this.attivita.id, to_send).subscribe(
       async (res) => {
-        const text = 'I tuoi dati sono stati aggiornati';
         this.getDatiProfilo()
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Profilo aggiornato',
-          message: text,
-          buttons: ['OK'],
-        });
-        await alert.present();
+        this.alertManager.createInfoAlert('Profilo aggiornato', 'I tuoi dati sono stati aggiornati');
       },
       async (res) => {
         await loading.dismiss();
         this.errorManager.stampaErrore(res, 'Modifica Fallita');
       });
-
   }
 
   async aggiornaPassword() {
@@ -113,14 +106,8 @@ export class ImpostazioniPage implements OnInit {
 
     this.http.put('/modifica/password/' + this.attivita.id, to_send).subscribe(
       async (res) => {
-        const text = 'La password del tuo account è stata aggiornata';
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Password aggiornata',
-          message: text,
-          buttons: ['OK'],
-        });
-        await alert.present();
+        this.alertManager.createInfoAlert('Password aggiornata', 'La password del tuo account è stata aggiornata');
       },
       async (res) => {
         await loading.dismiss();

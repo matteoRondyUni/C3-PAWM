@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../../../../services/authentication.service';
-import { ErrorManagerService } from '../../../../services/error-manager.service';
+import { AuthenticationService } from '../../../../services/authentication-service/authentication.service';
+import { ErrorManagerService } from '../../../../services/error-manager/error-manager.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
+import { LoadingController, ModalController } from '@ionic/angular';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
 
 @Component({
   selector: 'app-crea-dipendente',
@@ -15,7 +16,7 @@ export class CreaDipendentePage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthenticationService,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private errorManager: ErrorManagerService,
     private loadingController: LoadingController,
     private modalController: ModalController
@@ -43,13 +44,8 @@ export class CreaDipendentePage implements OnInit {
     (await this.authService.registerDipendente(this.credenziali.value)).subscribe(
       async (res) => {
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Nuovo dipendente creato',
-          message: "Ora è stato aggiunto alla lista",
-          buttons: ['OK'],
-        });
         this.modalController.dismiss(true);
-        await alert.present();
+        this.alertManager.createInfoAlert('Nuovo dipendente creato', 'Ora è stato aggiunto alla lista');
       },
       async (res) => {
         await loading.dismiss();

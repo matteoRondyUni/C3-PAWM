@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../../../../services/authentication.service';
-import { ErrorManagerService } from '../../../../services/error-manager.service';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
+import { AuthenticationService } from '../../../../services/authentication-service/authentication.service';
+import { ErrorManagerService } from '../../../../services/error-manager/error-manager.service';
+import { LoadingController, ModalController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { map, switchMap } from 'rxjs/operators';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
 
 @Component({
   selector: 'app-crea-prodotto',
@@ -21,7 +21,7 @@ export class CreaProdottoPage implements OnInit {
     private errorManager: ErrorManagerService,
     private modalController: ModalController,
     private loadingController: LoadingController,
-    private alertController: AlertController
+    private alertManager: AlertManagerService
   ) { }
 
   ngOnInit() {
@@ -52,18 +52,14 @@ export class CreaProdottoPage implements OnInit {
     this.http.post('/prodotto', to_send).subscribe(
       async (res) => {
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Nuovo prodotto creato',
-          message: "Ora è stato aggiunto alla lista",
-          buttons: ['OK'],
-        });
         this.modalController.dismiss(true);
-        await alert.present();
+        this.alertManager.createInfoAlert('Nuovo prodotto creato', "Ora è stato aggiunto alla lista");
       },
       async (res) => {
         await loading.dismiss();
         this.modalController.dismiss(false);
         this.errorManager.stampaErrore(res, 'Creazione prodotto fallita');
       });
+    this.modalController.dismiss(true);
   }
 }

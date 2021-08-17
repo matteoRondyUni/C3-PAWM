@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AlertController, LoadingController } from '@ionic/angular';
-import { map, switchMap } from 'rxjs/operators';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { ErrorManagerService } from 'src/app/services/error-manager.service';
-import { ReloadManagerService } from 'src/app/services/reload-manager.service';
+import { LoadingController } from '@ionic/angular';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
+import { AuthenticationService } from 'src/app/services/authentication-service/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager/reload-manager.service';
 
 @Component({
   selector: 'app-merci',
@@ -22,7 +22,7 @@ export class MerciPage implements OnInit {
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
     private loadingController: LoadingController,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private reloadManager: ReloadManagerService) {
     this.loadMerci(null);
   }
@@ -90,24 +90,7 @@ export class MerciPage implements OnInit {
         break;
     }
 
-    const alert = await this.alertController.create({
-      header: 'Cambiare lo stato della merce!',
-      message: messaggio,
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-        }, {
-          text: 'Okay',
-          handler: () => {
-            this.cambiaStatoMerce(merce);
-          }
-        }
-      ]
-    });
-
-    await alert.present();
+    this.alertManager.createConfirmationAlert(messaggio, () => { this.cambiaStatoMerce(merce); });
   }
 
   async cambiaStatoMerce(merce) {
@@ -121,15 +104,9 @@ export class MerciPage implements OnInit {
 
     this.http.put('/merci/' + merce.id, to_send).subscribe(
       async (res) => {
-        const text = 'I dati della merce sono stati aggiornati';
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Merce modificata',
-          message: text,
-          buttons: ['OK'],
-        });
         this.loadMerci(null);
-        await alert.present();
+        this.alertManager.createInfoAlert('Merce modificata', 'I dati della merce sono stati aggiornati');
       },
       async (res) => {
         await loading.dismiss();

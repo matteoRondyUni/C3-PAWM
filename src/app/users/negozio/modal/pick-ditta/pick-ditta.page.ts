@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { ErrorManagerService } from 'src/app/services/error-manager/error-manager.service';
 
 @Component({
   selector: 'app-pick-ditta',

@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { AuthenticationService } from 'src/app/services/authentication-service/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager/error-manager.service';
 import jwt_decode from 'jwt-decode';
 import { ModalController } from '@ionic/angular';
 import { DitteTrasportiPage } from '../../utenti/modal/ditte-trasporti/ditte-trasporti.page';

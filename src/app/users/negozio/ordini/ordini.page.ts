@@ -1,15 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { ErrorManagerService } from '../../../services/error-manager.service';
-import { ReloadManagerService } from 'src/app/services/reload-manager.service';
-import { InfoOrdineLoaderService } from 'src/app/services/info-ordine-loader.service';
-import { map, switchMap } from 'rxjs/operators';
+import { LoadingController, ModalController } from '@ionic/angular';
+import { AuthenticationService } from '../../../services/authentication-service/authentication.service';
+import { ErrorManagerService } from '../../../services/error-manager/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager/reload-manager.service';
+import { InfoOrdineLoaderService } from 'src/app/services/info-ordine-loader/info-ordine-loader.service';
 import { PickDittaPage } from '../modal/pick-ditta/pick-ditta.page';
 import { PickMagazzinoPage } from '../modal/pick-magazzino/pick-magazzino.page';
 import { PickProdottoPage } from '../modal/pick-prodotto/pick-prodotto.page';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
 
 @Component({
   selector: 'app-ordini',
@@ -32,7 +32,7 @@ export class OrdiniPage implements OnInit {
     private errorManager: ErrorManagerService,
     private reloadManager: ReloadManagerService,
     private infoOrdineLoader: InfoOrdineLoaderService,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private modalController: ModalController,
     private loadingController: LoadingController
   ) {
@@ -132,12 +132,7 @@ export class OrdiniPage implements OnInit {
     this.http.post('/ordine', to_send).subscribe(
       async (res) => {
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Nuovo ordine creato',
-          message: "Ora è stato aggiunto allo storico",
-          buttons: ['OK'],
-        });
-        await alert.present();
+        this.alertManager.createInfoAlert('Nuovo ordine creato', "Ora è stato aggiunto allo storico");
         this.loadOrdini(null);
       },
       async (res) => {

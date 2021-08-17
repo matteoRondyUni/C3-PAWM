@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
-import { AuthenticationService } from '../../../services/authentication.service';
-import { ErrorManagerService } from '../../../services/error-manager.service';
+import { AuthenticationService } from '../../../services/authentication-service/authentication.service';
+import { ErrorManagerService } from '../../../services/error-manager/error-manager.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
 
 @Component({
   selector: 'app-login-utente',
@@ -17,7 +18,7 @@ export class LoginUtentePage implements OnInit {
     private fb: FormBuilder,
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private router: Router,
     private loadingController: LoadingController
   ) { }
@@ -51,12 +52,7 @@ export class LoginUtentePage implements OnInit {
             this.router.navigateByUrl('/magazziniere', { replaceUrl: true });
             break;
           default:
-            const alert = await this.alertController.create({
-              header: 'Login failed',
-              message: "Rieffettua il Login",
-              buttons: ['OK'],
-            });
-            await alert.present();
+            this.alertManager.createInfoAlert('Login fallito', 'Rieffettua il login');
         }
       },
       async (res) => {

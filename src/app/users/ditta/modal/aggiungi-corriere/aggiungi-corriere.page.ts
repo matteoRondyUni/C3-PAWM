@@ -1,9 +1,9 @@
-import { AlertController, LoadingController, ModalController, NavParams, ToastController } from '@ionic/angular';
+import { LoadingController, ModalController, NavParams, ToastController } from '@ionic/angular';
 import { Component, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, switchMap } from 'rxjs/operators';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { AuthenticationService } from 'src/app/services/authentication-service/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager/error-manager.service';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
 
 @Component({
   selector: 'app-aggiungi-corriere',
@@ -28,7 +28,7 @@ export class AggiungiCorrierePage implements OnInit {
     private errorManager: ErrorManagerService,
     private modalController: ModalController,
     private loadingController: LoadingController,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private toastController: ToastController,
     private navParams: NavParams) {
     this.loadDipendenti();
@@ -95,21 +95,15 @@ export class AggiungiCorrierePage implements OnInit {
 
     this.http.put('/ditta-trasporti/ordine/merce/' + this.id, to_send).subscribe(
       async (res) => {
-        const text = 'I dati della Merce sono stati aggiornati';
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Merce modificata',
-          message: text,
-          buttons: ['OK'],
-        });
         this.modalController.dismiss(true);
-        await alert.present();
+        this.alertManager.createInfoAlert('Merce modificata', 'I dati della Merce sono stati aggiornati');
       },
       async (res) => {
         await loading.dismiss();
         this.modalController.dismiss(false);
         this.errorManager.stampaErrore(res, 'Modifica Fallita');
       });
+    this.modalController.dismiss(true);
   }
-
 }

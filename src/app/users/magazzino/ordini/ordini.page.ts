@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AlertController, LoadingController } from '@ionic/angular';
-import { map, switchMap } from 'rxjs/operators';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { ErrorManagerService } from 'src/app/services/error-manager.service';
-import { ReloadManagerService } from 'src/app/services/reload-manager.service';
+import { LoadingController } from '@ionic/angular';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
+import { AuthenticationService } from 'src/app/services/authentication-service/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager/error-manager.service';
+import { ReloadManagerService } from 'src/app/services/reload-manager/reload-manager.service';
 
 @Component({
   selector: 'app-ordini',
@@ -25,7 +25,7 @@ export class OrdiniPage implements OnInit {
     private authService: AuthenticationService,
     private errorManager: ErrorManagerService,
     private reloadManager: ReloadManagerService,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private loadingController: LoadingController,
   ) {
     this.loadOrdini(null)
@@ -125,19 +125,14 @@ export class OrdiniPage implements OnInit {
 
     this.http.put('/ordine/' + ordine.id, to_send).subscribe(
       async (res) => {
-        const text = 'L\'ordine è stato contrassegnato come ritirato';
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Ordine ritirato',
-          message: text,
-          buttons: ['OK'],
-        });
         this.loadOrdini(null);
-        await alert.present();
+        this.alertManager.createInfoAlert('Ordine ritirato', "L'ordine è stato contrassegnato come ritirato");
       },
       async (res) => {
         await loading.dismiss();
         this.errorManager.stampaErrore(res, 'Modifica Fallita');
       });
+    this.loadOrdini(null);
   }
 }

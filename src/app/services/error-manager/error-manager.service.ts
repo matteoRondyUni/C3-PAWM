@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertManagerService } from '../alert-manager/alert-manager.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorManagerService {
 
-  constructor(private alertController: AlertController, private router: Router) { }
+  constructor(private alertManager: AlertManagerService, private router: Router) { }
 
   stampaErrore(res, headerText) {
     if (this.controllaRes(res)) this.stampa(headerText, res.error)
@@ -22,11 +22,6 @@ export class ErrorManagerService {
   }
 
   async stampa(headerText, messageText) {
-    const alert = await this.alertController.create({
-      header: headerText,
-      message: messageText,
-      buttons: ['OK'],
-    });
-    await alert.present();
+    this.alertManager.createInfoAlert(headerText, messageText);
   }
 }

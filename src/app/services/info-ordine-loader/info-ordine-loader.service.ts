@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ErrorManagerService } from './error-manager.service';
+import { ErrorManagerService } from '../error-manager/error-manager.service';
 
 @Injectable({
   providedIn: 'root'

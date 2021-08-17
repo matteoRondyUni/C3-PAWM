@@ -2,7 +2,7 @@ import { CanLoad, Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
-import { AuthenticationService } from '../services/authentication.service';
+import { AuthenticationService } from '../services/authentication-service/authentication.service';
 
 @Injectable({
   providedIn: 'root'

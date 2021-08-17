@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ModalController, NavParams } from '@ionic/angular';
+import { LoadingController, ModalController, NavParams } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { ErrorManagerService } from 'src/app/services/error-manager.service';
+import { AuthenticationService } from 'src/app/services/authentication-service/authentication.service';
+import { ErrorManagerService } from 'src/app/services/error-manager/error-manager.service';
 import { HttpClient } from '@angular/common/http';
-import { map, switchMap } from 'rxjs/operators';
+import { AlertManagerService } from 'src/app/services/alert-manager/alert-manager.service';
 
 @Component({
   selector: 'app-dettagli-prodotto',
@@ -26,7 +26,7 @@ export class DettagliProdottoPage implements OnInit {
     private errorManager: ErrorManagerService,
     private modalController: ModalController,
     private loadingController: LoadingController,
-    private alertController: AlertController,
+    private alertManager: AlertManagerService,
     private navParams: NavParams
   ) { }
 
@@ -55,21 +55,16 @@ export class DettagliProdottoPage implements OnInit {
 
     this.http.put('/prodotto/disponibilita/' + this.id_prodotto, to_send).subscribe(
       async (res) => {
-        const text = 'Il prodotto ' + this.nome + ' è stato tolto dal Catalogo.';
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Prodotto Fuori Catalogo',
-          message: text,
-          buttons: ['OK'],
-        });
         this.modalController.dismiss(true);
-        await alert.present();
+        this.alertManager.createInfoAlert('Prodotto Fuori Catalogo', 'Il prodotto ' + this.nome + ' è stato tolto dal Catalogo.');
       },
       async (res) => {
         await loading.dismiss();
         this.modalController.dismiss(false);
         this.errorManager.stampaErrore(res, 'Modifica Fallita');
       });
+    this.modalController.dismiss(true);
   }
 
   async modificaProdotto() {
@@ -86,21 +81,15 @@ export class DettagliProdottoPage implements OnInit {
 
     this.http.put('/prodotto/' + this.id_prodotto, to_send).subscribe(
       async (res) => {
-        const text = 'I dati del prodotto sono stati aggiornati';
         await loading.dismiss();
-        const alert = await this.alertController.create({
-          header: 'Prodotto modificato',
-          message: text,
-          buttons: ['OK'],
-        });
         this.modalController.dismiss(true);
-        await alert.present();
+        this.alertManager.createInfoAlert('I dati del prodotto sono stati aggiornati', 'I dati del prodotto sono stati aggiornati');
       },
       async (res) => {
         await loading.dismiss();
         this.modalController.dismiss(false);
         this.errorManager.stampaErrore(res, 'Modifica Fallita');
       });
+    this.modalController.dismiss(true);
   }
-
 }
