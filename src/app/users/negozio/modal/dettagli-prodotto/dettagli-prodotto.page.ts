@@ -64,7 +64,6 @@ export class DettagliProdottoPage implements OnInit {
         this.modalController.dismiss(false);
         this.errorManager.stampaErrore(res, 'Modifica Fallita');
       });
-    this.modalController.dismiss(true);
   }
 
   async modificaProdotto() {
@@ -90,6 +89,5 @@ export class DettagliProdottoPage implements OnInit {
         this.modalController.dismiss(false);
         this.errorManager.stampaErrore(res, 'Modifica Fallita');
       });
-    this.modalController.dismiss(true);
   }
 }

@@ -60,6 +60,5 @@ export class CreaProdottoPage implements OnInit {
         this.modalController.dismiss(false);
         this.errorManager.stampaErrore(res, 'Creazione prodotto fallita');
       });
-    this.modalController.dismiss(true);
   }
 }

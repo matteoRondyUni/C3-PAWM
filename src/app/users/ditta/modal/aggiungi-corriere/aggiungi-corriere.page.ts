@@ -104,6 +104,5 @@ export class AggiungiCorrierePage implements OnInit {
         this.modalController.dismiss(false);
         this.errorManager.stampaErrore(res, 'Modifica Fallita');
       });
-    this.modalController.dismiss(true);
   }
 }
