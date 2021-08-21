@@ -37,7 +37,7 @@ La piattaforma offre ad ogni Utente la possibilità di visualizzare le informazi
 ***
 ## **Sviluppo**:
 
-Puntando soprattutto su performance e user experience per l’utente finale, abbiamo scelto di sviluppare una _Progressive Web App (PWA)_, soluzione che vuole unire il meglio delle app native e della tecnologia Web, ottenendo così una piattaforma:
+Puntando soprattutto su performance e user experience per l’utente finale, abbiamo scelto di sviluppare un'app ibrida con UI Web adottando [Ionic Framework](https://ionicframework.com/), soluzione che vuole unire il meglio delle app native e della tecnologia Web, ottenendo così una piattaforma:
 + **Progressive** – Ben funzionante a prescindere dal browser utilizzato dai vari utenti, poiché costruita alla base con principi di miglioramento progressivo.
 + **App-like** – Avente le sembianze di un app nativa, in termini di interazione e navigazione.
 + **Responsive** – Veloce e adattabile alle varie dimensioni dello schermo: desktop, mobile, ecc.
