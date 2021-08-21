@@ -6,34 +6,19 @@ import { MenuPage } from './menu.page';
 const routes: Routes = [
   {
     path: '',
-    component: MenuPage,
-    redirectTo: 'home',
+    redirectTo: '/negozio/home',
     pathMatch: 'full'
   },
   {
-    path: 'home',
+    path: '',
     component: MenuPage,
-    loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
-  },
-  {
-    path: 'dipendenti',
-    component: MenuPage,
-    loadChildren: () => import('../../attivita/dipendenti/dipendenti.module').then(m => m.DipendentiPageModule)
-  },
-  {
-    path: 'inventario',
-    component: MenuPage,
-    loadChildren: () => import('../inventario/inventario.module').then(m => m.InventarioPageModule)
-  },
-  {
-    path: 'ordini',
-    component: MenuPage,
-    loadChildren: () => import('../ordini/ordini.module').then(m => m.OrdiniPageModule)
-  },
-  {
-    path: 'impostazioni',
-    component: MenuPage,
-    loadChildren: () => import('../../attivita/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule)
+    children: [
+      { path: 'home', loadChildren: () => import('../home/home.module').then(m => m.HomePageModule) },
+      { path: 'dipendenti', loadChildren: () => import('../../attivita/dipendenti/dipendenti.module').then(m => m.DipendentiPageModule) },
+      { path: 'inventario', loadChildren: () => import('../inventario/inventario.module').then(m => m.InventarioPageModule) },
+      { path: 'ordini', loadChildren: () => import('../ordini/ordini.module').then(m => m.OrdiniPageModule) },
+      { path: 'impostazioni', loadChildren: () => import('../../attivita/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule) }
+    ]
   }
 ];
 

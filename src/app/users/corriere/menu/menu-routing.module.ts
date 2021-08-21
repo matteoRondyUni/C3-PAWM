@@ -6,24 +6,17 @@ import { MenuPage } from './menu.page';
 const routes: Routes = [
   {
     path: '',
-    component: MenuPage,
-    redirectTo: 'home',
+    redirectTo: '/corriere/home',
     pathMatch: 'full'
   },
   {
-    path: 'home',
+    path: '',
     component: MenuPage,
-    loadChildren: () => import('../home/home.module').then(m => m.HomePageModule)
-  },
-  {
-    path: 'merci',
-    component: MenuPage,
-    loadChildren: () => import('../merci/merci.module').then(m => m.MerciPageModule)
-  },
-  {
-    path: 'impostazioni',
-    component: MenuPage,
-    loadChildren: () => import('../../utenti/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule)
+    children: [
+      { path: 'home', loadChildren: () => import('../home/home.module').then(m => m.HomePageModule) },
+      { path: 'merci', loadChildren: () => import('../merci/merci.module').then(m => m.MerciPageModule) },
+      { path: 'impostazioni', loadChildren: () => import('../../utenti/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule) }
+    ]
   }
 ];
 

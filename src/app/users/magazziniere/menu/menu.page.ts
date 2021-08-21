@@ -26,21 +26,7 @@ export class MenuPage implements OnInit {
     }
   ];
 
-  selectedPath = '';
-
-  constructor(private authService: AuthenticationService, private router: Router) {
-    this.router.events.subscribe((event: RouterEvent) => {
-      if (event.url != undefined) {
-        if (event.url == '/magazziniere') {
-          this.selectedPath = '/magazziniere/home';
-        } else if (event.url == '/magazziniere/ordini/cronologia') {
-          this.selectedPath = '/magazziniere/ordini';
-        } else {
-          this.selectedPath = event.url;
-        }
-      }
-    });
-  }
+  constructor(private authService: AuthenticationService, private router: Router) { }
 
   ngOnInit() {
   }

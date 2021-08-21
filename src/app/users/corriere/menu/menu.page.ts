@@ -26,19 +26,9 @@ export class MenuPage implements OnInit {
     }
   ]
 
-  selectedPath = '';
-
-  constructor(private authService: AuthenticationService, private router: Router) {
-    this.router.events.subscribe((event: RouterEvent) => {
-      if (event.url != undefined) {
-        if (event.url == '/corriere') {
-          this.selectedPath = '/corriere/home';
-        } else {
-          this.selectedPath = event.url;
-        }
-      }
-    });
-  }
+  constructor(
+    private authService: AuthenticationService,
+    private router: Router) { }
 
   ngOnInit() {
   }
@@ -47,5 +37,4 @@ export class MenuPage implements OnInit {
     await this.authService.logout();
     this.router.navigateByUrl('/', { replaceUrl: true });
   }
-
 }

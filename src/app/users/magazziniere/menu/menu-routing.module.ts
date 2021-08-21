@@ -6,24 +6,17 @@ import { MenuPage } from './menu.page';
 const routes: Routes = [
   {
     path: '',
-    component: MenuPage,
-    redirectTo: 'home',
+    redirectTo: '/magazziniere/home',
     pathMatch: 'full'
   },
   {
-    path: 'home',
+    path: '',
     component: MenuPage,
-    loadChildren: () => import('../../magazziniere/home/home.module').then( m => m.HomePageModule)
-  },
-  {
-    path: 'ordini',
-    component: MenuPage,
-    loadChildren: () => import('../../magazzino/ordini/ordini.module').then(m => m.OrdiniPageModule)
-  },
-  {
-    path: 'impostazioni',
-    component: MenuPage,
-    loadChildren: () => import('../../utenti/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule)
+    children: [
+      { path: 'home', loadChildren: () => import('../../magazziniere/home/home.module').then(m => m.HomePageModule) },
+      { path: 'ordini', loadChildren: () => import('../../magazzino/ordini/ordini.module').then(m => m.OrdiniPageModule) },
+      { path: 'impostazioni', loadChildren: () => import('../../utenti/impostazioni/impostazioni.module').then(m => m.ImpostazioniPageModule) }
+    ]
   }
 ];
 
@@ -31,4 +24,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class MenuPageRoutingModule {}
+export class MenuPageRoutingModule { }
