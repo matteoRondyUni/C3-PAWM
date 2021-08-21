@@ -1,5 +1,6 @@
 const attivita = require('./attivita');
 const utente = require('./utente');
+const xss = require("xss");
 
 /**
  * Controlla che la password sia compresa tra 8 e 16 caratteri.
@@ -13,9 +14,11 @@ exports.controllaPassword = function (password) {
 /**
  * Controlla che il numero telefonico sia un formato corretto.
  * @param {String} telefono Numero telefonico da controllare
+ * @returns La stringa sanificata (XSS sanitization)
  */
 exports.controllaTelefono = function (telefono) {
-    if (typeof telefono != "string" || isNaN(telefono)) throw "Il numero di telefono non è corretto.";
+    if (typeof telefono != "string" || isNaN(telefono)) throw "Il numero di telefono non è valido.";
+    return xss(telefono);
 }
 
 /**
@@ -40,9 +43,11 @@ exports.controllaFloat = function (toControl, errorText) {
  * Controlla che il parametro passato sia diverso da null o dalla stringa vuota.
  * @param {String} toControl Dato da controllare
  * @param {String} errorText Errore da stampare
+ * @returns La stringa sanificata (XSS sanitization)
  */
 exports.controllaString = function (toControl, errorText) {
     if (toControl == null || toControl == "") throw errorText;
+    return xss(toControl);
 }
 
 /** 
@@ -82,13 +87,13 @@ exports.controllaDatiRegister = function (request, tipo) {
  */
 exports.controllaDatiAccount = function (request, tipo) {
     if (attivita.TIPO == tipo)
-        exports.controllaString(request.body.ragione_sociale, "Il campo Ragione Sociale non può essere vuoto!");
+        request.body.ragione_sociale = exports.controllaString(request.body.ragione_sociale, "Il campo Ragione Sociale non può essere vuoto!");
     else if (utente.TIPO == tipo) {
-        exports.controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
-        exports.controllaString(request.body.cognome, "Il campo Cognome non può essere vuoto!");
+        request.body.nome = exports.controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
+        request.body.cognome = exports.controllaString(request.body.cognome, "Il campo Cognome non può essere vuoto!");
     }
-    exports.controllaString(request.body.email, "Il campo Email non può essere vuoto!");
+    request.body.email = exports.controllaString(request.body.email, "Il campo Email non può essere vuoto!");
 
-    exports.controllaTelefono(request.body.telefono);
-    exports.controllaString(request.body.indirizzo, "Il campo Indirizzo non può essere vuoto!");
+    request.body.telefono = exports.controllaTelefono(request.body.telefono);
+    request.body.indirizzo = exports.controllaString(request.body.indirizzo, "Il campo Indirizzo non può essere vuoto!");
 }

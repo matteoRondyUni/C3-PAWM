@@ -70,8 +70,8 @@ function calcolaTotaleOrdine(inventario, prodottiDaVendere) {
  * @param {*} request Request con i dati da controllare
  */
 function controllaDatiCreazioneOrdine(request) {
-    controller.controllaString(request.body.tipo, "La Tipologia dell'Ordine non può essere vuota!");
-    controller.controllaString(request.body.email_cliente, "Il campo Email non può essere vuoto!");
+    request.body.tipo = controller.controllaString(request.body.tipo, "La Tipologia dell'Ordine non può essere vuota!");
+    request.body.email_cliente = controller.controllaString(request.body.email_cliente, "Il campo Email non può essere vuoto!");
     if (request.body.tipo == "MAGAZZINO")
         controller.controllaInt(request.body.id_magazzino, "Deve essere selezionato un Magazzino!");
     controller.controllaInt(request.body.id_ditta, "Deve essere selezionata una Ditta di Trasporti!");
@@ -84,7 +84,7 @@ function controllaDatiCreazioneOrdine(request) {
  * @param {*} request Request con i dati da controllare
  */
 function controllaDatiProdotto(request) {
-    controller.controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
+    request.body.nome = controller.controllaString(request.body.nome, "Il campo Nome non può essere vuoto!");
     controller.controllaInt(request.body.disponibilita, "La Disponibilità deve essere un numero!");
     controller.controllaFloat(request.body.prezzo, "Il Prezzo deve essere un numero!");
 }
