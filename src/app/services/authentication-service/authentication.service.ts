@@ -81,9 +81,7 @@ export class AuthenticationService {
   }
 
   registerCliente(credentials): Observable<any> {
-    return this.http.post('/register/cliente', credentials).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; }))
+    return this.http.post('/register/cliente', credentials);
   }
 
   async registerDipendente(credenziali): Promise<Observable<any>> {
@@ -98,14 +96,10 @@ export class AuthenticationService {
       'token_value': token.value
     }
 
-    return this.http.post('/register/dipendente', to_send).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; }))
+    return this.http.post('/register/dipendente', to_send);
   }
 
   registerAttivita(credentials): Observable<any> {
-    return this.http.post('/register/attivita', credentials).pipe(
-      map((data: any) => data.esito),
-      switchMap(esito => { return esito; }))
+    return this.http.post('/register/attivita', credentials);
   }
 }
