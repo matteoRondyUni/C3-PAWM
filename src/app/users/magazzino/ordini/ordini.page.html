@@ -39,7 +39,8 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-searchbar class = "transparent-searchbar" showcancelbutton="" (search)="cercaOrdine($event)" placeholder="Inserisci il codice">
+        <ion-searchbar class="transparent-searchbar" showcancelbutton="" (search)="cercaOrdine($event)"
+          placeholder="Inserisci il codice">
         </ion-searchbar>
 
         <br *ngIf="nessun_risultato === true">
@@ -63,7 +64,6 @@
                 <h2>Codice ritiro: {{ordine.codice_ritiro}}</h2>
               </ion-label>
 
-              <ion-icon name="information-circle-outline" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item lines="none">
@@ -113,7 +113,6 @@
             <h2>Codice ritiro: {{ordine.codice_ritiro}}</h2>
           </ion-label>
 
-          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
         </ion-item>
 
         <ion-item lines="none">
@@ -157,8 +156,6 @@
             <h2>Tipo: {{ordine.tipo}}</h2>
             <h2>Codice ritiro: {{ordine.codice_ritiro}}</h2>
           </ion-label>
-
-          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
         </ion-item>
 
         <ion-item lines="none">

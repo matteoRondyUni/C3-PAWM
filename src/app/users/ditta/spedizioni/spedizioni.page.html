@@ -55,7 +55,7 @@
 
         <ion-item lines="none">
           <ion-virtual-scroll [items]="ordine.merci">
-            <ion-item *virtualItem="let merce" (click)="aggiungiCorriere(merce)">
+            <ion-item button="true" *virtualItem="let merce" (click)="aggiungiCorriere(merce)">
               <ion-avatar slot="start">
                 <img src="../../../../../assets/shopping-bag.png">
               </ion-avatar>
@@ -102,7 +102,7 @@
 
         <ion-item lines="none">
           <ion-virtual-scroll [items]="ordine.merci">
-            <ion-item *virtualItem="let merce" (click)="apriDettagli(merce)">
+            <ion-item button="true" *virtualItem="let merce" (click)="apriDettagli(merce)">
               <ion-avatar slot="start">
                 <img src="../../../../../assets/shopping-bag.png">
               </ion-avatar>

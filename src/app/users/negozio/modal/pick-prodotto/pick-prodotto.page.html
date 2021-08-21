@@ -20,7 +20,7 @@
         <ion-label>{{header}}</ion-label>
       </ion-item-divider>
 
-      <ion-item lines="full" *virtualItem="let prodotto" (click)="pick(prodotto)">
+      <ion-item button="true" lines="full" *virtualItem="let prodotto" (click)="pick(prodotto)">
         <ion-avatar slot="start">
           <img src="../../../../../assets/shopping-bag.png">
         </ion-avatar>
@@ -29,7 +29,6 @@
           <h2 text-capitalize>{{prodotto.nome}}</h2>
         </ion-label>
 
-        <ion-icon name="information-circle-outline" slot="end"></ion-icon>
       </ion-item>
     </ion-virtual-scroll>
   </ion-card>

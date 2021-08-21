@@ -6,9 +6,9 @@
 
 <ion-content class="ion-content-with-blur-background">
 
-  <ion-virtual-scroll [items]="magazzini" approximateItemHeight="70px">
-    <ion-card class="mid-transparent-card" *virtualItem="let magazzino" (click)="pick(magazzino)">
-      <ion-item lines="none">
+  <ion-card class="mid-transparent-card">
+    <ion-virtual-scroll [items]="magazzini" approximateItemHeight="70px">
+      <ion-item button="true" lines="none" *virtualItem="let magazzino" (click)="pick(magazzino)">
         <ion-avatar slot="start">
           <img src="../../../../../assets/warehouse.png">
         </ion-avatar>
@@ -18,8 +18,8 @@
           <h3>{{magazzino.indirizzo}}</h3>
         </ion-label>
       </ion-item>
-    </ion-card>
-  </ion-virtual-scroll>
+    </ion-virtual-scroll>
+  </ion-card>
 </ion-content>
 
 <ion-footer>

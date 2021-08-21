@@ -94,7 +94,8 @@
                 required></ion-input>
             </ion-label>
 
-            <ion-icon name="trash-outline" color="danger" slot="end" (click)="rimuoviProdotto(prodotto)"></ion-icon>
+            <ion-icon tappable name="trash-outline" color="danger" slot="end" (click)="rimuoviProdotto(prodotto)">
+            </ion-icon>
           </ion-item>
         </ion-virtual-scroll>
 
@@ -125,7 +126,6 @@
             <h2>Totale: €{{ordine.totale}}</h2>
           </ion-label>
 
-          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
         </ion-item>
 
         <ion-item lines="none">

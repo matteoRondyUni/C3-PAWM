@@ -26,7 +26,7 @@
 
   <div *ngIf="segment === 'ritirate'">
     <ion-virtual-scroll [items]="merciDaRitirare">
-      <ion-card class="mid-transparent-card" *virtualItem="let merce" (click)="presentAlertConfirm(merce)">
+      <ion-card tappable class="mid-transparent-card" *virtualItem="let merce" (click)="presentAlertConfirm(merce)">
         <ion-item lines="none">
           <ion-avatar slot="start">
             <img src="../../../../../assets/box.png">
@@ -38,8 +38,6 @@
             <h2>Indirizzo: {{merce.indirizzo}}</h2>
             <h2>Stato: {{merce.stato}}</h2>
           </ion-label>
-
-          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
         </ion-item>
       </ion-card>
     </ion-virtual-scroll>
@@ -47,7 +45,7 @@
 
   <div *ngIf="segment === 'transito'">
     <ion-virtual-scroll [items]="merciInTransito">
-      <ion-card class="mid-transparent-card" *virtualItem="let merce" (click)="presentAlertConfirm(merce)">
+      <ion-card tappable class="mid-transparent-card" *virtualItem="let merce" (click)="presentAlertConfirm(merce)">
         <ion-item lines="none">
           <ion-avatar slot="start">
             <img src="../../../../../assets/box.png">
@@ -59,8 +57,6 @@
             <h2>Indirizzo: {{merce.indirizzo}}</h2>
             <h2>Stato: {{merce.stato}}</h2>
           </ion-label>
-
-          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
         </ion-item>
       </ion-card>
     </ion-virtual-scroll>

@@ -42,7 +42,7 @@
           <ion-label>{{header}}</ion-label>
         </ion-item-divider>
 
-        <ion-item lines="full" *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
+        <ion-item button="true" lines="full" *virtualItem="let prodotto" (click)="apriDettagli(prodotto)">
           <ion-avatar slot="start">
             <img src="../../../../../assets/box.png">
           </ion-avatar>

@@ -35,7 +35,7 @@
 
     <ion-card-content>
       <ion-virtual-scroll [items]="dipendenti" approximateItemHeight="70px">
-        <ion-item *virtualItem="let dipendente" (click)="pickCorriere(dipendente)">
+        <ion-item button="true" lines="full" *virtualItem="let dipendente" (click)="pickCorriere(dipendente)">
           <ion-avatar slot="start">
             <img src="../../../../../assets/user.png">
           </ion-avatar>
@@ -43,8 +43,6 @@
           <ion-label>
             <h2 text-capitalize>{{dipendente.cognome}} {{dipendente.nome}}</h2>
           </ion-label>
-
-          <ion-icon name="information-circle-outline" slot="end"></ion-icon>
         </ion-item>
       </ion-virtual-scroll>
     </ion-card-content>
