@@ -8,7 +8,7 @@ import { Plugins } from '@capacitor/core';
 
 const { Storage } = Plugins;
 
-const TOKEN_KEY = 'my-token';
+const TOKEN_KEY = 'jwt';
 
 @Injectable({
   providedIn: 'root'
