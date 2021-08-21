@@ -44,6 +44,10 @@ export class OrdiniPage implements OnInit {
       email: ['', [Validators.required]],
       tipo: ['', [Validators.required]],
     });
+    this.magazzino = { "id": null, "ragione_sociale": null, "indirizzo": null };
+    this.ditta = { "id": null, "ragione_sociale": null, "indirizzo": null };
+    this.consegnaADomicilio = null;
+    this.prodotti = [];
   }
 
   segmentChanged(ev: any) {
@@ -134,6 +138,7 @@ export class OrdiniPage implements OnInit {
         await loading.dismiss();
         this.alertManager.createInfoAlert('Nuovo ordine creato', "Ora è stato aggiunto allo storico");
         this.loadOrdini(null);
+        this.ngOnInit();
       },
       async (res) => {
         await loading.dismiss();
